@@ -463,4 +463,46 @@ next.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — FOUND IT (part 2): mode 3 works cleanly, isolates the trigger to subevent COUNT, not interval
+
+Ran mode 3 (5 subevents, full 10s interval) -- `logs/central_20260731_143509.log`
+(pushed). **Clean result, no `udc` errors, no hang.** Full boot, scanning
+started, and then it actually received live sensor data:
+
+```
+Scanning successfully started
+>>> Node 01 (subevent 0): skin_temp=28.50C humidity=44.6% seq=673
+>>> Node 01 (subevent 0): skin_temp=28.50C humidity=44.7% seq=703
+>>> Node 01 (subevent 0): skin_temp=28.50C humidity=44.6% seq=734
+```
+
+Readings arriving every 10s, matching the interval exactly -- periodic sync,
+PAST, and response-slot handling are all working end-to-end at this config
+(bonus reconfirmation that the SENDER fix holds beyond the earlier
+minimal-repro scale too, since this is the full 10s production interval, just
+with fewer subevents).
+
+**This isolates the USB hang trigger cleanly: it's subevent COUNT, not
+interval length.** Mode 0 (20 subevents, 10s) hangs. Mode 3 (5 subevents, 10s)
+works perfectly. Interval length is the same in both -- the only variable
+that changed is 5 -> 20 subevents, so that's what's exhausting whatever buffer
+pool `udc` is drawing from. Interval length is fully exonerated at this point.
+
+**Next step:** narrow down where between 5 and 20 subevents the hang starts
+(e.g. try 10, then binary-search from there) to find the actual threshold,
+then look at which specific `CONFIG_BT_BUF_*` / SDC buffer-count Kconfig
+option scales with subevent count and needs raising for 20 to work. Given
+we need all 17 (+3 spare = 20) subevents for the real deployment, this isn't
+optional -- something needs to give (more buffers, or fewer subevents than
+20 with a different multiplexing scheme) before production scale is usable.
+
+`common/pawr_protocol.h` currently has `APP_SCALE_TEST=3` (this working
+config) -- fine to leave central here for now if anyone wants a working
+reference point, just remember it's still a temporary diagnostic value, not
+`0`.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
