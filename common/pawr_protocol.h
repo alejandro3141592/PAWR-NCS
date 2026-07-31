@@ -33,7 +33,7 @@
  * restore full dynamic-assignment production behavior -- do not leave
  * this at 1 once the experiment is done.
  */
-#define APP_MINIMAL_REPRO 1
+#define APP_MINIMAL_REPRO 0
 
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
