@@ -1,0 +1,715 @@
+[11:36:03.576] [00:00:00.272,857] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:03.580] [1;31m--- 458 messages dropped ---
+[11:36:03.580] [0m[00:00:00.272,888] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 13[0m
+[11:36:03.580] [00:00:00.272,888] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:03.581] [00:00:00.272,918] [0m<dbg> bt_hci_core: hci_acl: handle 0 len 9 flags 2[0m
+[11:36:03.581] [00:00:00.272,979] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:03.582] [00:00:00.273,010] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:03.582] New timing: subevent 0, response slot 0
+[11:36:03.582] Not synced yet
+[11:36:03.583] [00:00:00.273,193] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:03.583] [00:00:00.273,254] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:03.583] [00:00:00.273,284] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 10 type 2[0m
+[11:36:03.584] [00:00:00.273,345] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:03.584] [00:00:00.273,376] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:03.584] [00:00:00.273,437] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:03.585] [00:00:00.273,468] [0m<dbg> bt_hci_core: bt_tx_i[00:00:05.222,656] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 13[0m
+[11:36:03.585] [00:00:05.222,747] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:03.585] [00:00:05.222,778] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 12[0m
+[11:36:03.587] [00:00:05.222,778] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:03.587] [00:00:05.222,808] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x03[0m
+[11:36:03.587] [00:00:05.222,839] [0m<dbg> bt_hci_core: le_conn_update_complete: status 0x00 , handle 0[0m
+[11:36:07.750] [SENSORS] node 1 seq 1 temp=26.50C humidity=36.5% flags=0x00
+[11:36:07.750] [00:00:10.392,669] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 7[0m
+[11:36:07.751] [00:00:10.392,700] [0m<dbg> bt_hci_core: hci_disconn_complete_prio: status 0x00  handle 0 reason 0x13[0m
+[11:36:07.751] [00:00:10.392,730] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:07.752] [00:00:10.392,791] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:07.752] [00:00:10.392,822] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 6[0m
+[11:36:07.752] [00:00:10.392,822] [0m<dbg> bt_hci_core: hci_event: event 0x05[0m
+[11:36:07.753] [00:00:10.392,883] [0m<dbg> bt_hci_core: hci_disconn_complete: status 0x00  handle 0 reason 0x13[0m
+[11:36:07.753] [00:00:10.392,913] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:07.753] Disconnected, reason 0x13 
+[11:36:17.409] [00:00:20.030,609] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:17.410] [1;31m--- 56 messages dropped ---
+[11:36:17.411] [0m[00:00:20.030,639] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2038 (buf 0x200099f4) to driver[0m
+[11:36:17.412] [00:00:20.030,670] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 8 type 1[0m
+[11:36:17.412] [00:00:20.030,700] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.412] [00:00:20.030,761] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:17.413] [00:00:20.030,792] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2038[0m
+[11:36:17.413] [00:00:20.030,853] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2038 status 0x00  buf 0x200097d4[0m
+[11:36:17.413] [00:00:20.030,883] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:17.414] [00:00:20.030,914] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.414] [00:00:20.030,975] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.414] [00:00:20.031,036] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2038 len 1[0m
+[11:36:17.415] [00:00:20.031,097] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:17.415] [00:00:20.031,127] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2039 len 6[0m
+[11:36:17.415] [00:00:20.031,158] [0m<dbg> bt_hci_core: bt_ TX process start[0m
+[11:36:17.416] [00:00:20.031,250] [0m<dbg> bt_hci_core:00:20.031,280] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending
+[11:36:17.416] [00:00:20.031,311] [0m<dbg> bt_hci_core: bt_send: buf 0x200091,433] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.416] [00:t_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:17.416] [00:00:20.031,494] [0me 0x2039[0m
+[11:36:17.416] [00:00:20.031,555] [0m<dbg> bt_hci_core: hci_cmd_00097d4[0m
+[11:36:17.417] [00:00:20.031,585] [0m<dbg> bt_hci_core: hci_cmd_d.031,616] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.417] [: tx_processor: TX process start[0m
+[11:36:17.417] [00:00:20.031,738] [0m<db 0x200099f4 opcode 0x2039 len 1[0m
+[11:36:17.417] Waiting for periodic sync..ty=37.0% flags=0x00
+[11:36:17.491] [00:00:20.113,586] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x29[0m
+[11:36:17.492] [1;31m--- 5 messages dropped ---
+[11:36:17.492] [0m[00:00:20.113,769] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: status 0x00  handle 1 role 1 peer E2:67:67:7D:3F:69 (random) peer RPA 00:00:00:00:00:00[0m
+[11:36:17.493] [00:00:20.113,861] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: local RPA 00:00:00:00:00:00[0m
+[11:36:17.493] [00:00:20.113,891] [0m<dbg> bt_smp: bt_smp_accept: conn 0x20002518 handle 1[0m
+[11:36:17.493] Connected, err 0x00 
+[11:36:17.494] [00:00:20.114,044] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.494] [00:00:20.114,074] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 8[0m
+[11:36:17.494] [00:00:20.114,074] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:17.495] [00:00:20.114,105] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x12[0m
+[11:36:17.495] [00:00:20.114,135] [0m<dbg> bt_adv: bt_hci_le_adv_set_terminated: status 0x00  adv_handle 0 conn_handle 0x01 num 0[0m
+[11:36:17.495] [00:00:20.114,196] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:17.496] [00:00:20.114,196] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2016 len 2[0m
+[11:36:17.497] [00:00:20.114,227] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2016 param_len 2[0m
+[11:36:17.497] [00:00:20.114,257] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.497] [00:00:20.114,288] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.497] [00:00:20.114,288] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:17.498] [00:00:20.114,318] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2016 (buf 0x200099f4) to driver[0m
+[11:36:17.498] [00:00:20.114,318] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 6 type 1[0m
+[11:36:17.499] [00:00:20.114,349] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.499] [00:00:20.114,410] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:17.499] [00:00:20.114,440] [0m<dbg> bt_hci_core: hci_cmd_status: opcode 0x2016[0m
+[11:36:17.500] [00:00:20.114,501] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2016 status 0x00  buf 0x200097d4[0m
+[11:36:17.500] [00:00:20.114,501] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:17.501] [00:00:20.114,532] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.501] [00:00:20.114,624] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.501] [00:00:20.114,654] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2016 len 0[0m
+[11:36:17.563] [00:00:20.152,862] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 15[0m
+[11:36:17.564] [00:00:20.152,923] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.565] [00:00:20.152,954] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 14[0m
+[11:36:17.565] [00:00:20.152,954] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:17.566] [00:00:20.152,984] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x04[0m
+[11:36:17.567] [00:00:20.197,631] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:17.567] [00:00:20.197,692] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.569] [00:00:20.197,692] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:17.569] [00:00:20.197,814] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:17.570] [00:00:20.197,845] [0m<dbg> bt_hci_core: hci_acl: handle 1 len 11 flags 2[0m
+[11:36:17.570] [00:00:20.197,998] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.571] [00:00:20.198,059] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.572] [00:00:20.198,089] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:17.572] [00:00:20.198,150] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.572] [00:00:20.198,150] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.573] [00:00:20.198,211] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.573] [00:00:20.198,242] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.574] [00:00:20.198,272] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.608] [00:00:20.242,614] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:17.609] [00:00:20.242,645] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:17.610] [00:00:20.242,675] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 1 count 1[0m
+[11:36:17.611] [00:00:20.242,828] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:17.612] [00:00:20.242,919] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.613] [00:00:20.242,919] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:17.614] [00:00:20.242,950] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:17.615] [00:00:20.242,950] [0m<dbg> bt_hci_core: hci_acl: handle 1 len 11 flags 2[0m
+[11:36:17.615] [00:00:20.242,980] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.617] [00:00:20.243,011] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.618] [00:00:20.243,164] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.618] [00:00:20.243,194] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.619] [00:00:20.243,255] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:17.620] [00:00:20.243,286] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.620] [00:00:20.243,316] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.621] [00:00:20.243,377] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.628] [00:00:20.243,377] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.629] [00:00:20.243,438] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.638] [00:00:20.272,613] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:17.640] [00:00:20.272,644] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:17.641] [00:00:20.272,674] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 1 count 1[0m
+[11:36:17.641] [00:00:20.272,857] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:17.642] [00:00:20.272,918] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.642] [00:00:20.272,918] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:17.643] [00:00:20.272,949] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:17.643] [00:00:20.272,949] [0m<dbg> bt_hci_core: hci_acl: handle 1 len 11 flags 2[0m
+[11:36:17.643] [00:00:20.272,979] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.644] [00:00:20.273,040] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.644] [00:00:20.273,162] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.645] [00:00:20.273,193] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.645] [00:00:20.273,254] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 32 type 2[0m
+[11:36:17.646] [00:00:20.273,284] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.646] [00:00:20.273,315] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.647] [00:00:20.273,345] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.647] [00:00:20.273,376] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.647] [00:00:20.273,406] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.676] [00:00:20.302,612] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:17.676] [00:00:20.302,642] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:17.677] [00:00:20.302,642] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 1 count 1[0m
+[11:36:17.677] [00:00:20.302,825] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 14[0m
+[11:36:17.677] [00:00:20.302,886] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.677] [00:00:20.302,917] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 13[0m
+[11:36:17.677] [00:00:20.302,917] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:17.679] [00:00:20.302,947] [0m<dbg> bt_hci_core: hci_acl: handle 1 len 9 flags 2[0m
+[11:36:17.679] [00:00:20.302,978] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.679] [00:00:20.303,009] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.679] New timing: subevent 0, response slot 0
+[11:36:17.680] Not synced yet
+[11:36:17.680] [00:00:20.303,161] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.681] [00:00:20.303,222] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.681] [00:00:20.303,253] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 10 type 2[0m
+[11:36:17.682] [00:00:20.303,314] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.682] [00:00:20.303,314] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.683] [00:00:20.303,375] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.683] [00:00:20.303,405] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:17.683] [00:00:20.303,436] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:17.684] [00:00:20.317,199] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 9[0m
+[11:36:17.684] [00:00:20.317,260] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:17.684] [00:00:20.317,291] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 8[0m
+[11:36:17.685] [00:00:20.317,291] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:17.685] [00:00:20.317,321] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x0c[0m
+[11:36:17.685] [00:00:20.317,443] [0m<dbg> bt_hci_core: le_phy_update_complete: PHY updated: status: 0x00 , tx: 2, rx: 2[0m
+[11:36:18.684] [00:00:20.332,672] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:18.685] [00:00:20.332,702] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:18.685] [00:00:20.332,702] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 1 count 1[0m
+[11:36:18.685] [00:00:20.332,885] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:18.686] [00:00:20.332,916] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:22.497] [00:00:25.113,952] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:22.498] [00:00:25.114,013] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:22.499] [00:00:25.114,044] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 21 type 2[0m
+[11:36:22.499] [00:00:25.114,074] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:22.499] [00:00:25.114,105] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:22.500] [00:00:25.114,135] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:22.500] [00:00:25.114,166] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:22.500] [00:00:25.114,196] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:22.500] [00:00:25.132,537] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:22.501] [00:00:25.132,568] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:22.501] [00:00:25.132,598] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 1 count 1[0m
+[11:36:22.501] [00:00:25.132,781] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 15[0m
+[11:36:22.502] [00:00:25.132,843] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:22.502] [00:00:25.132,843] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 14[0m
+[11:36:22.502] [00:00:25.132,873] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:22.503] [00:00:25.132,873] [0m<dbg> bt_hci_core: hci_acl: handle 1 len 10 flags 2[0m
+[11:36:22.504] [00:00:25.132,934] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:22.504] [00:00:25.132,965] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:23.575] [00:00:25.222,747] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 13[0m
+[11:36:23.575] [00:00:25.222,808] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:23.577] [00:00:25.222,839] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 12[0m
+[11:36:23.577] [00:00:25.222,839] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:23.578] [00:00:25.222,869] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x03[0m
+[11:36:23.578] [00:00:25.222,900] [0m<dbg> bt_hci_core: le_conn_update_complete: status 0x00 , handle 1[0m
+[11:36:27.749] [SENSORS] node 1 seq 3 temp=26.50C humidity=36.5% flags=0x00
+[11:36:27.751] [00:00:30.392,730] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 7[0m
+[11:36:27.751] [00:00:30.392,791] [0m<dbg> bt_hci_core: hci_disconn_complete_prio: status 0x00  handle 1 reason 0x13[0m
+[11:36:27.752] [00:00:30.392,791] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:27.753] [00:00:30.392,883] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:27.753] [00:00:30.392,883] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 6[0m
+[11:36:27.754] [00:00:30.392,913] [0m<dbg> bt_hci_core: hci_event: event 0x05[0m
+[11:36:27.754] [00:00:30.392,944] [0m<dbg> bt_hci_core: hci_disconn_complete: status 0x00  handle 1 reason 0x13[0m
+[11:36:27.754] [00:00:30.392,974] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:27.755] Disconnected, reason 0x13 
+[11:36:37.488] [00:00:40.033,874] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:37.488] [1;31m--- 56 messages dropped ---
+[11:36:37.489] [0m[00:00:40.033,905] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2038 (buf 0x200099f4) to driver[0m
+[11:36:37.490] [00:00:40.033,935] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 8 type 1[0m
+[11:36:37.491] [00:00:40.033,966] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.491] [00:00:40.034,027] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:37.492] [00:00:40.034,057] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2038[0m
+[11:36:37.492] [00:00:40.034,118] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2038 status 0x00  buf 0x200097d4[0m
+[11:36:37.493] [00:00:40.034,149] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:37.493] [00:00:40.034,179] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.493] [00:00:40.034,240] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.494] [00:00:40.034,301] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2038 len 1[0m
+[11:36:37.494] [00:00:40.034,362] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:37.494] [00:00:40.034,423] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2039 len 6[0m
+[11:36:37.494] [00:00:40.034,423] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2039 param_len 6[0m
+[11:36:37.495] [00:00:40.034,454] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.495] [00:00:40.034,515] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.495] [00:00:40.034,515] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:37.495] [00:00:40.034,545] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2039 (buf 0x200099f4) to driver[0m
+[11:36:37.495] [00:00:40.034,576] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 10 type 1[0m
+[11:36:37.497] [00:00:40.034,698] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.497] [00:00:40.034,759] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:37.497] [00:00:40.034,790] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2039[0m
+[11:36:37.497] [00:00:40.034,851] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2039 status 0x00  buf 0x200097d4[0m
+[11:36:37.498] [00:00:40.034,881] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:37.498] [00:00:[00:00:40.114,044] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: local RPA 00:00:00:00:00:00[0m
+[11:36:37.498] [1;31m--- 8 messages dropped ---
+[11:36:37.498] [0m[00:00:40.114,105] [0m<dbg> bt_smp: bt_smp_accept: conn 0x20002518 handle 2[0m
+[11:36:37.498] Connected, err 0x00 
+[11:36:37.499] [00:00:40.114,257] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.499] [00:00:40.114,257] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 8[0m
+[11:36:37.499] [00:00:40.114,288] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:37.500] [00:00:40.114,288] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x12[0m
+[11:36:37.500] [00:00:40.114,318] [0m<dbg> bt_adv: bt_hci_le_adv_set_terminated: status 0x00  adv_handle 0 conn_handle 0x02 num 0[0m
+[11:36:37.501] [00:00:40.114,410] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:37.501] [00:00:40.114,410] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2016 len 2[0m
+[11:36:37.501] [00:00:40.114,440] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2016 param_len 2[0m
+[11:36:37.502] [00:00:40.114,440] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.502] [00:00:40.114,501] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.503] [00:00:40.114,501] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:37.503] [00:00:40.114,532] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2016 (buf 0x200099f4) to driver[0m
+[11:36:37.503] [00:00:40.114,532] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 6 type 1[0m
+[11:36:37.504] [00:00:40.114,562] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.504] [00:00:40.114,624] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:37.504] [00:00:40.114,654] [0m<dbg> bt_hci_core: hci_cmd_status: opcode 0x2016[0m
+[11:36:37.505] [00:00:40.114,715] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2016 status 0x00  buf 0x200097d4[0m
+[11:36:37.505] [00:00:40.114,746] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:37.505] [00:00:40.114,746] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.505] [00:00:40.114,837] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.505] [00:00:40.114,868] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2016 len 0[0m
+[11:36:37.578] [00:00:40.152,923] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 15[0m
+[11:36:37.581] [00:00:40.153,015] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.581] [00:00:40.153,015] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 14[0m
+[11:36:37.581] [00:00:40.153,045] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:37.581] [00:00:40.153,045] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x04[0m
+[11:36:37.582] [00:00:40.212,677] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:36:37.582] [00:00:40.212,768] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.582] [00:00:40.212,768] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:36:37.583] [00:00:40.212,799] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:37.583] [00:00:40.212,799] [0m<dbg> bt_hci_core: hci_acl: handle 2 len 11 flags 2[0m
+[11:36:37.583] [00:00:40.213,043] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.583] [00:00:40.213,104] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.584] [00:00:40.213,165] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:37.584] [00:00:40.213,195] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.584] [00:00:40.213,226] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.584] [00:00:40.213,287] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.585] [00:00:40.213,287] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.585] [00:00:40.213,348] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.607] [00:00:40.242,675] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:37.609] [00:00:40.242,736] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:37.609] [00:00:40.242,736] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 2 count 1[0m
+[11:36:37.609] [00:00:40.242,919] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:36:37.610] [00:00:40.242,980] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.610] [00:00:40.242,980] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:36:37.611] [00:00:40.243,011] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:37.611] [00:00:40.243,011] [0m<dbg> bt_hci_core: hci_acl: handle 2 len 11 flags 2[0m
+[11:36:37.611] [00:00:40.243,072] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.612] [00:00:40.243,103] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.612] [00:00:40.243,225] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.612] [00:00:40.243,286] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.612] [00:00:40.243,316] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:37.613] [00:00:40.243,347] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.613] [00:00:40.243,377] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.613] [00:00:40.243,438] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.613] [00:00:40.243,438] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.614] [00:00:40.243,499] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.638] [00:00:40.272,674] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:37.639] [00:00:40.272,735] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:37.639] [00:00:40.272,735] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 2 count 1[0m
+[11:36:37.640] [00:00:40.272,918] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:36:37.640] [00:00:40.272,979] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.640] [00:00:40.272,979] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:36:37.641] [00:00:40.273,010] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:37.642] [00:00:40.273,010] [0m<dbg> bt_hci_core: hci_acl: handle 2 len 11 flags 2[0m
+[11:36:37.642] [00:00:40.273,071] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.642] [00:00:40.273,101] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.643] [00:00:40.273,223] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.643] [00:00:40.273,254] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.644] [00:00:40.273,315] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 32 type 2[0m
+[11:36:37.644] [00:00:40.273,345] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.644] [00:00:40.273,376] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.644] [00:00:40.273,406] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.644] [00:00:40.273,437] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.645] [00:00:40.273,498] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.676] [00:00:40.302,673] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:37.677] [00:00:40.302,703] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:37.678] [00:00:40.302,734] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 2 count 1[0m
+[11:36:37.678] [00:00:40.302,886] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 14[0m
+[11:36:37.679] [00:00:40.302,947] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.679] [00:00:40.302,978] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 13[0m
+[11:36:37.679] [00:00:40.302,978] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:37.680] [00:00:40.303,009] [0m<dbg> bt_hci_core: hci_acl: handle 2 len 9 flags 2[0m
+[11:36:37.680] [00:00:40.303,039] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.680] [00:00:40.303,070] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.680] New timing: subevent 0, response slot 0
+[11:36:37.680] Not synced yet
+[11:36:37.681] [00:00:40.303,222] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.681] [00:00:40.303,283] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.681] [00:00:40.303,314] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 10 type 2[0m
+[11:36:37.681] [00:00:40.303,375] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.682] [00:00:40.303,375] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.682] [00:00:40.303,436] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.682] [00:00:40.303,466] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:37.683] [00:00:40.303,497] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:37.683] [00:00:40.317,291] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 9[0m
+[11:36:37.683] [00:00:40.317,352] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:37.684] [00:00:40.317,382] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 8[0m
+[11:36:37.684] [00:00:40.317,382] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:37.684] [00:00:40.317,413] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x0c[0m
+[11:36:37.685] [00:00:40.317,535] [0m<dbg> bt_hci_core: le_phy_update_complete: PHY updated: status: 0x00 , tx: 2, rx: 2[0m
+[11:36:38.684] [00:00:40.332,733] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:38.685] [00:00:40.332,763] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:38.687] [00:00:40.332,763] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 2 count 1[0m
+[11:36:38.688] [00:00:40.332,946] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:38.688] [00:00:40.332,977] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:42.497] [00:00:45.114,166] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:42.498] [00:00:45.114,227] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:42.499] [00:00:45.114,257] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 21 type 2[0m
+[11:36:42.500] [00:00:45.114,288] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:42.500] [00:00:45.114,318] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:42.501] [00:00:45.114,349] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:42.501] [00:00:45.114,379] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:42.501] [00:00:45.114,410] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:42.501] [00:00:45.132,629] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:42.502] [00:00:45.132,629] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:42.502] [00:00:45.132,659] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 2 count 1[0m
+[11:36:42.503] [00:00:45.132,843] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 15[0m
+[11:36:42.503] [00:00:45.132,904] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:42.504] [00:00:45.132,934] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 14[0m
+[11:36:42.504] [00:00:45.132,934] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:36:42.505] [00:00:45.132,965] [0m<dbg> bt_hci_core: hci_acl: handle 2 len 10 flags 2[0m
+[11:36:42.505] [00:00:45.132,995] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:42.505] [00:00:45.133,026] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:43.575] [00:00:45.222,808] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 13[0m
+[11:36:43.577] [00:00:45.222,900] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:43.577] [00:00:45.222,900] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 12[0m
+[11:36:43.578] [00:00:45.222,930] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:43.579] [00:00:45.222,930] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x03[0m
+[11:36:43.579] [00:00:45.222,961] [0m<dbg> bt_hci_core: le_conn_update_complete: status 0x00 , handle 2[0m
+[11:36:47.749] [SENSORS] node 1 seq 5 temp=26.50C humidity=36.1% flags=0x00
+[11:36:47.750] [00:00:50.392,822] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 7[0m
+[11:36:47.751] [00:00:50.392,852] [0m<dbg> bt_hci_core: hci_disconn_complete_prio: status 0x00  handle 2 reason 0x13[0m
+[11:36:47.751] [00:00:50.392,883] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:47.752] [00:00:50.392,944] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:47.752] [00:00:50.392,974] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 6[0m
+[11:36:47.753] [00:00:50.392,974] [0m<dbg> bt_hci_core: hci_event: event 0x05[0m
+[11:36:47.753] [00:00:50.393,005] [0m<dbg> bt_hci_core: hci_disconn_complete: status 0x00  handle 2 reason 0x13[0m
+[11:36:47.753] [00:00:50.393,066] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:47.754] Disconnected, reason 0x13 
+[11:36:57.414] [00:01:00.037,170] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:57.415] [1;31m--- 56 messages dropped ---
+[11:36:57.417] [0m[00:01:00.037,200] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2038 (buf 0x200099f4) to driver[0m
+[11:36:57.418] [00:01:00.037,231] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 8 type 1[0m
+[11:36:57.419] [00:01:00.037,292] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.420] [00:01:00.037,353] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:57.420] [00:01:00.037,353] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2038[0m
+[11:36:57.421] [00:01:00.037,414] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2038 status 0x00  buf 0x200097d4[0m
+[11:36:57.421] [00:01:00.037,445] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:57.421] [00:01:00.037,475] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.421] [00:01:00.037,536] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.422] [00:01:00.037,597] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2038 len 1[0m
+[11:36:57.423] [00:01:00.037,689] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:57.423] [00:01:00.037,719] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2039 len 6[0m
+[11:36:57.423] [00:01:00.037,719] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2039 param_len 6[0m
+[11:36:57.423] [00:01:00.037,750] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.424] [00:01:00.037,811] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.424] [00:01:00.037,841] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:57.424] [00:01:00.037,841] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2039 (buf 0x200099f4) to driver[0m
+[11:36:57.425] [00:01:00.037,872] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 10 type 1[0m
+[11:36:57.425] [00:01:00.037,994] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.425] [00:01:00.038,055] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:57.426] [00:01:00.038,085] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2039[0m
+[11:36:57.426] [00:01:00.038,146] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2039 status 0x00  buf 0x200097d4[0m
+[11:36:57.426] [00:01:00.038,177] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:57.426] [00:01:00.038,177] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.427] [00:01:00.038,269] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.427] [00:01:00.038,330] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2039 len 1[0m
+[11:36:57.427] Waiting for periodic sync...
+[11:36:57.531] [00:01:00.081,909] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 37[0m
+[11:36:57.532] [00:01:00.081,970] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 9[0m
+[11:36:57.532] [00:01:00.082,031] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.533] [00:01:00.082,031] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 36[0m
+[11:36:57.533] [00:01:00.082,061] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:57.533] [1;31m--- 2 messages dropped ---
+[11:36:57.533] [0m[00:01:00.082,336] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: local RPA 00:00:00:00:00:00[0m
+[11:36:57.534] [00:01:00.082,397] [0m<dbg> bt_smp: bt_smp_accept: conn 0x20002518 handle 3[0m
+[11:36:57.534] Connected, err 0x00 
+[11:36:57.534] [00:01:00.082,519] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.534] [00:01:00.082,550] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 8[0m
+[11:36:57.535] [00:01:00.082,550] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:57.535] [00:01:00.082,580] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x12[0m
+[11:36:57.535] [00:01:00.082,611] [0m<dbg> bt_adv: bt_hci_le_adv_set_terminated: status 0x00  adv_handle 0 conn_handle 0x03 num 0[0m
+[11:36:57.535] [SENSORS] node 1 seq 6 temp=26.50C humidity=35.6% flags=0x00
+[11:36:57.535] [00:01:00.086,181] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:36:57.537] [00:01:00.086,181] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2016 len 2[0m
+[11:36:57.537] [00:01:00.086,212] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2016 param_len 2[0m
+[11:36:57.537] [00:01:00.086,212] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.537] [00:01:00.086,273] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.538] [00:01:00.086,273] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:36:57.538] [00:01:00.086,303] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2016 (buf 0x200099f4) to driver[0m
+[11:36:57.538] [00:01:00.086,303] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 6 type 1[0m
+[11:36:57.539] [00:01:00.086,334] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.539] [00:01:00.086,395] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:36:57.539] [00:01:0,395] [0m<dbg> bt_hci_core: hci_cmd_status: opcode 0x2016[0m
+[11:36:57.539] hci_cmd_done: opcode 0x2016 status 0x00  buf 0x200097d4[0m
+[11:36:57.540] [00:01:00.086,456] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:36:57.540] [00:01:00.086,486] [0m<dbg> bt_hci_core: bt_tx_irq_aise: kick TX[0m
+[11:36:57.540] [00:01:00.086,578] [0m<dbg> bt_hci_core: tx_1:00.086,608] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0[00:01:00.122,985] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 15[0m
+[11:36:57.541] [00:01:00.123,077] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.541] [00:01:00.123,077] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 14[0m
+[11:36:57.541] [00:01:00.123,107] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:57.541] [00:01:00.123,107] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x04[0m
+[11:36:57.542] [00:01:00.167,755] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:57.542] [00:01:00.167,816] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.542] [00:01:00.167,846] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:57.543] [00:01:00.167,968] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:57.543] [00:01:00.167,968] [0m<dbg> bt_hci_core: hci_acl: handle 3 len 11 flags 2[0m
+[11:36:57.543] [00:01:00.168,121] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.543] [00:01:00.168,182] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.544] [00:01:00.168,243] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:57.544] [00:01:00.168,273] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.544] [00:01:00.168,304] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.544] [00:01:00.168,334] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.545] [00:01:00.168,365] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.545] [00:01:00.168,426] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.577] [00:01:00.212,768] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:57.578] [00:01:00.212,799] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:57.579] [00:01:00.212,799] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 3 count 1[0m
+[11:36:57.579] [00:01:00.212,982] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:57.580] [00:01:00.213,043] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.580] [00:01:00.213,073] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:57.580] [00:01:00.213,073] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:57.580] [00:01:00.213,104] [0m<dbg> bt_hci_core: hci_acl: handle 3 len 11 flags 2[0m
+[11:36:57.581] [00:01:00.213,134] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.581] [00:01:00.213,165] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.581] [00:01:00.213,287] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.581] [00:01:00.213,348] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.582] [00:01:00.213,378] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:36:57.582] [00:01:00.213,439] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.582] [00:01:00.213,439] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.582] [00:01:00.213,500] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.583] [00:01:00.213,531] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.583] [00:01:00.213,562] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.607] [00:01:00.242,767] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:57.607] [00:01:00.242,797] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:57.607] [00:01:00.242,797] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 3 count 1[0m
+[11:36:57.607] [00:01:00.242,980] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 16[0m
+[11:36:57.608] [00:01:00.243,041] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.608] [00:01:00.243,072] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 15[0m
+[11:36:57.608] [00:01:00.243,072] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:57.608] [00:01:00.243,103] [0m<dbg> bt_hci_core: hci_acl: handle 3 len 11 flags 2[0m
+[11:36:57.609] [00:01:00.243,133] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.609] [00:01:00.243,164] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.610] [00:01:00.243,286] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.610] [00:01:00.243,347] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.610] [00:01:00.243,377] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 32 type 2[0m
+[11:36:57.611] [00:01:00.243,408] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.611] [00:01:00.243,438] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.611] [00:01:00.243,499] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.611] [00:01:00.243,499] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.613] [00:01:00.243,560] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.660] [00:01:00.287,353] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 9[0m
+[11:36:57.661] [00:01:00.287,445] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.662] [00:01:00.287,445] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 8[0m
+[11:36:57.663] [00:01:00.287,475] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:36:57.663] [00:01:00.287,475] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x0c[0m
+[11:36:57.664] [00:01:00.287,536] [0m<dbg> bt_hci_core: le_phy_update_complete: PHY updated: status: 0x00 , tx: 2, rx: 2[0m
+[11:36:57.664] [00:01:00.287,689] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:57.664] [00:01:00.287,689] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:57.664] [00:01:00.287,719] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 3 count 1[0m
+[11:36:57.665] [00:01:00.287,902] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 14[0m
+[11:36:57.665] [00:01:00.287,963] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:36:57.665] [00:01:00.287,994] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 13[0m
+[11:36:57.665] [00:01:00.287,994] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:36:57.666] [00:01:00.288,024] [0m<dbg> bt_hci_core: hci_acl: handle 3 len 9 flags 2[0m
+[11:36:57.666] [00:01:00.288,055] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.666] [00:01:00.288,085] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.666] New timing: subevent 0, response slot 0
+[11:36:57.666] Not synced yet
+[11:36:57.666] [00:01:00.288,238] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.667] [00:01:00.288,269] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.667] [00:01:00.288,330] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 10 type 2[0m
+[11:36:57.667] [00:01:00.288,360] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.667] [00:01:00.288,391] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.668] [00:01:00.288,421] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:57.668] [00:01:00.288,452] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:57.668] [00:01:00.288,513] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:36:58.668] [00:01:00.317,626] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:36:58.669] [00:01:00.317,657] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:36:58.670] [00:01:00.317,687] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 3 count 1[0m
+[11:36:58.670] [00:01:00.317,840] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:36:58.671] [00:01:00.317,871] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:02.467] [00:01:05.082,489] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:02.467] [00:01:05.082,550] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:02.467] [00:01:05.082,580] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 21 type 2[0m
+[11:37:02.468] [00:01:05.082,611] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:02.468] [00:01:05.082,641] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:02.468] [00:01:05.082,672] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:02.468] [00:01:05.082,702] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:02.469] [00:01:05.082,733] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:02.469] [00:01:05.102,691] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:02.469] [00:01:05.102,722] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:02.470] [00:01:05.102,752] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 3 count 1[0m
+[11:37:02.470] [00:01:05.102,905] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 15[0m
+[11:37:02.470] [00:01:05.102,966] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:02.471] [00:01:05.102,996] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 2 len 14[0m
+[11:37:02.471] [00:01:05.102,996] [0m<dbg> bt_hci_core: hci_acl: buf 0x20009480[0m
+[11:37:02.471] [00:01:05.103,027] [0m<dbg> bt_hci_core: hci_acl: handle 3 len 10 flags 2[0m
+[11:37:02.472] [00:01:05.103,057] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:02.472] [00:01:05.103,088] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:03.573] [00:01:05.222,869] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 13[0m
+[11:37:03.574] [00:01:05.222,961] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:03.574] [00:01:05.222,991] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 12[0m
+[11:37:03.575] [00:01:05.222,991] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:37:03.575] [00:01:05.222,991] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x03[0m
+[11:37:03.575] [00:01:05.223,052] [0m<dbg> bt_hci_core: le_conn_update_complete: status 0x00 , handle 3[0m
+[11:37:07.748] [SENSORS] node 1 seq 7 temp=26.50C humidity=35.0% flags=0x00
+[11:37:07.748] [00:01:10.392,883] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009480 len 7[0m
+[11:37:07.748] [00:01:10.392,913] [0m<dbg> bt_hci_core: hci_disconn_complete_prio: status 0x00  handle 3 reason 0x13[0m
+[11:37:07.750] [00:01:10.392,944] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:07.750] [00:01:10.393,005] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:07.751] [00:01:10.393,035] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x20009480 type 4 len 6[0m
+[11:37:07.752] [00:01:10.393,035] [0m<dbg> bt_hci_core: hci_event: event 0x05[0m
+[11:37:07.752] [00:01:10.393,066] [0m<dbg> bt_hci_core: hci_disconn_complete: status 0x00  handle 3 reason 0x13[0m
+[11:37:07.753] [00:01:10.393,127] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:07.753] Disconnected, reason 0x13 
+[11:37:17.417] [00:01:20.040,466] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:37:17.418] [1;31m--- 56 messages dropped ---
+[11:37:17.419] [0m[00:01:20.040,496] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2038 (buf 0x200099f4) to driver[0m
+[11:37:17.419] [00:01:20.040,527] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 8 type 1[0m
+[11:37:17.420] [00:01:20.040,557] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.420] [00:01:20.040,618] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:37:17.420] [00:01:20.040,649] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2038[0m
+[11:37:17.420] [00:01:20.040,710] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2038 status 0x00  buf 0x200097d4[0m
+[11:37:17.421] [00:01:20.040,740] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:37:17.421] [00:01:20.040,771] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.421] [00:01:20.040,832] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.421] [00:01:20.040,893] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2038 len 1[0m
+[11:37:17.422] [00:01:20.040,954] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:37:17.422] [00:01:20.041,015] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2039 len 6[0m
+[11:37:17.422] [00:01:20.041,015] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2039 param_len 6[0m
+[11:37:17.422] [00:01:20.041,046] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.423] [00:01:20.041,107] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.423] [00:01:20.041,137] [0m<dbg> bt_hci_core: hci_core_send_cmd: fetch cmd[0m
+[11:37:17.423] [00:01:20.041,137] [0m<dbg> bt_hci_core: hci_core_send_cmd: Sending command 0x2039 (buf 0x200099f4) to driver[0m
+[11:37:17.423] [00:01:20.041,168] [0m<dbg> bt_hci_core: bt_send: buf 0x200099f4 len 10 type 1[0m
+[11:37:17.424] [00:01:20.041,290] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.424] [00:01:20.041,351] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 7[0m
+[11:37:17.424] [00:01:20.041,381] [0m<dbg> bt_hci_core: hci_cmd_complete: opcode 0x2039[0m
+[11:37:17.424] [00:01:20.041,442] [0m<dbg> bt_hci_core: hci_cmd_done: opcode 0x2039 status 0x00  buf 0x200097d4[0m
+[11:37:17.425] [00:01:20.041,473] [0m<dbg> bt_hci_core: hci_cmd_done: sync cmd released[0m
+[11:37:17.425] [00:01:20.041,473] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.425] [00:01:20.041,564] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.425] [00:01:20.041,625] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099f4 opcode 0x2039 len 1[0m
+[11:37:17.425] Waiting for periodic sync...
+[11:37:17.462] [00:01:20.088,165] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x29[0m
+[11:37:17.463] [1;31m--- 5 messages dropped ---
+[11:37:17.463] [0m[00:01:20.088,348] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: status 0x00  handle 4 role 1 peer E2:67:67:7D:3F:69 (random) peer RPA 00:00:00:00:00:00[0m
+[11:37:17.464] [00:01:20.088,439] [0m<dbg> bt_hci_core: bt_hci_le_enh_conn_complete: local RPA 00:00:00:00:00:00[0m
+[11:37:17.465] [00:01:20.088,470] [0m<dbg> bt_smp: bt_smp_accept: conn 0x20002518 handle 4[0m
+[11:37:17.465] Connected, err 0x00 
+[11:37:17.465] [00:01:20.088,623] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.465] [00:01:20.088,623] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 8[0m
+[11:37:17.465] [00:01:20.088,653] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:37:17.467] [00:01:20.088,653] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x12[0m
+[11:37:17.467] [00:01:20.088,714] [0m<dbg> bt_adv: bt_hci_le_adv_set_terminated: status 0x00  adv_handle 0 conn_handle 0x04 num 0[0m
+[11:37:17.467] [00:01:20.088,775] [0m<dbg> bt_hci_core: bt_hci_cmd_alloc: buf 0x200099f4[0m
+[11:37:17.467] [00:01:20.088,775] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: buf 0x200099f4 opcode 0x2016 len 2[0m
+[11:37:17.468] [00:01:20.088,806] [0m<dbg> bt_hci_core: bt_hci_cmd_send: opcode 0x2016 param_len 2[0m
+[11:37:17.468] [00:01:20.088,806] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.468] [00:01:20.088,867] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.469] [00:01:20.088,867] [0m<dbg> bt_hci_core1:20.088,989] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x20009 [0m<dbg> bt_hci_core: hci_cmd_status: opcode 0x2016[0m
+[11:37:17.469] [00:0_core: hci_cmd_done: opcode 0x2016 status 0x00  buf 0x200097d4[ore: hci_cmd_done: sync cmd released[0m
+[11:37:17.469] [00:01:20.089,111] [0TX[0m
+[11:37:17.469] [00:01:20.089,172] [0m<dbg> bt_hci_core: tx_processor: ,233] [0m<dbg> bt_hci_core: bt_hci_cmd_send_sync: rsp 0x200099fseq 8 temp=26.50C humidity=35.3% flags=0x00
+[11:37:17.532] [00:01:20.123,077] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 15[0m
+[11:37:17.532] [00:01:20.123,138] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.533] [00:01:20.123,168] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 14[0m
+[11:37:17.533] [00:01:20.123,168] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:37:17.533] [00:01:20.123,199] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x04[0m
+[11:37:17.533] [00:01:20.167,846] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:37:17.534] [00:01:20.167,907] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.534] [00:01:20.167,907] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:37:17.534] [00:01:20.168,029] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:37:17.535] [00:01:20.168,029] [0m<dbg> bt_hci_core: hci_acl: handle 4 len 11 flags 2[0m
+[11:37:17.535] [00:01:20.168,182] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.535] [00:01:20.168,273] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.535] [00:01:20.168,304] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:37:17.535] [00:01:20.168,334] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.535] [00:01:20.168,365] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.535] [00:01:20.168,426] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.536] [00:01:20.168,426] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.536] [00:01:20.168,487] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.577] [00:01:20.212,829] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:17.577] [00:01:20.212,860] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:17.577] [00:01:20.212,890] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 4 count 1[0m
+[11:37:17.577] [00:01:20.213,043] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:37:17.578] [00:01:20.213,134] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.578] [00:01:20.213,134] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:37:17.578] [00:01:20.213,165] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:37:17.579] [00:01:20.213,165] [0m<dbg> bt_hci_core: hci_acl: handle 4 len 11 flags 2[0m
+[11:37:17.579] [00:01:20.213,195] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.579] [00:01:20.213,226] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.579] [00:01:20.213,378] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.580] [00:01:20.213,409] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.580] [00:01:20.213,470] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 25 type 2[0m
+[11:37:17.580] [00:01:20.213,500] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.581] [00:01:20.213,531] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.581] [00:01:20.213,592] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.581] [00:01:20.213,592] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.581] [00:01:20.213,653] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.606] [00:01:20.242,828] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:17.606] [00:01:20.242,858] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:17.606] [00:01:20.242,889] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 4 count 1[0m
+[11:37:17.608] [00:01:20.243,041] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 16[0m
+[11:37:17.608] [00:01:20.243,133] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.608] [00:01:20.243,133] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 15[0m
+[11:37:17.608] [00:01:20.243,133] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:37:17.608] [00:01:20.243,164] [0m<dbg> bt_hci_core: hci_acl: handle 4 len 11 flags 2[0m
+[11:37:17.609] [00:01:20.243,194] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.609] [00:01:20.243,225] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.609] [00:01:20.243,347] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.610] [00:01:20.243,408] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.610] [00:01:20.243,438] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 32 type 2[0m
+[11:37:17.610] [00:01:20.243,499] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.610] [00:01:20.243,499] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.611] [00:01:20.243,560] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.611] [00:01:20.243,591] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.611] [00:01:20.243,621] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.644] [00:01:20.272,827] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:17.644] [00:01:20.272,857] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:17.645] [00:01:20.272,857] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 4 count 1[0m
+[11:37:17.645] [00:01:20.273,040] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 14[0m
+[11:37:17.645] [00:01:20.273,101] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.645] [00:01:20.273,132] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 13[0m
+[11:37:17.645] [00:01:20.273,132] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:37:17.645] [00:01:20.273,132] [0m<dbg> bt_hci_core: hci_acl: handle 4 len 9 flags 2[0m
+[11:37:17.647] [00:01:20.273,193] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.647] [00:01:20.273,223] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.647] New timing: subevent 0, response slot 0
+[11:37:17.647] Not synced yet
+[11:37:17.648] [00:01:20.273,376] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.648] [00:01:20.273,437] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.649] [00:01:20.273,468] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 10 type 2[0m
+[11:37:17.649] [00:01:20.273,498] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.649] [00:01:20.273,529] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.649] [00:01:20.273,590] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.650] [00:01:20.273,590] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:17.650] [00:01:20.273,651] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:17.651] [00:01:20.287,414] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 9[0m
+[11:37:17.651] [00:01:20.287,475] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:17.651] [00:01:20.287,506] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 8[0m
+[11:37:17.651] [00:01:20.287,506] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:37:17.653] [00:01:20.287,536] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x0c[0m
+[11:37:17.653] [00:01:20.287,658] [0m<dbg> bt_hci_core: le_phy_update_complete: PHY updated: status: 0x00 , tx: 2, rx: 2[0m
+[11:37:18.652] [00:01:20.302,856] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:18.654] [00:01:20.302,917] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:18.655] [00:01:20.302,917] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 4 count 1[0m
+[11:37:18.656] [00:01:20.303,100] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:18.656] [00:01:20.303,131] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:22.495] [00:01:25.088,531] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:22.496] [00:01:25.088,592] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:22.496] [00:01:25.088,623] [0m<dbg> bt_hci_core: bt_send: buf 0x20009a24 len 21 type 2[0m
+[11:37:22.496] [00:01:25.088,653] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:22.496] [00:01:25.088,684] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:22.498] [00:01:25.088,714] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:22.498] [00:01:25.088,745] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:22.499] [00:01:25.088,775] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:22.499] [00:01:25.132,751] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x200097d4 len 8[0m
+[11:37:22.500] [00:01:25.132,781] [0m<dbg> bt_hci_core: hci_num_completed_packets: num_handles 1[0m
+[11:37:22.500] [00:01:25.132,812] [0m<dbg> bt_hci_core: hci_num_completed_packets: handle 4 count 1[0m
+[11:37:22.501] [00:01:25.132,995] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 15[0m
+[11:37:22.501] [00:01:25.133,056] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:22.501] [00:01:25.133,056] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 2 len 14[0m
+[11:37:22.501] [00:01:25.133,087] [0m<dbg> bt_hci_core: hci_acl: buf 0x2000949c[0m
+[11:37:22.502] [00:01:25.133,087] [0m<dbg> bt_hci_core: hci_acl: handle 4 len 10 flags 2[0m
+[11:37:22.502] [00:01:25.133,148] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:22.502] [00:01:25.133,178] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:23.573] [00:01:25.222,961] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 13[0m
+[11:37:23.574] [00:01:25.223,022] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:23.574] [00:01:25.223,052] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 12[0m
+[11:37:23.575] [00:01:25.223,052] [0m<dbg> bt_hci_core: hci_event: event 0x3e[0m
+[11:37:23.575] [00:01:25.223,083] [0m<dbg> bt_hci_core: hci_le_meta_event: subevent 0x03[0m
+[11:37:23.575] [00:01:25.223,114] [0m<dbg> bt_hci_core: le_conn_update_complete: status 0x00 , handle 4[0m
+[11:37:27.696] [SENSORS] node 1 seq 9 temp=26.50C humidity=35.6% flags=0x00
+[11:37:27.698] [00:01:30.342,956] [0m<dbg> bt_hci_core: bt_recv_unsafe: buf 0x2000949c len 7[0m
+[11:37:27.699] [00:01:30.342,987] [0m<dbg> bt_hci_core: hci_disconn_complete_prio: status 0x00  handle 4 reason 0x13[0m
+[11:37:27.699] [00:01:30.343,017] [0m<dbg> bt_hci_core: bt_tx_irq_raise: kick TX[0m
+[11:37:27.699] [00:01:30.343,078] [0m<dbg> bt_hci_core: rx_work_handler: Getting net_buf from queue[0m
+[11:37:27.700] [00:01:30.343,109] [0m<dbg> bt_hci_core: rx_work_handler: buf 0x2000949c type 4 len 6[0m
+[11:37:27.701] [00:01:30.343,109] [0m<dbg> bt_hci_core: hci_event: event 0x05[0m
+[11:37:27.701] [00:01:30.343,139] [0m<dbg> bt_hci_core: hci_disconn_complete: status 0x00  handle 4 reason 0x13[0m
+[11:37:27.702] [00:01:30.343,200] [0m<dbg> bt_hci_core: tx_processor: TX process start[0m
+[11:37:27.702] Disconnected, reason 0x13 
