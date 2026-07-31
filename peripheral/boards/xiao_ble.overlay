@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2026
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Adds the skin-temperature (MAX30205, LM75-register-compatible) and
+ * humidity (SHT4x) sensors onto the board's exposed I2C bus (xiao_i2c /
+ * &i2c1, already enabled with pinctrl at the board-common level).
+ */
+
+/* The board's i2c1_default pinctrl (xiao_ble-pinctrl.dtsi) doesn't enable
+ * the SoC's internal pull-ups on the exposed header pins (SDA=P0.04,
+ * SCL=P0.05) -- unlike Arduino's Wire.begin(), which enables them by
+ * default on this same hardware. The SHT4x's I2C reset command was
+ * failing at boot (device_is_ready() false) while MAX30205 on the same
+ * bus worked, which pointed at marginal signal integrity rather than
+ * speed/timing; the known-working Arduino reference on identical wiring
+ * confirmed it's not a physical/wiring fault. Re-declaring the pinctrl
+ * group here with bias-pull-up enabled restores parity with what Arduino
+ * was already relying on.
+ */
+&pinctrl {
+	i2c1_default: i2c1_default {
+		group1 {
+			psels = <NRF_PSEL(TWIM_SDA, 0, 4)>,
+				<NRF_PSEL(TWIM_SCL, 0, 5)>;
+			bias-pull-up;
+		};
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	/* Standard mode (100 kHz), matching the Arduino Wire.begin() default
+	 * that the known-working reference reader used. Fast mode (400 kHz)
+	 * was causing the SHT4x's reset command (sent during device init) to
+	 * fail, leaving device_is_ready() false and humidity reads failing.
+	 */
+	clock-frequency = <I2C_BITRATE_STANDARD>;
+
+	sht4x@44 {
+		compatible = "sensirion,sht4x";
+		reg = <0x44>;
+		repeatability = <2>;
+		status = "okay";
+	};
+
+	max30205: temp_sensor@48 {
+		compatible = "lm75";
+		reg = <0x48>;
+		status = "okay";
+	};
+};

@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "PAwR peripheral sensor node"
+
+config APP_NODE_ID
+	int "This node's human-readable ID, stamped into its reported payload (1-17)"
+	default 1
+	range 1 17
+	help
+	  Does NOT determine subevent/slot assignment (central assigns that
+	  dynamically over GATT) -- this is only a label so central's printed
+	  output and logs are self-describing per physical node.
+
+config APP_SIMULATE_SENSORS
+	bool "Use simulated sensor values instead of real I2C reads"
+	default n
+	help
+	  When enabled, skips real sensor init/reads and reports slowly
+	  drifting fake temperature/humidity values instead. Useful for
+	  exercising the PAwR protocol path without I2C hardware attached.
+
+source "Kconfig.zephyr"
