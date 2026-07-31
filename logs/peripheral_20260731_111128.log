@@ -1,0 +1,42 @@
+[11:11:28.511] [SENSORS] node 1 seq 23 temp=26.00C humidity=41.3% flags=0x00
+[11:11:28.513] Disconnected, reason 0x13 
+[11:11:28.513] Timed out while synchronizing
+[11:11:28.514] Waiting for periodic sync...
+[11:11:28.514] Connected, err 0x00 
+[11:11:28.514] [SENSORS] node 1 seq 24 temp=26.00C humidity=41.4% flags=0x00
+[11:11:28.515] New timing: subevent 0, response slot 0
+[11:11:28.515] Not synced yet
+[11:11:30.113] [SENSORS] node 1 seq 25 temp=26.00C humidity=41.3% flags=0x00
+[11:11:30.115] Disconnected, reason 0x13 
+[11:11:39.877] Timed out while synchronizing
+[11:11:39.878] Waiting for periodic sync...
+[11:11:39.879] Connected, err 0x00 
+[11:11:39.880] [SENSORS] node 1 seq 26 temp=26.00C humidity=41.4% flags=0x00
+[11:11:39.880] New timing: subevent 0, response slot 0
+[11:11:39.881] Not synced yet
+[11:11:49.288] Disconnected, reason 0x08 
+[11:11:49.290] [SENSORS] node 1 seq 27 temp=26.00C humidity=43.6% flags=0x00
+[11:11:59.878] Timed out while synchronizing
+[11:11:59.878] Waiting for periodic sync...
+[11:11:59.879] Connected, err 0x00 
+[11:11:59.879] [SENSORS] node 1 seq 28 temp=26.00C humidity=42.0% flags=0x00
+[11:11:59.880] New timing: subevent 0, response slot 0
+[11:11:59.880] Not synced yet
+[11:12:10.152] [SENSORS] node 1 seq 29 temp=26.00C humidity=41.4% flags=0x00
+[11:12:10.153] Disconnected, reason 0x13 
+[11:12:19.879] Timed out while synchronizing
+[11:12:19.879] Waiting for periodic sync...
+[11:12:19.880] [SENSORS] node 1 seq 30 temp=26.00C humidity=41.3% flags=0x00
+[11:12:19.880] Connected, err 0x00 
+[11:12:19.880] New timing: subevent 0, response slot 0
+[11:12:19.880] Not synced yet
+[11:12:30.172] [SENSORS] node 1 seq 31 temp=26.00C humidity=41.2% flags=0x00
+[11:12:31.235] Disconnected, reason 0x08 
+[11:12:39.879] Timed out while synchronizing
+[11:12:39.880] Waiting for periodic sync...
+[11:12:39.880] Connected, err 0x00 
+[11:12:39.881] New timing: subevent 0, response slot 0
+[11:12:39.881] Not synced yet
+[11:12:39.882] [SENSORS] node 1 seq 32 temp=26.00C humidity=41.2% flags=0x00
+[11:12:50.191] [SENSORS] node 1 seq 33 temp=26.00C humidity=41.3% flags=0x00
+[11:12:50.192] Disconnected, reason 0x13 
