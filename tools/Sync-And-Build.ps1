@@ -249,13 +249,29 @@ if (-not $comPort) {
 
 $logFile = Join-Path $repoRoot "logs\${App}_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 Write-Step "Capturing $MonitorSeconds s of $comPort output to $logFile ..."
-& (Join-Path $PSScriptRoot 'Watch-SerialLog.ps1') -Port $comPort -OutFile $logFile -DurationSeconds $MonitorSeconds
+# Watch-SerialLog.ps1 sets its own ErrorActionPreference='Stop' and can
+# Write-Error (e.g. port already open elsewhere) -- that becomes a
+# terminating exception that would otherwise unwind straight through this
+# call and kill the rest of this script too. Catch it so a monitor failure
+# is reported but doesn't prevent finishing up (e.g. nothing to push, but
+# at least say so instead of silently stopping).
+$monitorFailed = $false
+try {
+    & (Join-Path $PSScriptRoot 'Watch-SerialLog.ps1') -Port $comPort -OutFile $logFile -DurationSeconds $MonitorSeconds
+} catch {
+    Write-Output "Monitor step failed: $($_.Exception.Message)"
+    Write-Output "(Often means something else -- e.g. a VS Code serial monitor tab -- already has $comPort open. Close it and re-run, or use tools/Watch-SerialLog.ps1 manually once free.)"
+    $monitorFailed = $true
+}
 
 # ----------------------------------------------------------------------
 # 7. Push logs + NOTES.md so the other person can see them
 # ----------------------------------------------------------------------
 if (-not $SkipGit) {
     Write-Step "Pushing log + notes..."
+    if ($monitorFailed -and -not (Test-Path $logFile)) {
+        Write-Output "No log file to push (monitor step didn't produce one)."
+    }
     Set-Location $repoRoot
     git add $logFile
     $notesPath = Join-Path $repoRoot 'NOTES.md'
