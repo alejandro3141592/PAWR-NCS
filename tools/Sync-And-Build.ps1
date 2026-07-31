@@ -247,6 +247,12 @@ if (-not $comPort) {
     exit 1
 }
 
+# The port can enumerate before the app's own USB-CDC console is actually
+# ready to transmit (seen repeatedly: capture completes with 0 bytes, but a
+# manual reset afterward immediately shows output). Give it more settle time
+# than the port-detection loop above already used.
+Start-Sleep -Seconds 5
+
 $logFile = Join-Path $repoRoot "logs\${App}_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 Write-Step "Capturing $MonitorSeconds s of $comPort output to $logFile ..."
 # Watch-SerialLog.ps1 sets its own ErrorActionPreference='Stop' and can
@@ -261,6 +267,12 @@ try {
 } catch {
     Write-Output "Monitor step failed: $($_.Exception.Message)"
     Write-Output "(Often means something else -- e.g. a VS Code serial monitor tab -- already has $comPort open. Close it and re-run, or use tools/Watch-SerialLog.ps1 manually once free.)"
+    $monitorFailed = $true
+}
+
+if (-not $monitorFailed -and (Test-Path $logFile) -and (Get-Item $logFile).Length -eq 0) {
+    Write-Output "Captured log is empty -- the board likely wasn't producing output yet when capture started (this has happened before; a manual reset after flashing tends to fix it). Not pushing an empty file."
+    Remove-Item $logFile
     $monitorFailed = $true
 }
 
