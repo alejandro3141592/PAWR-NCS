@@ -57,7 +57,14 @@ param(
     [switch]$SkipFlash
 )
 
-$ErrorActionPreference = 'Stop'
+
+# Deliberately NOT 'Stop': native tools (git, west/python) routinely write
+# informational output to stderr, which PowerShell 5.1 wraps as a
+# NativeCommandError under 2>&1 redirection -- with ErrorActionPreference
+# 'Stop' that becomes a terminating error even on exit code 0, killing the
+# script on the very first stderr line a native command prints. Exit codes
+# are checked explicitly after each step that matters instead.
+$ErrorActionPreference = 'Continue'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $appDir = Join-Path $repoRoot $App
 $buildDir = Join-Path $appDir 'build'
@@ -112,6 +119,11 @@ if (-not $SkipGit) {
         git commit -m $CommitMessage
         Write-Step "Pushing..."
         git push origin main
+        if ($LASTEXITCODE -ne 0) {
+            Write-Output "git push failed (exit $LASTEXITCODE) -- likely the remote has commits you don't have (see NOTE above). Resolve manually (git pull) and re-run."
+            Play-Error
+            exit 1
+        }
     } else {
         Write-Output "Working tree already clean, nothing to commit."
     }
