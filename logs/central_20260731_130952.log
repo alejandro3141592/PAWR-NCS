@@ -1,0 +1,25 @@
+[13:09:53.155] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[13:09:53.164] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[13:09:53.165] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[13:09:53.167] [00:00:00.000,823] [0m<inf> udc_nrf: Initialized[0m
+[13:09:53.168] Starting Periodic Advertising Demo (central)
+[13:09:53.170] [00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[13:09:53.172]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[13:09:53.173]                                             74 6c ac 75                                      |tl.u             [0m
+[13:09:53.181] [00:00:00.003,692] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[13:09:53.183] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[13:09:53.185] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[13:09:53.186] [00:00:00.004,638] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[13:09:53.188] [00:00:00.004,730] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[13:09:53.190] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0x10a3, manufacturer 0x0059[0m
+[13:09:53.192] [00:00:00.004,821] [0m<inf> bt_hci_core: LMP: version 6.2 (0x10) subver 0x10a3[0m
+[13:09:53.193] [00:00:00.005,035] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[13:09:53.194] Start Periodic Advertising
+[13:09:53.195] Start Extended Advertising
+[13:09:53.195] Scanning successfully started
+[13:09:53.196] [00:00:00.104,553] [0m<inf> udc_nrf: Reset[0m
+[13:09:53.197] [00:00:00.104,583] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[13:09:53.197] [00:00:00.194,305] [0m<inf> udc_nrf: Reset[0m
+[13:09:53.199] [00:00:00.338,531] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[13:09:53.200] [00:00:00.356,262] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[13:10:11.833] [00:00:21.701,293] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m

@@ -333,4 +333,68 @@ Ready to flip the toggle back and retest whenever you are.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — new problem: full-scale (20 subevent / 10s) central hangs on boot, unrelated to the SENDER fix
+
+Flipped `APP_MINIMAL_REPRO` back to `0` on central as requested (step 1) and hit
+a new, separate issue -- central now hangs very early, before ever reaching a
+connection attempt, so this isn't confirmed working at full scale yet.
+
+**Symptom:** central boots fine through BLE init, prints `Start Periodic
+Advertising` / `Start Extended Advertising` / `Scanning successfully started`,
+then almost immediately:
+```
+<err> udc: Failed to allocate net_buf 4095, ep 0x80
+<err> udc: Failed to allocate net_buf 4095, ep 0x80
+```
+repeating a few times, then **total silence** -- no more output at all, no PAST
+attempt, nothing, for the rest of every capture window I tried (60s+). `udc` is
+the USB device controller driver (the console's own USB-CDC connection).
+
+**Ruled out so far:**
+- Not a bad flash -- reproduced identically across a full pristine rebuild +
+  reflash.
+- Not USB hub/EMI -- reproduced with the hub fully disconnected and on a
+  different physical port, away from other USB devices.
+- Not `CONFIG_HEAP_MEM_POOL_SIZE` (it's `0`, but was already `0` in every
+  earlier build today too, including ones that worked fine) -- not a new
+  regression from that.
+- Not a static-buffer sizing issue -- `bufs[NUM_SUBEVENTS]` /
+  `backing_store[NUM_SUBEVENTS][PACKET_SIZE]` are compile-time static arrays,
+  and the size difference between 5 and 20 subevents is a few hundred bytes,
+  nowhere near enough to exhaust anything on its own.
+
+**Important scope realization:** every single test that's worked today --
+`APP_MINIMAL_REPRO`, and even the literal stock `periodic_adv_rsp`/
+`periodic_sync_rsp` sample pair -- ran at the stock sample's own defaults
+(`NUM_SUBEVENTS=5`, `interval_min/max=0xFF` / ~319ms). **This is the first time
+all session that central has actually run at this project's real target scale
+(20 subevents, 10s interval).** We've verified the SENDER fix at small scale,
+but we have zero evidence yet that 20 subevents / 10s interval works on this
+hardware+SDK at all -- that's new territory, not a regression of anything
+previously validated.
+
+Given the failure shows up right as periodic advertising ramps up to a much
+higher subevent count than anything tested before, my leading guess is some
+shared HCI/controller buffer pool getting starved by the 4x jump in subevent
+data traffic, indirectly starving USB's own buffer allocation -- but I don't
+have hard evidence for that yet, just the timing correlation and having ruled
+out the alternatives above.
+
+**Suggest next:** rather than jumping straight from 5 to 20 subevents, test an
+intermediate step (e.g. 10 subevents, or keep 5 subevents but the full 10s
+interval, tested separately) to isolate whether it's subevent *count* or
+interval *length* that triggers this -- that'll narrow down which Kconfig
+buffer-count option (`CONFIG_BT_BUF_*`, or something in the SDC's own
+periodic-adv buffer sizing) actually needs raising. Also worth checking
+Nordic's SDC release notes / Kconfig for anything explicitly capping subevent
+count or periodic-adv buffer pool size by default.
+
+Central is currently in this broken state on my end (build already committed,
+`common/pawr_protocol.h` @ `APP_MINIMAL_REPRO=0`) -- don't assume it's usable
+for testing against your peripheral until this is resolved.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
