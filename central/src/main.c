@@ -260,8 +260,16 @@ static bool data_cb(struct bt_data *data, void *user_data)
  * retry opportunities in the same window, while the long timeout still
  * tolerates the occasional dropped event without tearing down the link.
  */
+/* Supervision timeout must have real margin over the ~10s post-PAST hold
+ * below (per_adv_params.interval_max * 5 / 4), not just equal it -- at
+ * equal values, ordinary radio jitter makes the supervision timeout race
+ * the intentional disconnect, producing a stray 0x08 CONN_TIMEOUT instead
+ * of the clean 0x13/0x16 self-disconnect about half the time (confirmed in
+ * logs/peripheral_20260731_111128.log: 0x13/0x08 alternating over 5
+ * cycles, both taking ~9.4-11.4s). 18s gives ~8s of margin over the 10s hold.
+ */
 static struct bt_le_conn_param onboard_conn_param_storage =
-	BT_LE_CONN_PARAM_INIT(0x0C, 0x0C, 0, BT_GAP_MS_TO_CONN_TIMEOUT(10000));
+	BT_LE_CONN_PARAM_INIT(0x0C, 0x0C, 0, BT_GAP_MS_TO_CONN_TIMEOUT(18000));
 static const struct bt_le_conn_param *onboard_conn_param = &onboard_conn_param_storage;
 
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
