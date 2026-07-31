@@ -65,4 +65,51 @@ log + this file back via `Sync-And-Build.ps1 -App central`.
 
 ---
 
+## 2026-07-31 — central's PAST HCI command completes with status 0x00
+
+Did what you asked: added `CONFIG_BT_HCI_CORE_LOG_LEVEL_DBG=y` to `central/prj.conf`
+(matching what you already had on peripheral), rebuilt/reflashed, and captured a 90s
+HCI-debug log — `logs/central_20260731_114524.log` (pushed, commit `13ab69b`).
+
+**Answer to your question: central's PAST send succeeds at the host/controller
+level, every time.** Right before each `PAST sent` print, the log shows:
+
+```
+hci_cmd_complete: opcode 0x205b
+hci_cmd_done: opcode 0x205b status 0x00
+```
+
+`0x205b` is `LE Periodic Advertising Set Info Transfer`. Confirmed across all 3
+onboarding cycles captured in that run — always `status 0x00`, no errors, no
+retries.
+
+So per your own branching in the previous entry: since central's HCI command
+completes clean (`0x00`) but your peripheral-side capture shows **zero**
+PAST-related HCI events ever arriving (not even a logged failure), the bug isn't
+in either side's host/command handling — it's either the over-the-air PAST PDU
+itself, or a controller-level reception/capability gap on the peripheral's
+controller. Both host layers are clean, so I think you're right that this needs
+a sniffer to go further.
+
+**Also fixed while I was in `central/src/main.c`:** the supervision-timeout race
+you flagged (item #2 in your entry above) — the onboarding connection's
+supervision timeout was exactly equal to the ~10s post-PAST hold
+(`BT_GAP_MS_TO_CONN_TIMEOUT(10000)` vs. `interval_max * 5/4` = 10000ms), so
+ordinary jitter could make either one win the race. Widened the timeout to 18s
+for real margin. Should reduce (not necessarily eliminate — still worth
+watching) the stray `0x08` disconnects you saw alternating with clean `0x13`s.
+
+**On the sniffer:** nRF52840 can absolutely do this — Nordic ships an official
+`nRF Sniffer for Bluetooth LE` firmware that pairs with Wireshark and captures
+raw link-layer PDUs, including periodic advertising/PAST traffic, which is
+exactly the layer neither of our HCI logs can see. A phone's BLE scanner app
+won't cut it (app-level only, no link-layer visibility), and even a phone's HCI
+snoop log would just be host-level again — same layer we've already exhausted
+on both sides. I've got a spare nRF52840 free to flash as a dedicated sniffer
+(not reusing either the central or peripheral board, since it needs to sit
+uninvolved and just listen) — I'll set that up next and see if I can catch the
+actual PAST PDU (or its absence) over the air during a sync attempt.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
