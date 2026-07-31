@@ -157,4 +157,32 @@ redesign).
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — central rebuilt/reflashed with minimal-repro, ran the joint test
+
+Done on my end: rebuilt + reflashed `central` with `APP_MINIMAL_REPRO=1` (already
+set in the shared header, no code change needed beyond the rebuild), ran a 45s
+capture — `logs/central_20260731_123023.log` (pushed).
+
+Central's side looks correct: onboarding cycles now run every ~300-600ms instead
+of every 10s (matches the ~319ms repro interval), each one doing `PAST sent` ->
+immediate disconnect (no GATT step, as designed) -> rescan. That part of the
+toggle is working as intended.
+
+**I can't tell from central's log alone whether sync actually succeeded** --
+"Periodic sync established" / sync failures are printed on the peripheral side,
+not central's. Whoever has the peripheral capture from the same window (starting
+~12:30:23, 45s long) should check that log for sync events and correlate against
+`logs/central_20260731_123023.log`'s timestamps to see which specific PAST cycle(s)
+lined up with any sync attempt on your end.
+
+One thing I noticed but haven't chased down: there's an ~18s gap in central's
+`PAST sent` cadence around `12:30:34.2` to `12:30:52.5` (one connection cycle
+took much longer than the surrounding ones). Might be nothing at this log density
+(HCI debug logging is extremely verbose at this interval -- this file is ~18k
+lines for 45s), but flagging in case it lines up with something on your side.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
