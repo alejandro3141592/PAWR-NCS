@@ -248,14 +248,20 @@ static bool data_cb(struct bt_data *data, void *user_data)
 	}
 }
 
-/* 100-150ms interval / 10s supervision timeout, versus the library
- * default's 30-50ms / 4s -- gives the controller far more slack to service
- * this onboarding connection around the periodic advertising subevent
- * train (20 subevents every 10s), which is much busier than a plain
- * connectable-advertising peripheral would be.
+/* Short interval (15ms) / long supervision timeout (10s), the opposite
+ * direction from an earlier attempt at 100-150ms. Per the SoftDevice
+ * Controller's scheduling docs, periodic advertising is scheduled like a
+ * central-role timing-activity that can collide with this GATT connection,
+ * and a *slow* connection interval gives fewer chances per second to
+ * recover from a dropped connection event -- a single collision with the
+ * ~800ms subevent-train burst (20 subevents x 40ms) could eat 5-8+
+ * consecutive connection events at a 100-150ms interval, most of the way
+ * to a supervision timeout on its own. A short interval gives many more
+ * retry opportunities in the same window, while the long timeout still
+ * tolerates the occasional dropped event without tearing down the link.
  */
 static struct bt_le_conn_param onboard_conn_param_storage =
-	BT_LE_CONN_PARAM_INIT(0x50, 0x78, 0, BT_GAP_MS_TO_CONN_TIMEOUT(10000));
+	BT_LE_CONN_PARAM_INIT(0x0C, 0x0C, 0, BT_GAP_MS_TO_CONN_TIMEOUT(10000));
 static const struct bt_le_conn_param *onboard_conn_param = &onboard_conn_param_storage;
 
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
