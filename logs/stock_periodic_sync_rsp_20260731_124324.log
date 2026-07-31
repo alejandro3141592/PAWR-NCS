@@ -1,0 +1,323 @@
+[12:43:39.095] A8[1;31m--- 48 messages dropped ---
+[12:43:39.098] [0m
+[12:43:39.098] Indication: subevent 0, responding in slot 0
+[12:43:39.098]     0xFF: 5900AD
+[12:43:39.099] Indication: subevent 0, responding in slot 0
+[12:43:39.099]     0xFF: 5900B2
+[12:43:39.099] Indication: subevent 0, responding in slot 0
+[12:43:39.100]     0xFF: 5900BC
+[12:43:39.100] Indication: subevent 0, responding in slot 0
+[12:43:39.101]     0xFF: 5900C1
+[12:43:39.101] Indication: subevent 0, responding in slot 0
+[12:43:39.103]     0xFF: 5900C6
+[12:43:39.103] Failed to receive indication: subevent 0
+[12:43:39.103] Indication: subevent 0, responding in slot 0
+[12:43:39.103]     0xFF: 5900D0
+[12:43:39.103] Indication: subevent 0, responding in slot 0
+[12:43:39.104]     0xFF: 5900D5
+[12:43:39.104] Indication: subevent 0, responding in slot 0
+[12:43:39.104]     0xFF: 5900DA
+[12:43:39.104] Failed to receive indication: subevent 0
+[12:43:39.104] Failed to receive indication: subevent 0
+[12:43:39.105] Indication: subevent 0, responding in slot 0
+[12:43:39.105]     0xFF: 5900E9
+[12:43:39.105] Indication: subevent 0, responding in slot 0
+[12:43:39.105]     0xFF: 5900EE
+[12:43:39.105] Indication: subevent 0, responding in slot 0
+[12:43:39.107]     0xFF: 5900F3
+[12:43:39.107] Indication: subevent 0, responding in slot 0
+[12:43:39.107]     0xFF: 5900F8
+[12:43:39.107] Indication: subevent 0, responding in slot 0
+[12:43:39.107]     0xFF: 5900FD
+[12:43:39.108] Indication: subevent 0, responding in slot 0
+[12:43:39.108]     0xFF: 590002
+[12:43:39.108] Indication: subevent 0Indication: subevent 0, responding in slot 0
+[12:43:39.108]     0xFF: 590001
+[12:43:39.109] Indication: subevent 0, responding in slot 0
+[12:43:39.109]     0xFF: 59000B
+[12:43:39.109] Indication: subevent 0, responding in slot 0
+[12:43:39.109]     0xFF: 590010
+[12:43:39.109] Indication: subevent 0, responding in slot 0
+[12:43:39.110]     0xFF: 590015
+[12:43:39.110] Indication: subevent 0, responding in slot 0
+[12:43:39.110]     0xFF: 59001A
+[12:43:39.110] Indication: subevent 0, responding in slot 0
+[12:43:39.110]     0xFF: 59001F
+[12:43:39.111] Indication: subevent 0, responding in slot 0
+[12:43:39.111]     0xFF: 590024
+[12:43:39.111] Indication: subevent 0, responding in slot 0
+[12:43:39.111]     0xFF: 590029
+[12:43:39.111] Indication: subevent 0, responding in slot 0
+[12:43:39.112]     0xFF: 59002E
+[12:43:39.112] Indication: subevent 0, responding in slot 0
+[12:43:39.112]     0xFF: 590033
+[12:43:39.112] Indication: subevent 0, responding in slot 0
+[12:43:39.112]     0xFF: 590038
+[12:43:39.113] Indication: subevent 0, responding in slot 0
+[12:43:39.113]     0xFF: 59003D
+[12:43:39.113] Indication: subevent 0, responding in slot 0
+[12:43:39.113]     0xFF: 590042
+[12:43:39.122] Indication: subevent 0, responding in slot 0
+[12:43:39.123]     0xFF: 590047
+[12:43:39.123] Indication: subevent 0, responding in slot 0
+[12:43:39.123]     0xFF: 59004C
+[12:43:39.123] Indication: subevent 0, responding in slot 0
+[12:43:39.123]     0xFF: 590051
+[12:43:39.124] Indication: subevent 0, responding in slot 0
+[12:43:39.124]     0xFF: 590056
+[12:43:39.124] Indication: subevent 0, responding in slot 0
+[12:43:39.124]     0xFF: 59005B
+[12:43:39.124] Indication: subevent 0, responding in slot 0
+[12:43:39.125]     0xFF: 590060
+[12:43:39.125] Indication: subevent 0, responding in slot 0
+[12:43:39.125]     0xFF: 590065
+[12:43:39.126] Indication: subevent 0, responding in slot 0
+[12:43:39.126]     0xFF: 59006A
+[12:43:39.126] Indication: subevent 0, responding in slot 0
+[12:43:39.126]     0xFF: 59006F
+[12:43:39.126] Indication: subevent 0, responding in slot 0
+[12:43:39.126]     0xFF: 590074
+[12:43:39.126] Indication: subevent 0, responding in slot 0
+[12:43:39.126]     0xFF: 590079
+[12:43:39.127] Indication: subevent 0, responding in slot 0
+[12:43:39.128]     0xFF: 59007E
+[12:43:39.128] Indication: subevent 0, responding in slot 0
+[12:43:39.129]     0xFF: 590083
+[12:43:39.129] Indication: subevent 0, responding in slot 0
+[12:43:39.129]     0xFF: 590088
+[12:43:39.129] Indication: subevent 0, responding in slot 0
+[12:43:39.130]     0xFF: 59008D
+[12:43:39.130] Indication: subevent 0, responding in slot 0
+[12:43:39.131]     0xFF: 590092
+[12:43:39.131] Indication: subevent 0, responding in slot 0
+[12:43:39.131]     0xFF: 590097
+[12:43:39.132] Indication: subevent 0, responding in slot 0
+[12:43:39.132]     0xFF: 59009C
+[12:43:39.132] Indication: subevent 0, responding in slot 0
+[12:43:39.132]     0xFF: 5900A1
+[12:43:39.132] Indication: subevent 0, responding in slot 0
+[12:43:39.133]     0xFF: 5900A6
+[12:43:39.133] Indication: subevent 0, responding in slot 0
+[12:43:39.133]     0xFF: 5900AB
+[12:43:39.133] Indication: subevent 0, responding in slot 0
+[12:43:39.134]     0xFF: 5900B0
+[12:43:39.134] Indication: subevent 0, responding in slot 0
+[12:43:39.134]     0xFF: 5900B5
+[12:43:39.134] Indication: subevent 0, responding in slot 0
+[12:43:39.134]     0xFF: 5900BA
+[12:43:39.134] Indication: subevent 0, responding in slot 0
+[12:43:39.134]     0xFF: 5900BF
+[12:43:39.134] Indication: subevent 0, responding in slot 0
+[12:43:39.135]     0xFF: 5900C4
+[12:43:39.135] Indication: subevent 0, responding in slot 0
+[12:43:39.135]     0xFF: 5900C9
+[12:43:39.135] Indication: subevent 0, responding in slot 0
+[12:43:39.135]     0xFF: 5900CE
+[12:43:39.136] Indication: subevent 0, responding in slot 0
+[12:43:39.136]     0xFF: 5900D3
+[12:43:39.136] Indication: subevent 0, responding in slot 0
+[12:43:39.137]     0xFF: 5900D8
+[12:43:39.137] Indication: subevent 0, responding in slot 0
+[12:43:39.137]     0xFF: 5900DD
+[12:43:39.137] Indication: subevent 0, responding in slot 0
+[12:43:39.137]     0xFF: 5900E2
+[12:43:39.137] Indication: subevent 0, responding in slot 0
+[12:43:39.137]     0xFF: 5900E7
+[12:43:39.139] Indication: subevent 0, responding in slot 0
+[12:43:39.139]     0xFF: 5900EC
+[12:43:42.283] Indication: subevent 0, responding in slot 0
+[12:43:42.283]     0xFF: 5900F1
+[12:43:42.284] Indication: subevent 0, responding in slot 0
+[12:43:42.284]     0xFF: 5900F6
+[12:43:42.284] Indication: subevent 0, responding in slot 0
+[12:43:42.284]     0xFF: 5900FB
+[12:43:42.284] Indication: subevent 0, responding in slot 0
+[12:43:42.284]     0xFF: 590000
+[12:43:42.285] Indication: subevent 0, responding in slot 0
+[12:43:42.285]     0xFF: 590005
+[12:43:42.285] Indication: subevent 0, responding in slot 0
+[12:43:42.285]     0xFF: 59000F
+[12:43:42.286] Indication: subevent 0, responding in slot 0
+[12:43:42.286]     0xFF: 590014
+[12:43:42.286] Indication: subevent 0, responding in slot 0
+[12:43:42.286]     0xFF: 590019
+[12:43:42.286] Failed to receive indication: subevent 0
+[12:43:42.287] Indication: subevent 0, responding in slot 0
+[12:43:42.287]     0xFF: 590023
+[12:43:43.558] Indication: subevent 0, responding in slot 0
+[12:43:43.559]     0xFF: 590028
+[12:43:43.559] Failed to receive indication: subevent 0
+[12:43:43.560] Failed to receive indication: subevent 0
+[12:43:43.560] Indication: subevent 0, responding in slot 0
+[12:43:43.560]     0xFF: 590037
+[12:43:45.471] Indication: subevent 0, responding in slot 0
+[12:43:45.473]     0xFF: 59003C
+[12:43:45.473] Indication: subevent 0, responding in slot 0
+[12:43:45.473]     0xFF: 590041
+[12:43:45.474] Failed to receive indication: subevent 0
+[12:43:45.474] Failed to receive indication: subevent 0
+[12:43:45.474] Indication: subevent 0, responding in slot 0
+[12:43:45.474]     0xFF: 590050
+[12:43:45.475] Indication: subevent 0, responding in slot 0
+[12:43:45.475]     0xFF: 590055
+[12:43:47.701] Indication: subevent 0, responding in slot 0
+[12:43:47.702]     0xFF: 59005A
+[12:43:47.702] Indication: subevent 0, responding in slot 0
+[12:43:47.702]     0xFF: 59005F
+[12:43:47.703] Indication: subevent 0, responding in slot 0
+[12:43:47.703]     0xFF: 590064
+[12:43:47.704] Indication: subevent 0, responding in slot 0
+[12:43:47.704]     0xFF: 590069
+[12:43:47.704] Indication: subevent 0, responding in slot 0
+[12:43:47.704]     0xFF: 59006E
+[12:43:47.704] Failed to receive indication: subevent 0
+[12:43:47.705] Indication: subevent 0, responding in slot 0
+[12:43:47.705]     0xFF: 590078
+[12:43:49.295] Indication: subevent 0, responding in slot 0
+[12:43:49.295]     0xFF: 59007D
+[12:43:49.296] Indication: subevent 0, responding in slot 0
+[12:43:49.296]     0xFF: 590082
+[12:43:49.297] Indication: subevent 0, responding in slot 0
+[12:43:49.297]     0xFF: 590087
+[12:43:49.297] Failed to receive indication: subevent 0
+[12:43:49.297] Indication: subevent 0, responding in slot 0
+[12:43:49.298]     0xFF: 590091
+[12:43:50.571] Failed to receive indication: subevent 0
+[12:43:50.572] Indication: subevent 0, responding in slot 0
+[12:43:50.573]     0xFF: 59009B
+[12:43:50.573] Indication: subevent 0, responding in slot 0
+[12:43:50.574]     0xFF: 5900A5
+[12:43:54.714] Indication: subevent 0, responding in slot 0
+[12:43:54.715]     0xFF: 5900AA
+[12:43:54.715] Indication: subevent 0, responding in slot 0
+[12:43:54.715]     0xFF: 5900AF
+[12:43:54.716] Indication: subevent 0, responding in slot 0
+[12:43:54.716]     0xFF: 5900B4
+[12:43:54.716] Indication: subevent 0, responding in slot 0
+[12:43:54.716]     0xFF: 5900B9
+[12:43:54.716] Indication: subevent 0, responding in slot 0
+[12:43:54.717]     0xFF: 5900BE
+[12:43:54.717] Indication: subevent 0, responding in slot 0
+[12:43:54.717]     0xFF: 5900C3
+[12:43:54.717] Indication: subevent 0, responding in slot 0
+[12:43:54.717]     0xFF: 5900C8
+[12:43:54.717] Indication: subevent 0, responding in slot 0
+[12:43:54.717]     0xFF: 5900CD
+[12:43:54.718] Indication: subevent 0, responding in slot 0
+[12:43:54.718]     0xFF: 5900D2
+[12:43:54.718] Indication: subevent 0, responding in slot 0
+[12:43:54.718]     0xFF: 5900D7
+[12:43:54.719] Failed to receive indication: subevent 0
+[12:43:54.719] Indication: subevent 0, responding in slot 0
+[12:43:54.719]     0xFF: 5900E1
+[12:43:54.719] Indication: subevent 0, responding in slot 0
+[12:43:54.719]     0xFF: 5900E6
+[12:43:56.627] Indication: subevent 0, responding in slot 0
+[12:43:56.628]     0xFF: 5900EB
+[12:43:56.628] Indication: subevent 0, responding in slot 0
+[12:43:56.629]     0xFF: 5900F0
+[12:43:56.629] Failed to receive indication: subevent 0
+[12:43:56.629] Failed to receive indication: subevent 0
+[12:43:56.629] Indication: subevent 0, responding in slot 0
+[12:43:56.629]     0xFF: 5900FF
+[12:43:56.629] Indication: subevent 0, responding in slot 0
+[12:43:56.629]     0xFF: 590004
+[12:43:58.220] Indication: subevent 0, responding in slot 0
+[12:43:58.221]     0xFF: 590009
+[12:43:58.221] Indication: subevent 0, responding in slot 0
+[12:43:58.222]     0xFF: 59000E
+[12:43:58.222] Indication: subevent 0, responding in slot 0
+[12:43:58.223]     0xFF: 590013
+[12:43:58.223] Failed to receive indication: subevent 0
+[12:43:58.223] Indication: subevent 0, responding in slot 0
+[12:43:58.223]     0xFF: 59001D
+[12:44:09.376] Indication: subevent 0, responding in slot 0
+[12:44:09.377]     0xFF: 590022
+[12:44:09.377] Indication: subevent 0, responding in slot 0
+[12:44:09.379]     0xFF: 590027
+[12:44:09.379] Indication: subevent 0, responding in slot 0
+[12:44:09.380]     0xFF: 59002C
+[12:44:09.380] Indication: subevent 0, responding in slot 0
+[12:44:09.381]     0xFF: 590031
+[12:44:09.381] Indication: subevent 0, responding in slot 0
+[12:44:09.381]     0xFF: 590036
+[12:44:09.381] Indication: subevent 0, responding in slot 0
+[12:44:09.382]     0xFF: 59003B
+[12:44:09.382] Indication: subevent 0, responding in slot 0
+[12:44:09.382]     0xFF: 590040
+[12:44:09.383] Indication: subevent 0, responding in slot 0
+[12:44:09.383]     0xFF: 590045
+[12:44:09.383] Indication: subevent 0, responding in slot 0
+[12:44:09.383]     0xFF: 59004A
+[12:44:09.383] Indication: subevent 0, responding in slot 0
+[12:44:09.384]     0xFF: 59004F
+[12:44:09.384] Indication: subevent 0, responding in slot 0
+[12:44:09.384]     0xFF: 590054
+[12:44:09.384] Indication: subevent 0, responding in slot 0
+[12:44:09.385]     0xFF: 590059
+[12:44:09.385] Indication: subevent 0, responding in slot 0
+[12:44:09.385]     0xFF: 59005E
+[12:44:09.385] Indication: subevent 0, responding in slot 0
+[12:44:09.386]     0xFF: 590063
+[12:44:09.386] Indication: subevent 0, responding in slot 0
+[12:44:09.386]     0xFF: 590068
+[12:44:09.386] Indication: subevent 0, responding in slot 0
+[12:44:09.386]     0xFF: 59006D
+[12:44:09.386] Indication: subevent 0, responding in slot 0
+[12:44:09.386]     0xFF: 590072
+[12:44:09.387] Indication: subevent 0, responding in slot 0
+[12:44:09.387]     0xFF: 590077
+[12:44:09.387] Indication: subevent 0, responding in slot 0
+[12:44:09.387]     0xFF: 59007C
+[12:44:09.387] Indication: subevent 0, responding in slot 0
+[12:44:09.387]     0xFF: 590081
+[12:44:09.389] Indication: subevent 0, responding in slot 0
+[12:44:09.389]     0xFF: 590086
+[12:44:09.389] Indication: subevent 0, responding in slot 0
+[12:44:09.391]     0xFF: 59008B
+[12:44:09.391] Indication: subevent 0, responding in slot 0
+[12:44:09.392]     0xFF: 590090
+[12:44:09.392] Indication: subevent 0, responding in slot 0
+[12:44:09.392]     0xFF: 590095
+[12:44:09.392] Indication: subevent 0, responding in slot 0
+[12:44:09.392]     0xFF: 59009A
+[12:44:09.393] Indication: subevent 0, responding in slot 0
+[12:44:09.393]     0xFF: 59009F
+[12:44:09.393] Indication: subevent 0, responding in slot 0
+[12:44:09.393]     0xFF: 5900A4
+[12:44:09.394] Indication: subevent 0, responding in slot 0
+[12:44:09.394]     0xFF: 5900A9
+[12:44:09.394] Indication: subevent 0, responding in slot 0
+[12:44:09.394]     0xFF: 5900AE
+[12:44:09.394] Indication: subevent 0, responding in slot 0
+[12:44:09.394]     0xFF: 5900B3
+[12:44:09.395] Indication: subevent 0, responding in slot 0
+[12:44:09.395]     0xFF: 5900B8
+[12:44:09.395] Indication: subevent 0, responding in slot 0
+[12:44:09.395]     0xFF: 5900BD
+[12:44:09.395] Indication: subevent 0, responding in slot 0
+[12:44:09.395]     0xFF: 5900C2
+[12:44:09.396] Failed to receive indication: subevent 0
+[12:44:09.396] Indication: subevent 0, responding in slot 0
+[12:44:09.397]     0xFF: 5900CC
+[12:44:12.882] Indication: subevent 0, responding in slot 0
+[12:44:12.883]     0xFF: 5900D1
+[12:44:12.883] Indication: subevent 0, responding in slot 0
+[12:44:12.884]     0xFF: 5900D6
+[12:44:12.884] Indication: subevent 0, responding in slot 0
+[12:44:12.885]     0xFF: 5900DB
+[12:44:12.885] Indication: subevent 0, responding in slot 0
+[12:44:12.885]     0xFF: 5900E0
+[12:44:12.886] Indication: subevent 0, responding in slot 0
+[12:44:12.887]     0xFF: 5900E5
+[12:44:12.887] Indication: subevent 0, responding in slot 0
+[12:44:12.887]     0xFF: 5900EA
+[12:44:12.887] Indication: subevent 0, responding in slot 0
+[12:44:12.887]     0xFF: 5900EF
+[12:44:12.887] Indication: subevent 0, responding in slot 0
+[12:44:12.887]     0xFF: 5900F4
+[12:44:12.888] Failed to receive indication: subevent 0
+[12:44:12.888] Indication: subevent 0, responding in slot 0
+[12:44:12.888]     0xFF: 5900FE
+[12:44:12.888] Indication: subevent 0, responding in slot 0
+[12:44:12.888]     0xFF: 590003
