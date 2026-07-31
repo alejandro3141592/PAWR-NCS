@@ -35,6 +35,25 @@
  */
 #define APP_MINIMAL_REPRO 0
 
+/* Scale isolation test (2026-07-31, see NOTES.md): flipping
+ * APP_MINIMAL_REPRO back to 0 hit a NEW bug (unrelated to the SENDER fix) --
+ * central hangs a moment after "Scanning successfully started" with
+ * repeating "udc: Failed to allocate net_buf 4095, ep 0x80" and then total
+ * silence. Every previously-working test today (APP_MINIMAL_REPRO=1, and the
+ * literal stock sample) only ever ran at the stock sample's own light
+ * defaults (5 subevents, ~319ms interval) -- full scale (20 subevents, 10s)
+ * has never actually been verified to work on this hardware/SDK. This knob
+ * separates the two variables stock+production conflates, to find out which
+ * one (subevent count, or interval length) actually triggers the hang:
+ *   0 = full production (20 subevents, 10s)      -- known broken
+ *   1 = stock defaults (5 subevents, ~319ms)      -- known working
+ *   2 = 20 subevents, ~319ms interval             -- isolates COUNT
+ *   3 = 5 subevents, 10s interval                 -- isolates INTERVAL
+ * Remove this whole knob once the trigger is found and the real fix (buffer
+ * pool sizing, most likely) is identified and applied instead.
+ */
+#define APP_SCALE_TEST 2
+
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
  * = 10.00s exactly). subevent_interval is uint8_t in 1.25ms units,
@@ -44,6 +63,12 @@
 #if APP_MINIMAL_REPRO
 #define NUM_SUBEVENTS             5
 #define PAWR_INTERVAL_UNITS       0xFF    /* ~318.75 ms, the original NCS sample's interval */
+#elif APP_SCALE_TEST == 2
+#define NUM_SUBEVENTS             20
+#define PAWR_INTERVAL_UNITS       0xFF    /* ~318.75 ms -- count isolation */
+#elif APP_SCALE_TEST == 3
+#define NUM_SUBEVENTS             5
+#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- interval isolation */
 #else
 #define NUM_SUBEVENTS             20
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
