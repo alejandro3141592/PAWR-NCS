@@ -397,4 +397,70 @@ for testing against your peripheral until this is resolved.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — scale isolation attempt: mode 2 (20 subevents, short interval) produces zero console output at all
+
+Added a temporary `APP_SCALE_TEST` knob to `common/pawr_protocol.h` (see comment
+there) to separate the two variables the working/broken configs conflate:
+subevent *count* vs. interval *length*. Tried mode 2 first: 20 subevents, kept
+at the short ~319ms interval.
+
+**Result so far is inconclusive but concerning: zero console output whatsoever**
+-- not even the boot banner (`*** Booting nRF Connect SDK ***`) that mode 0
+still managed to print before its `udc` errors. Tried, in order: capture
+immediately after auto-flash, capture after a 5s settle delay, a single
+manual reset, and re-flashing from a bootloader-mode-already-sitting board
+with an immediate zero-delay capture -- all came back completely empty. Board
+does leave bootloader mode and re-enumerate its COM port normally each time,
+so it's not stuck in the bootloader; it's running *something*, just producing
+no serial output at all, which is a step earlier/worse than mode 0 (which at
+least got through the full boot sequence, BLE init, and
+`Scanning successfully started` before hanging).
+
+**Not confirmed yet whether this is:**
+- A genuinely earlier failure than mode 0 (e.g. 20 subevents breaks something
+  in the periodic-adv parameter setup itself, before advertising even starts,
+  independent of interval) -- would mean subevent *count* alone is sufficient
+  to break something, and it's worse than the mode-0 symptom, not equivalent.
+- Something wrong with the `APP_SCALE_TEST` mode-2 branch itself (typo/bad
+  interaction with `NUM_RSP_SLOTS`/`PAWR_SUBEVENT_INTERVAL`/etc. -- I set
+  `PAWR_INTERVAL_UNITS=0xFF` but left `PAWR_SUBEVENT_INTERVAL=0x20` (40ms)
+  unchanged; with 20 subevents at 40ms spacing each, that's 800ms of
+  subevent train inside a ~319ms periodic interval, which is almost certainly
+  an invalid/rejected parameter combination the stock sample's own math never
+  needed to account for -- the stock sample only ever paired 5 subevents
+  with that same 319ms interval. **This might just be an invalid config
+  I created, not a real finding about the actual bug** -- flagging this
+  as the most likely explanation before reading too much into "zero output."
+- Still possibly something board/capture-tooling related, though the repeated
+  zero-delay/manual-reset attempts make that less likely than for mode 0's
+  case (where a manual reset had at least sometimes helped before).
+
+**Haven't tried mode 3 yet** (5 subevents, full 10s interval -- isolates
+interval length, keeps a parameter combination we know is individually valid
+on each axis) -- doing that next, since mode 2 as configured may not be a
+valid test at all given the subevent-train-vs-interval math above.
+
+central is currently flashed with the mode-2 build (not usable for testing).
+`common/pawr_protocol.h` has `APP_SCALE_TEST=2`.
+
+**Update, same sitting: confirmed mode 2 was an invalid test, not a real
+finding.** Did the math I'd flagged above as the likely explanation: 20
+subevents * `PAWR_SUBEVENT_INTERVAL` (40ms) = an 800ms subevent train, which
+literally cannot fit inside a ~319ms periodic interval. Mode 2 as I'd set it
+up was self-contradictory parameters, not a valid isolation of subevent count
+-- the zero-output result tells us nothing about the real bug, just that
+malformed PAwR params fail even harder/earlier than the mode-0 symptom
+(reasonable to expect, not news).
+
+**Retiring mode 2, moving straight to mode 3** (5 subevents, 10s interval --
+200ms subevent train, fits trivially in either interval, so it's a clean
+single-variable change from the known-working mode 1). Updated the
+`APP_SCALE_TEST` comment in `common/pawr_protocol.h` to record this so mode 2
+doesn't get reused by mistake, and set `APP_SCALE_TEST=3` now. Testing that
+next.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->

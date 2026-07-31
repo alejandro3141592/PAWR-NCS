@@ -47,12 +47,18 @@
  * one (subevent count, or interval length) actually triggers the hang:
  *   0 = full production (20 subevents, 10s)      -- known broken
  *   1 = stock defaults (5 subevents, ~319ms)      -- known working
- *   2 = 20 subevents, ~319ms interval             -- isolates COUNT
+ *   2 = REMOVED, was invalid: 20 subevents needs a subevent train of
+ *       20 * 40ms = 800ms, which doesn't fit inside a ~319ms periodic
+ *       interval at all -- produced zero console output, but that's most
+ *       likely just malformed HCI params getting rejected/hanging very
+ *       early, not a real signal about subevent count alone. Don't reuse.
  *   3 = 5 subevents, 10s interval                 -- isolates INTERVAL
+ *       (valid: 5 * 40ms = 200ms subevent train fits easily in either
+ *       interval, so this is a clean single-variable change from mode 1)
  * Remove this whole knob once the trigger is found and the real fix (buffer
  * pool sizing, most likely) is identified and applied instead.
  */
-#define APP_SCALE_TEST 2
+#define APP_SCALE_TEST 3
 
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
