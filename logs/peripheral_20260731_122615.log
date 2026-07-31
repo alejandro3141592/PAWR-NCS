@@ -1,0 +1,393 @@
+[12:26:15.490] [00:00:00.461,944] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[12:26:15.493] [1;31m--- 370 messages dropped ---
+[12:26:15.493] [0m[00:00:00.471,343] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[12:26:15.493] Timed out while synchronizing
+[12:26:15.494] Waiting for periodic sync...
+[12:26:15.494] [SENSORS] node 1 seq 2 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.494] [SENSORS] node 1 seq 3 temp=26.50C humidity=38.3% flags=0x00
+[12:26:15.495] Timed out while synchronizing
+[12:26:15.495] Waiting for periodic sync...
+[12:26:15.496] [SENSORS] node 1 seq 4 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.496] [SENSORS] node 1 seq 5 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.496] Timed out while synchronizing
+[12:26:15.497] Waiting for periodic sync...
+[12:26:15.497] [SENSORS] node 1 seq 6 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.497] [SENSORS] node 1 seq 7 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.497] Timed out while synchronizing
+[12:26:15.499] Waiting for periodic sync...
+[12:26:15.499] [SENSORS] node 1 seq 8 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.499] [SENSORS] node 1 seq 9 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.500] Timed out while synchronizing
+[12:26:15.500] Waiting for periodic sync...
+[12:26:15.500] [SENSORS] node 1 seq 10 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.501] [SENSORS] node 1 [SENSORS] node 1 seq 13 temp=26.50C humidity=38.2% flags=0x00
+[12:26:15.501] Timed out while synchronizing
+[12:26:15.501] Waiting for periodic sync...
+[12:26:15.501] [SENSORS] node 1 seq 14 temp=26.50C humidity=38.1% flags=0x00
+[12:26:15.502] [SENSORS] node 1 seq 15 temp=26.50C humidity=38.1% flags=0x00
+[12:26:15.502] Timed out while synchronizing
+[12:26:15.503] Waiting for periodic sync...
+[12:26:15.503] [SENSORS] node 1 seq 16 temp=26.50C humidity=38.1% flags=0x00
+[12:26:16.801] [SENSORS] node 1 seq 17 temp=26.50C humidity=38.1% flags=0x00
+[12:26:16.801] Timed out while synchronizing
+[12:26:16.802] Waiting for periodic sync...
+[12:26:16.802] [SENSORS] node 1 seq 18 temp=26.50C humidity=38.0% flags=0x00
+[12:26:16.802] [SENSORS] node 1 seq 19 temp=26.50C humidity=38.1% flags=0x00
+[12:26:16.803] Timed out while synchronizing
+[12:26:16.803] Waiting for periodic sync...
+[12:26:16.803] [SENSORS] node 1 seq 20 temp=26.50C humidity=38.1% flags=0x00
+[12:26:18.114] [SENSORS] node 1 seq 21 temp=26.50C humidity=38.0% flags=0x00
+[12:26:18.115] Timed out while synchronizing
+[12:26:18.115] Waiting for periodic sync...
+[12:26:18.116] [SENSORS] node 1 seq 22 temp=26.50C humidity=38.0% flags=0x00
+[12:26:18.117] [SENSORS] node 1 seq 23 temp=26.50C humidity=38.0% flags=0x00
+[12:26:18.117] Timed out while synchronizing
+[12:26:18.117] Waiting for periodic sync...
+[12:26:18.118] [SENSORS] node 1 seq 24 temp=26.50C humidity=38.0% flags=0x00
+[12:26:19.426] [SENSORS] node 1 seq 25 temp=26.50C humidity=37.9% flags=0x00
+[12:26:19.426] Timed out while synchronizing
+[12:26:19.427] Waiting for periodic sync...
+[12:26:19.427] [SENSORS] node 1 seq 26 temp=26.50C humidity=38.0% flags=0x00
+[12:26:19.427] [SENSORS] node 1 seq 27 temp=26.50C humidity=38.0% flags=0x00
+[12:26:19.427] Timed out while synchronizing
+[12:26:19.427] Waiting for periodic sync...
+[12:26:19.428] [SENSORS] node 1 seq 28 temp=26.50C humidity=38.0% flags=0x00
+[12:26:20.738] [SENSORS] node 1 seq 29 temp=26.50C humidity=37.9% flags=0x00
+[12:26:20.739] Timed out while synchronizing
+[12:26:20.740] Waiting for periodic sync...
+[12:26:20.741] [SENSORS] node 1 seq 30 temp=26.50C humidity=37.9% flags=0x00
+[12:26:20.742] [SENSORS] node 1 seq 31 temp=26.50C humidity=37.9% flags=0x00
+[12:26:20.742] Timed out while synchronizing
+[12:26:20.742] Waiting for periodic sync...
+[12:26:20.743] [SENSORS] node 1 seq 32 temp=26.50C humidity=37.9% flags=0x00
+[12:26:22.039] Timed out while synchronizing
+[12:26:22.040] Waiting for periodic sync...
+[12:26:22.041] [SENSORS] node 1 seq 33 temp=26.50C humidity=37.9% flags=0x00
+[12:26:22.042] [SENSORS] node 1 seq 34 temp=26.50C humidity=37.9% flags=0x00
+[12:26:22.042] Timed out while synchronizing
+[12:26:22.043] Waiting for periodic sync...
+[12:26:22.043] [SENSORS] node 1 seq 35 temp=26.50C humidity=37.9% flags=0x00
+[12:26:22.044] [SENSORS] node 1 seq 36 temp=26.50C humidity=37.9% flags=0x00
+[12:26:23.310] Timed out while synchronizing
+[12:26:23.311] Waiting for periodic sync...
+[12:26:23.312] [SENSORS] node 1 seq 37 temp=26.50C humidity=37.9% flags=0x00
+[12:26:23.313] [SENSORS] node 1 seq 38 temp=26.50C humidity=37.9% flags=0x00
+[12:26:23.313] Timed out while synchronizing
+[12:26:23.313] Waiting for periodic sync...
+[12:26:23.314] [SENSORS] node 1 seq 39 temp=26.50C humidity=37.9% flags=0x00
+[12:26:24.349] [SENSORS] node 1 seq 40 temp=26.50C humidity=37.9% flags=0x00
+[12:26:24.349] Timed out while synchronizing
+[12:26:24.350] Waiting for periodic sync...
+[12:26:24.350] [SENSORS] node 1 seq 41 temp=26.50C humidity=37.9% flags=0x00
+[12:26:24.351] [SENSORS] node 1 seq 42 temp=26.50C humidity=37.9% flags=0x00
+[12:26:24.351] Timed out while synchronizing
+[12:26:24.351] Waiting for periodic sync...
+[12:26:24.351] [SENSORS] node 1 seq 43 temp=26.50C humidity=37.9% flags=0x00
+[12:26:25.660] [SENSORS] node 1 seq 44 temp=26.50C humidity=37.9% flags=0x00
+[12:26:25.661] Timed out while synchronizing
+[12:26:25.661] Waiting for periodic sync...
+[12:26:25.662] [SENSORS] node 1 seq 45 temp=26.50C humidity=37.9% flags=0x00
+[12:26:25.663] [SENSORS] node 1 seq 46 temp=26.50C humidity=37.9% flags=0x00
+[12:26:25.664] Timed out while synchronizing
+[12:26:25.664] Waiting for periodic sync...
+[12:26:25.665] [SENSORS] node 1 seq 47 temp=26.50C humidity=37.9% flags=0x00
+[12:26:26.973] [SENSORS] node 1 seq 48 temp=26.50C humidity=37.9% flags=0x00
+[12:26:26.974] Timed out while synchronizing
+[12:26:26.974] Waiting for periodic sync...
+[12:26:26.975] [SENSORS] node 1 seq 49 temp=26.50C humidity=37.8% flags=0x00
+[12:26:26.975] [SENSORS] node 1 seq 50 temp=26.50C humidity=37.8% flags=0x00
+[12:26:26.975] Timed out while synchronizing
+[12:26:26.975] Waiting for periodic sync...
+[12:26:26.975] [SENSORS] node 1 seq 51 temp=26.50C humidity=37.8% flags=0x00
+[12:26:28.287] [SENSORS] node 1 seq 52 temp=26.50C humidity=37.8% flags=0x00
+[12:26:28.287] Timed out while synchronizing
+[12:26:28.297] Waiting for periodic sync...
+[12:26:28.297] [SENSORS] node 1 seq 53 temp=26.50C humidity=37.8% flags=0x00
+[12:26:28.297] [SENSORS] node 1 seq 54 temp=26.50C humidity=37.8% flags=0x00
+[12:26:28.297] Timed out while synchronizing
+[12:26:28.297] Waiting for periodic sync...
+[12:26:28.298] [SENSORS] node 1 seq 55 temp=26.50C humidity=37.8% flags=0x00
+[12:26:29.598] [SENSORS] node 1 seq 56 temp=26.50C humidity=37.8% flags=0x00
+[12:26:29.599] Timed out while synchronizing
+[12:26:29.599] Waiting for periodic sync...
+[12:26:29.600] [SENSORS] node 1 seq 57 temp=26.50C humidity=37.8% flags=0x00
+[12:26:29.600] [SENSORS] node 1 seq 58 temp=26.50C humidity=37.7% flags=0x00
+[12:26:29.600] Timed out while synchronizing
+[12:26:29.601] Waiting for periodic sync...
+[12:26:29.601] [SENSORS] node 1 seq 59 temp=26.50C humidity=37.7% flags=0x00
+[12:26:30.911] [SENSORS] node 1 seq 60 temp=26.50C humidity=37.7% flags=0x00
+[12:26:30.911] Timed out while synchronizing
+[12:26:30.912] Waiting for periodic sync...
+[12:26:30.912] [SENSORS] node 1 seq 61 temp=26.50C humidity=37.6% flags=0x00
+[12:26:30.912] [SENSORS] node 1 seq 62 temp=26.50C humidity=37.6% flags=0x00
+[12:26:30.912] Timed out while synchronizing
+[12:26:30.912] Waiting for periodic sync...
+[12:26:30.913] [SENSORS] node 1 seq 63 temp=26.50C humidity=37.6% flags=0x00
+[12:26:32.217] Timed out while synchronizing
+[12:26:32.218] Waiting for periodic sync...
+[12:26:32.218] [SENSORS] node 1 seq 64 temp=26.50C humidity=37.6% flags=0x00
+[12:26:32.219] [SENSORS] node 1 seq 65 temp=26.50C humidity=37.6% flags=0x00
+[12:26:32.219] Timed out while synchronizing
+[12:26:32.219] Waiting for periodic sync...
+[12:26:32.220] [SENSORS] node 1 seq 66 temp=26.50C humidity=37.6% flags=0x00
+[12:26:32.220] [SENSORS] node 1 seq 67 temp=26.50C humidity=37.5% flags=0x00
+[12:26:33.488] Timed out while synchronizing
+[12:26:33.489] Waiting for periodic sync...
+[12:26:33.489] [SENSORS] node 1 seq 68 temp=26.50C humidity=37.5% flags=0x00
+[12:26:33.490] [SENSORS] node 1 seq 69 temp=26.50C humidity=37.5% flags=0x00
+[12:26:33.490] Timed out while synchronizing
+[12:26:33.490] Waiting for periodic sync...
+[12:26:33.491] [SENSORS] node 1 seq 70 temp=26.50C humidity=37.5% flags=0x00
+[12:26:34.521] [SENSORS] node 1 seq 71 temp=26.50C humidity=37.4% flags=0x00
+[12:26:34.521] Timed out while synchronizing
+[12:26:34.521] Waiting for periodic sync...
+[12:26:34.523] [SENSORS] node 1 seq 72 temp=26.50C humidity=37.4% flags=0x00
+[12:26:34.523] [SENSORS] node 1 seq 73 temp=26.50C humidity=37.3% flags=0x00
+[12:26:34.524] Timed out while synchronizing
+[12:26:34.524] Waiting for periodic sync...
+[12:26:34.524] [SENSORS] node 1 seq 74 temp=26.50C humidity=37.4% flags=0x00
+[12:26:35.835] [SENSORS] node 1 seq 75 temp=26.50C humidity=37.4% flags=0x00
+[12:26:35.835] Timed out while synchronizing
+[12:26:35.836] Waiting for periodic sync...
+[12:26:35.837] [SENSORS] node 1 seq 76 temp=26.50C humidity=37.3% flags=0x00
+[12:26:35.837] [SENSORS] node 1 seq 77 temp=26.50C humidity=37.3% flags=0x00
+[12:26:35.837] Timed out while synchronizing
+[12:26:35.838] Waiting for periodic sync...
+[12:26:35.838] [SENSORS] node 1 seq 78 temp=26.50C humidity=37.3% flags=0x00
+[12:26:37.146] [SENSORS] node 1 seq 79 temp=26.50C humidity=37.3% flags=0x00
+[12:26:37.148] Timed out while synchronizing
+[12:26:37.148] Waiting for periodic sync...
+[12:26:37.149] [SENSORS] node 1 seq 80 temp=26.50C humidity=37.3% flags=0x00
+[12:26:37.150] [SENSORS] node 1 seq 81 temp=26.50C humidity=37.3% flags=0x00
+[12:26:37.150] Timed out while synchronizing
+[12:26:37.151] Waiting for periodic sync...
+[12:26:37.151] [SENSORS] node 1 seq 82 temp=26.50C humidity=37.3% flags=0x00
+[12:26:38.459] [SENSORS] node 1 seq 83 temp=26.50C humidity=37.3% flags=0x00
+[12:26:38.459] Timed out while synchronizing
+[12:26:38.459] Waiting for periodic sync...
+[12:26:38.460] [SENSORS] node 1 seq 84 temp=26.50C humidity=37.3% flags=0x00
+[12:26:38.460] [SENSORS] node 1 seq 85 temp=26.50C humidity=37.3% flags=0x00
+[12:26:38.460] Timed out while synchronizing
+[12:26:38.461] Waiting for periodic sync...
+[12:26:38.461] [SENSORS] node 1 seq 86 temp=26.50C humidity=37.3% flags=0x00
+[12:26:39.772] [SENSORS] node 1 seq 87 temp=26.50C humidity=37.3% flags=0x00
+[12:26:39.772] Timed out while synchronizing
+[12:26:39.773] Waiting for periodic sync...
+[12:26:39.773] [SENSORS] node 1 seq 88 temp=26.50C humidity=37.3% flags=0x00
+[12:26:39.774] [SENSORS] node 1 seq 89 temp=26.50C humidity=37.3% flags=0x00
+[12:26:39.774] Timed out while synchronizing
+[12:26:39.774] Waiting for periodic sync...
+[12:26:39.775] [SENSORS] node 1 seq 90 temp=26.50C humidity=37.3% flags=0x00
+[12:26:41.084] [SENSORS] node 1 seq 91 temp=26.50C humidity=37.3% flags=0x00
+[12:26:41.086] Timed out while synchronizing
+[12:26:41.086] Waiting for periodic sync...
+[12:26:41.087] [SENSORS] node 1 seq 92 temp=26.50C humidity=37.3% flags=0x00
+[12:26:41.088] [SENSORS] node 1 seq 93 temp=26.50C humidity=37.3% flags=0x00
+[12:26:41.088] Timed out while synchronizing
+[12:26:41.089] Waiting for periodic sync...
+[12:26:41.089] [SENSORS] node 1 seq 94 temp=26.50C humidity=37.4% flags=0x00
+[12:26:42.396] Timed out while synchronizing
+[12:26:42.396] Waiting for periodic sync...
+[12:26:42.397] [SENSORS] node 1 seq 95 temp=26.50C humidity=37.4% flags=0x00
+[12:26:42.397] [SENSORS] node 1 seq 96 temp=26.50C humidity=37.4% flags=0x00
+[12:26:42.398] Timed out while synchronizing
+[12:26:42.398] Waiting for periodic sync...
+[12:26:42.399] [SENSORS] node 1 seq 97 temp=26.50C humidity=37.4% flags=0x00
+[12:26:42.399] [SENSORS] node 1 seq 98 temp=26.50C humidity=37.3% flags=0x00
+[12:26:43.665] Timed out while synchronizing
+[12:26:43.666] Waiting for periodic sync...
+[12:26:43.667] [SENSORS] node 1 seq 99 temp=26.50C humidity=37.4% flags=0x00
+[12:26:43.667] [SENSORS] node 1 seq 100 temp=26.50C humidity=37.4% flags=0x00
+[12:26:43.667] Timed out while synchronizing
+[12:26:43.668] Waiting for periodic sync...
+[12:26:43.668] [SENSORS] node 1 seq 101 temp=26.50C humidity=37.4% flags=0x00
+[12:26:44.693] [SENSORS] node 1 seq 102 temp=26.50C humidity=37.4% flags=0x00
+[12:26:44.693] Timed out while synchronizing
+[12:26:44.693] Waiting for periodic sync...
+[12:26:44.694] [SENSORS] node 1 seq 103 temp=26.50C humidity=37.4% flags=0x00
+[12:26:44.694] [SENSORS] node 1 seq 104 temp=26.50C humidity=37.4% flags=0x00
+[12:26:44.694] Timed out while synchronizing
+[12:26:44.694] Waiting for periodic sync...
+[12:26:44.695] [SENSORS] node 1 seq 105 temp=26.50C humidity=37.4% flags=0x00
+[12:26:46.006] [SENSORS] node 1 seq 106 temp=26.50C humidity=37.4% flags=0x00
+[12:26:46.007] Timed out while synchronizing
+[12:26:46.008] Waiting for periodic sync...
+[12:26:46.009] [SENSORS] node 1 seq 107 temp=26.50C humidity=37.4% flags=0x00
+[12:26:46.009] [SENSORS] node 1 seq 108 temp=26.50C humidity=37.4% flags=0x00
+[12:26:46.009] Timed out while synchronizing
+[12:26:46.009] Waiting for periodic sync...
+[12:26:46.010] [SENSORS] node 1 seq 109 temp=26.50C humidity=37.4% flags=0x00
+[12:26:47.319] [SENSORS] node 1 seq 110 temp=26.50C humidity=37.4% flags=0x00
+[12:26:47.319] Timed out while synchronizing
+[12:26:47.319] Waiting for periodic sync...
+[12:26:47.319] [SENSORS] node 1 seq 111 temp=26.50C humidity=37.4% flags=0x00
+[12:26:47.319] [SENSORS] node 1 seq 112 temp=26.50C humidity=37.4% flags=0x00
+[12:26:47.320] Timed out while synchronizing
+[12:26:47.320] Waiting for periodic sync...
+[12:26:47.320] [SENSORS] node 1 seq 113 temp=26.50C humidity=37.4% flags=0x00
+[12:26:48.631] [SENSORS] node 1 seq 114 temp=26.50C humidity=37.4% flags=0x00
+[12:26:48.632] Timed out while synchronizing
+[12:26:48.633] Waiting for periodic sync...
+[12:26:48.633] [SENSORS] node 1 seq 115 temp=26.50C humidity=37.4% flags=0x00
+[12:26:48.634] [SENSORS] node 1 seq 116 temp=26.50C humidity=37.4% flags=0x00
+[12:26:48.634] Timed out while synchronizing
+[12:26:48.634] Waiting for periodic sync...
+[12:26:48.634] [SENSORS] node 1 seq 117 temp=26.50C humidity=37.3% flags=0x00
+[12:26:49.945] [SENSORS] node 1 seq 118 temp=26.50C humidity=37.4% flags=0x00
+[12:26:49.946] Timed out while synchronizing
+[12:26:49.946] Waiting for periodic sync...
+[12:26:49.946] [SENSORS] node 1 seq 119 temp=26.50C humidity=37.3% flags=0x00
+[12:26:49.947] [SENSORS] node 1 seq 120 temp=26.50C humidity=37.4% flags=0x00
+[12:26:49.947] Timed out while synchronizing
+[12:26:49.947] Waiting for periodic sync...
+[12:26:49.948] [SENSORS] node 1 seq 121 temp=26.50C humidity=37.3% flags=0x00
+[12:26:51.257] [SENSORS] node 1 seq 122 temp=26.50C humidity=37.3% flags=0x00
+[12:26:51.259] Timed out while synchronizing
+[12:26:51.259] Waiting for periodic sync...
+[12:26:51.259] [SENSORS] node 1 seq 123 temp=26.50C humidity=37.3% flags=0x00
+[12:26:51.259] [SENSORS] node 1 seq 124 temp=26.50C humidity=37.2% flags=0x00
+[12:26:51.261] Timed out while synchronizing
+[12:26:51.261] Waiting for periodic sync...
+[12:26:51.261] [SENSORS] node 1 seq 125 temp=26.50C humidity=37.3% flags=0x00
+[12:26:52.569] [SENSORS] node 1 seq 126 temp=26.50C humidity=37.2% flags=0x00
+[12:26:52.569] Timed out while synchronizing
+[12:26:52.570] Waiting for periodic sync...
+[12:26:52.570] [SENSORS] node 1 seq 127 temp=26.50C humidity=37.2% flags=0x00
+[12:26:52.570] Timed out while synchronizing
+[12:26:52.570] Waiting for periodic sync...
+[12:26:52.571] [SENSORS] node 1 seq 128 temp=26.50C humidity=37.2% flags=0x00
+[12:26:52.571] [SENSORS] node 1 seq 129 temp=26.50C humidity=37.3% flags=0x00
+[12:26:53.844] Timed out while synchronizing
+[12:26:53.845] Waiting for periodic sync...
+[12:26:53.845] [SENSORS] node 1 seq 130 temp=26.50C humidity=37.2% flags=0x00
+[12:26:53.846] [SENSORS] node 1 seq 131 temp=26.50C humidity=37.2% flags=0x00
+[12:26:53.846] Timed out while synchronizing
+[12:26:53.846] Waiting for periodic sync...
+[12:26:53.847] [SENSORS] node 1 seq 132 temp=26.50C humidity=37.2% flags=0x00
+[12:26:54.867] [SENSORS] node 1 seq 133 temp=26.50C humidity=37.3% flags=0x00
+[12:26:54.869] Timed out while synchronizing
+[12:26:54.869] Waiting for periodic sync...
+[12:26:54.869] [SENSORS] node 1 seq 134 temp=26.50C humidity=37.3% flags=0x00
+[12:26:54.870] [SENSORS] node 1 seq 135 temp=26.50C humidity=37.2% flags=0x00
+[12:26:54.870] Timed out while synchronizing
+[12:26:54.871] Waiting for periodic sync...
+[12:26:54.871] [SENSORS] node 1 seq 136 temp=26.50C humidity=37.2% flags=0x00
+[12:26:56.179] [SENSORS] node 1 seq 137 temp=26.50C humidity=37.2% flags=0x00
+[12:26:56.180] Timed out while synchronizing
+[12:26:56.180] Waiting for periodic sync...
+[12:26:56.181] [SENSORS] node 1 seq 138 temp=26.50C humidity=37.2% flags=0x00
+[12:26:56.181] [SENSORS] node 1 seq 139 temp=26.50C humidity=37.3% flags=0x00
+[12:26:56.182] Timed out while synchronizing
+[12:26:56.182] Waiting for periodic sync...
+[12:26:56.182] [SENSORS] node 1 seq 140 temp=26.50C humidity=37.2% flags=0x00
+[12:26:57.491] [SENSORS] node 1 seq 141 temp=26.50C humidity=37.2% flags=0x00
+[12:26:57.492] Timed out while synchronizing
+[12:26:57.493] Waiting for periodic sync...
+[12:26:57.493] [SENSORS] node 1 seq 142 temp=26.50C humidity=37.2% flags=0x00
+[12:26:57.494] [SENSORS] node 1 seq 143 temp=26.50C humidity=37.2% flags=0x00
+[12:26:57.494] Timed out while synchronizing
+[12:26:57.494] Waiting for periodic sync...
+[12:26:57.494] [SENSORS] node 1 seq 144 temp=26.50C humidity=37.2% flags=0x00
+[12:26:58.805] [SENSORS] node 1 seq 145 temp=26.50C humidity=37.2% flags=0x00
+[12:26:58.805] Timed out while synchronizing
+[12:26:58.805] Waiting for periodic sync...
+[12:26:58.806] [SENSORS] node 1 seq 146 temp=26.50C humidity=37.2% flags=0x00
+[12:26:58.806] [SENSORS] node 1 seq 147 temp=26.50C humidity=37.2% flags=0x00
+[12:26:58.806] Timed out while synchronizing
+[12:26:58.806] Waiting for periodic sync...
+[12:26:58.807] [SENSORS] node 1 seq 148 temp=26.50C humidity=37.2% flags=0x00
+[12:27:00.117] [SENSORS] node 1 seq 149 temp=26.50C humidity=37.3% flags=0x00
+[12:27:00.117] Timed out while synchronizing
+[12:27:00.117] Waiting for periodic sync...
+[12:27:00.119] [SENSORS] node 1 seq 150 temp=26.50C humidity=37.3% flags=0x00
+[12:27:00.119] [SENSORS] node 1 seq 151 temp=26.50C humidity=37.3% flags=0x00
+[12:27:00.119] Timed out while synchronizing
+[12:27:00.119] Waiting for periodic sync...
+[12:27:00.120] [SENSORS] node 1 seq 152 temp=26.50C humidity=37.3% flags=0x00
+[12:27:01.429] [SENSORS] node 1 seq 153 temp=26.50C humidity=37.3% flags=0x00
+[12:27:01.430] Timed out while synchronizing
+[12:27:01.430] Waiting for periodic sync...
+[12:27:01.431] [SENSORS] node 1 seq 154 temp=26.50C humidity=37.4% flags=0x00
+[12:27:01.431] [SENSORS] node 1 seq 155 temp=26.50C humidity=37.4% flags=0x00
+[12:27:01.431] Timed out while synchronizing
+[12:27:01.431] Waiting for periodic sync...
+[12:27:01.432] [SENSORS] node 1 seq 156 temp=26.50C humidity=37.4% flags=0x00
+[12:27:02.741] [SENSORS] node 1 seq 157 temp=26.50C humidity=37.4% flags=0x00
+[12:27:02.743] Timed out while synchronizing
+[12:27:02.743] Waiting for periodic sync...
+[12:27:02.758] [SENSORS] node 1 seq 158 temp=26.50C humidity=37.4% flags=0x00
+[12:27:02.760] Timed out while synchronizing
+[12:27:02.760] Waiting for periodic sync...
+[12:27:02.760] [SENSORS] node 1 seq 159 temp=26.50C humidity=37.5% flags=0x00
+[12:27:02.760] [SENSORS] node 1 seq 160 temp=26.50C humidity=37.5% flags=0x00
+[12:27:04.021] Timed out while synchronizing
+[12:27:04.021] Waiting for periodic sync...
+[12:27:04.022] [SENSORS] node 1 seq 161 temp=26.50C humidity=37.5% flags=0x00
+[12:27:04.022] [SENSORS] node 1 seq 162 temp=26.50C humidity=37.5% flags=0x00
+[12:27:04.022] Timed out while synchronizing
+[12:27:04.022] Waiting for periodic sync...
+[12:27:04.023] [SENSORS] node 1 seq 163 temp=26.50C humidity=37.6% flags=0x00
+[12:27:05.039] [SENSORS] node 1 seq 164 temp=26.50C humidity=37.6% flags=0x00
+[12:27:05.041] Timed out while synchronizing
+[12:27:05.041] Waiting for periodic sync...
+[12:27:05.042] [SENSORS] node 1 seq 165 temp=26.50C humidity=37.6% flags=0x00
+[12:27:05.042] [SENSORS] node 1 seq 166 temp=26.50C humidity=37.7% flags=0x00
+[12:27:05.043] Timed out while synchronizing
+[12:27:05.043] Waiting for periodic sync...
+[12:27:05.043] [SENSORS] node 1 seq 167 temp=26.50C humidity=37.7% flags=0x00
+[12:27:06.351] [SENSORS] node 1 seq 168 temp=26.50C humidity=37.7% flags=0x00
+[12:27:06.352] Timed out while synchronizing
+[12:27:06.352] Waiting for periodic sync...
+[12:27:06.353] [SENSORS] node 1 seq 169 temp=26.50C humidity=37.8% flags=0x00
+[12:27:06.354] [SENSORS] node 1 seq 170 temp=26.50C humidity=37.8% flags=0x00
+[12:27:06.354] Timed out while synchronizing
+[12:27:06.354] Waiting for periodic sync...
+[12:27:06.355] [SENSORS] node 1 seq 171 temp=26.50C humidity=37.8% flags=0x00
+[12:27:07.664] [SENSORS] node 1 seq 172 temp=26.50C humidity=37.8% flags=0x00
+[12:27:07.664] Timed out while synchronizing
+[12:27:07.665] Waiting for periodic sync...
+[12:27:07.665] [SENSORS] node 1 seq 173 temp=26.50C humidity=37.9% flags=0x00
+[12:27:07.665] [SENSORS] node 1 seq 174 temp=26.50C humidity=37.9% flags=0x00
+[12:27:07.665] Timed out while synchronizing
+[12:27:07.665] Waiting for periodic sync...
+[12:27:07.665] [SENSORS] node 1 seq 175 temp=26.50C humidity=37.9% flags=0x00
+[12:27:08.976] [SENSORS] node 1 seq 176 temp=26.50C humidity=38.0% flags=0x00
+[12:27:08.977] Timed out while synchronizing
+[12:27:08.977] Waiting for periodic sync...
+[12:27:08.977] [SENSORS] node 1 seq 177 temp=26.50C humidity=38.0% flags=0x00
+[12:27:08.977] [SENSORS] node 1 seq 178 temp=26.50C humidity=38.0% flags=0x00
+[12:27:08.978] Timed out while synchronizing
+[12:27:08.978] Waiting for periodic sync...
+[12:27:08.978] [SENSORS] node 1 seq 179 temp=26.50C humidity=38.1% flags=0x00
+[12:27:10.289] [SENSORS] node 1 seq 180 temp=26.50C humidity=38.1% flags=0x00
+[12:27:10.289] Timed out while synchronizing
+[12:27:10.289] Waiting for periodic sync...
+[12:27:10.290] [SENSORS] node 1 seq 181 temp=26.50C humidity=38.1% flags=0x00
+[12:27:10.290] [SENSORS] node 1 seq 182 temp=26.50C humidity=38.2% flags=0x00
+[12:27:10.290] Timed out while synchronizing
+[12:27:10.290] Waiting for periodic sync...
+[12:27:10.291] [SENSORS] node 1 seq 183 temp=26.50C humidity=38.2% flags=0x00
+[12:27:11.601] [SENSORS] node 1 seq 184 temp=26.50C humidity=38.2% flags=0x00
+[12:27:11.601] Timed out while synchronizing
+[12:27:11.602] Waiting for periodic sync...
+[12:27:11.603] [SENSORS] node 1 seq 185 temp=26.50C humidity=38.3% flags=0x00
+[12:27:11.603] [SENSORS] node 1 seq 186 temp=26.50C humidity=38.3% flags=0x00
+[12:27:11.603] Timed out while synchronizing
+[12:27:11.604] Waiting for periodic sync...
+[12:27:11.604] [SENSORS] node 1 seq 187 temp=26.50C humidity=38.3% flags=0x00
+[12:27:12.914] [SENSORS] node 1 seq 188 temp=26.50C humidity=38.3% flags=0x00
+[12:27:12.915] Timed out while synchronizing
+[12:27:12.915] Waiting for periodic sync...
+[12:27:12.917] [SENSORS] node 1 seq 189 temp=26.50C humidity=38.4% flags=0x00
+[12:27:12.917] Timed out while synchronizing
+[12:27:12.918] Waiting for periodic sync...
+[12:27:12.919] [SENSORS] node 1 seq 190 temp=26.50C humidity=38.4% flags=0x00
+[12:27:12.919] [SENSORS] node 1 seq 191 temp=26.50C humidity=38.4% flags=0x00
+[12:27:14.207] Timed out while synchronizing
+[12:27:14.208] Waiting for periodic sync...
+[12:27:14.209] [SENSORS] node 1 seq 192 temp=26.50C humidity=38.5% flags=0x00
+[12:27:14.209] [SENSORS] node 1 seq 193 temp=26.50C humidity=38.5% flags=0x00
+[12:27:14.210] Timed out while synchronizing
+[12:27:14.210] Waiting for periodic sync...
+[12:27:14.211] [SENSORS] node 1 seq 194 temp=26.50C humidity=38.5% flags=0x00
+[12:27:15.211] [SENSORS] node 1 seq 195 temp=26.50C humidity=38.5% flags=0x00
