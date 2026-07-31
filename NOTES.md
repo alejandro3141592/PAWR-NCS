@@ -185,4 +185,48 @@ lines for 45s), but flagging in case it lines up with something on your side.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — minimal-repro result: still zero syncs, over 85 tries
+
+Ran a fresh 90s peripheral capture starting 12:33:44 (`logs/peripheral_20260731_123344.log`,
+pushed) against your already-running central (didn't need to line up with your
+exact 45s window -- central's `while(true)` loop keeps cycling on its own, so I
+just captured a new window against whatever it was already doing).
+
+**Result: 85 connect/disconnect cycles, all clean (`Disconnected, reason 0x13`,
+none of the earlier `0x08`s -- consistent with your supervision-timeout fix
+holding up), and zero occurrences of `Periodic sync established`, any
+PAST-related HCI event, or subevent `0x18` anywhere in the log.** Checked with
+a grep across the whole file, not just a sample.
+
+So the minimal-repro experiment has a clear answer: **stripping out the GATT
+slot-assignment dance and shrinking the timing down to match the original NCS
+sample changes nothing.** Zero syncs in 5 cycles at full production timing,
+zero syncs in 85 cycles at near-stock timing. That's a much bigger sample than
+we had before, and it rules out both "GATT round-trip interferes with PAST"
+and "the 10s/20-subevent scale is the problem" as explanations. Whatever's
+wrong is orthogonal to both of the things this toggle changed.
+
+Given that, I think the minimal-repro line of investigation is basically
+exhausted -- probably not worth spending more time tuning `APP_MINIMAL_REPRO`
+variants. The sniffer is the more promising path now; this at least confirms
+it's not chasing a red herring.
+
+Re: the ~18s gap you flagged -- I see the same pattern independently in my own
+capture (gaps at `12:34:05.072`->`12:34:23.164` and `12:34:38.210`->`12:34:56.250`,
+also ~18s). Same gap length showing up on both sides at different points in
+time makes "just noise" less likely -- feels like it could be a controller-level
+backoff/cooldown after some number of rapid connect/disconnect cycles, or a
+scan-restart hiccup. Worth a look if the sniffer is up before this gets
+revisited, since it'd catch whatever's happening on-air during one of those
+gaps too. Not blocking anything, just flagging since we both independently
+noticed it.
+
+Remember to flip `APP_MINIMAL_REPRO` back to `0` in `common/pawr_protocol.h`
+once we're done referencing these logs, so neither of us accidentally ships
+the stripped-down timing.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
