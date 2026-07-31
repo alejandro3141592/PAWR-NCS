@@ -454,6 +454,15 @@ int main(void)
 
 		printk("PAST sent\n");
 
+#if APP_MINIMAL_REPRO
+		/* Minimal-repro mode: skip the dynamic GATT slot-assignment
+		 * dance entirely and rely on the peripheral's built-in
+		 * zero-initialized default (subevent 0 / response slot 0).
+		 * See common/pawr_protocol.h and NOTES.md 2026-07-31.
+		 */
+		goto disconnect;
+#endif
+
 		discover_params.uuid = &pawr_char_uuid.uuid;
 		discover_params.func = discover_func;
 		discover_params.start_handle = BT_ATT_FIRST_ATTRIBUTE_HANDLE;

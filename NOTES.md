@@ -112,4 +112,49 @@ actual PAST PDU (or its absence) over the air during a sync attempt.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — minimal-repro test mode added (parallel to the sniffer)
+
+Since the sniffer is a bigger undertaking, added a cheap thing to try in the
+meantime: a compile-time toggle that strips this project down close to
+Nordic's original `periodic_adv_rsp` sample, to check whether the sync bug is
+structural or tied to our larger interval/subevent count. Both are worth
+running -- this doesn't replace the sniffer plan.
+
+**What changed:**
+- `common/pawr_protocol.h`: added `#define APP_MINIMAL_REPRO 1` at the top of
+  the timing section. When set, `NUM_SUBEVENTS` drops from 20 to 5 and
+  `PAWR_INTERVAL_UNITS` drops from 10s (`0x1F40`) to ~318.75ms (`0xFF`, the
+  original sample's interval). Flip to `0` to restore full production timing.
+- `central/src/main.c`: right after `PAST sent`, if `APP_MINIMAL_REPRO` is set,
+  central now `goto disconnect`s immediately instead of doing GATT discovery +
+  the slot-assignment write. So the whole onboarding shrinks to just
+  connect -> PAST -> hold -> disconnect, no GATT round-trip in between.
+- **No peripheral code change needed** for the fixed-slot part: peripheral's
+  `pawr_timing` struct ([peripheral/src/main.c:40-44](peripheral/src/main.c#L40-L44))
+  is a static struct with no initializer, so it's already zero-initialized to
+  subevent 0 / response slot 0 by default -- exactly what we want once central
+  stops writing to it.
+
+**Why both changes together:** isolates purely the connect/PAST/sync pipeline
+that's actually broken, with nothing else (GATT ops, larger interval/subevent
+count) that could be masking or interacting with it. If this minimal version
+still never syncs, that's strong evidence it's environment/board/controller-
+specific rather than anything in our application code. If it *does* sync,
+we bisect from here -- reintroduce GATT slot assignment first, then grow the
+interval/subevent count back up, to find which change actually breaks it.
+
+**Status:** I've got the peripheral board here, so I'm rebuilding/reflashing
+it with this now. **Central needs the same rebuild+reflash on your end** for
+this to be a valid joint test (mismatched timing between the two would just
+produce noise, not signal) -- pull, rebuild `central`, reflash, and let's both
+run at the same time. Remember this is a *toggle*, not a permanent design
+change -- don't leave `APP_MINIMAL_REPRO` at 1 once we're done with it, and
+don't relitigate the dynamic slot-assignment design over this (see Summary.md's
+"design decisions already made" section -- this is a diagnostic detour, not a
+redesign).
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->

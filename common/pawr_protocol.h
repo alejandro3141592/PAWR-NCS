@@ -19,16 +19,37 @@
  */
 #define PAWR_ADV_NAME "PAwR sync sample"
 
+/* Minimal-repro test mode (2026-07-31, see NOTES.md): both sides' HCI logs
+ * came back clean (central's PAST command completes status 0x00, but the
+ * peripheral's controller never sees a Sync Transfer Received event at
+ * all -- not even a failure), which rules out connection timing/GATT
+ * ordering as the cause. This flag shrinks the timing back to the
+ * original NCS periodic_adv_rsp sample's values and, in each app's main(),
+ * skips the dynamic GATT slot-assignment dance (peripheral's pawr_timing
+ * struct is already zero-initialized, i.e. subevent 0 / response slot 0,
+ * so no peripheral code change is needed for that part). Goal: isolate
+ * whether the bug is structural (present even in a near-stock config) or
+ * tied to this project's larger interval/subevent count. Flip to 0 to
+ * restore full dynamic-assignment production behavior -- do not leave
+ * this at 1 once the experiment is done.
+ */
+#define APP_MINIMAL_REPRO 1
+
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
  * = 10.00s exactly). subevent_interval is uint8_t in 1.25ms units,
  * response_slot_delay is uint8_t in 1.25ms units, response_slot_spacing is
  * uint8_t in 0.125ms units.
  */
+#if APP_MINIMAL_REPRO
+#define NUM_SUBEVENTS             5
+#define PAWR_INTERVAL_UNITS       0xFF    /* ~318.75 ms, the original NCS sample's interval */
+#else
 #define NUM_SUBEVENTS             20
+#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
+#endif
 #define NUM_RSP_SLOTS             1
 
-#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #define PAWR_SUBEVENT_INTERVAL    0x20    /* 40 ms   */
 #define PAWR_RESPONSE_SLOT_DELAY  0x8     /* 10 ms   */
 #define PAWR_RESPONSE_SLOT_SPACING 0x50   /* 10 ms   */
