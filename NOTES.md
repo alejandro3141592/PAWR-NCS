@@ -269,4 +269,68 @@ update, controller firmware, board damage) rather than in either app's code.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — FOUND IT: peripheral/prj.conf was missing CONFIG_BT_PER_ADV_SYNC_TRANSFER_SENDER
+
+Didn't even need to wait for a fully-stock central -- the stock
+`periodic_sync_rsp` peripheral uses the same device name our project already
+scans for (`"PAwR sync sample"`), so it connected straight to our own
+already-running (minimal-repro) central. And it worked immediately: continuous
+`Indication: subevent 0, responding in slot 0` for the full 60s capture
+(`logs/stock_periodic_sync_rsp_20260731_124324.log`, pushed). That pins the bug
+down to our peripheral's code/config specifically -- central, the boards, and
+the environment are all fine.
+
+Diffed our `peripheral/prj.conf` against the stock sample's line by line. Found
+it:
+
+```
+Stock:                                    Ours (before):
+CONFIG_BT_PER_ADV_SYNC_TRANSFER_SENDER=y  (missing)
+CONFIG_BT_PER_ADV_SYNC_TRANSFER_RECEIVER=y CONFIG_BT_PER_ADV_SYNC_TRANSFER_RECEIVER=y
+```
+
+We had `RECEIVER` but not `SENDER`, even though the peripheral only logically
+*receives* a sync transfer -- but Nordic's own sample enables both on that
+side. No build error, no runtime error from omitting it, it just silently
+leaves out whatever internal capability the combined flag pair enables in the
+SoftDevice Controller -- which is exactly consistent with everything we saw:
+central's HCI command reporting success while the peripheral's controller
+never processed anything as a result.
+
+**Added `CONFIG_BT_PER_ADV_SYNC_TRANSFER_SENDER=y` to `peripheral/prj.conf`,
+rebuilt/reflashed** (still with `APP_MINIMAL_REPRO=1`, to keep matching your
+currently-running central) and captured a fresh log
+(`logs/peripheral_20260731_124738.log`, pushed). **It works**: 141 successful
+`>>> Poll received: subevent 0, responding in slot 0` responses over the ~60s
+capture (43 benign misses mixed in, consistent with the occasional drops we
+always saw even in the working stock-sample baseline). This is our own
+project's code, not the stock sample -- the fix is real.
+
+(Checked `central/prj.conf` for symmetry: it already only has `SENDER`, no
+`RECEIVER`, matching stock `periodic_adv_rsp` exactly -- central never needed
+a change.)
+
+**Next steps, in order:**
+1. Flip `APP_MINIMAL_REPRO` back to `0` in `common/pawr_protocol.h` on both
+   sides (full production timing: 20 subevents, 10s interval, GATT slot
+   assignment restored) and do one more joint test to confirm the fix holds
+   at full production scale, not just the stripped-down config.
+2. Once confirmed, we can drop `CONFIG_BT_HCI_CORE_LOG_LEVEL_DBG` from both
+   `prj.conf`s (diagnostic-only, very verbose) and stand down the sniffer plan
+   -- shouldn't be needed anymore.
+3. Update `Summary.md`'s "NOT YET RESOLVED" section -- this was the primary
+   open bug, it's resolved now. (Also still owes that stale 100-150ms
+   connection-interval correction from a few entries back.)
+4. Worth someone filing/checking upstream whether this is a known NCS/Zephyr
+   sample-vs-Kconfig-dependency gap, since it's a genuinely easy trap: nothing
+   in the Kconfig `depends on` graph for `BT_PER_ADV_SYNC_TRANSFER_RECEIVER`
+   requires `SENDER`, so there's no automated warning if you only enable what
+   seems logically necessary.
+
+Ready to flip the toggle back and retest whenever you are.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
