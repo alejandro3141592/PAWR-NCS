@@ -229,4 +229,44 @@ the stripped-down timing.
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-07-31 — important: stock Zephyr sample synced successfully a few days ago
+
+New information that changes the picture: the stock, completely unmodified
+`zephyr/samples/bluetooth/periodic_adv_rsp` + `periodic_sync_rsp` pair was
+tried on this same hardware a few days ago and **it worked** -- periodic sync
+established successfully. That wasn't mentioned earlier in this thread because
+it predates the current debugging session, but it's important: it means the
+board/controller/SDK combination is *not* incapable of PAwR+PAST (rules out
+the "controller feature gap" branch of our either/or from a few entries up).
+It also means something specific changed or was never carried over correctly
+in this project's adaptation, since even `APP_MINIMAL_REPRO` (which we thought
+was close to stock) still isn't literally the stock sample -- it still carries
+our device name, Kconfig options, connection-param overrides, sensor code
+(compiled but unused), status LED, and (on peripheral) the HCI debug logging,
+none of which exist in the real sample.
+
+**Re-running the actual stock sample now to confirm it still works and get a
+clean known-good baseline log to diff against.** I'm building
+`C:\ncs\v3.3.0\zephyr\samples\bluetooth\periodic_sync_rsp` (unmodified,
+straight from the SDK, board `xiao_ble/nrf52840`) and flashing it to the
+peripheral board I have here. **Could you do the same with
+`periodic_adv_rsp`** on the central board on your end? Both samples build
+standalone (their own `prj.conf`/`CMakeLists.txt`, no dependency on anything
+in this repo) -- just point `west build` at the sample directory instead of
+`central/`/`peripheral/`. Once both are flashed, watch for `Periodic sync
+established.` on the sync_rsp side.
+
+If the stock pair still syncs today: we diff our project's central/peripheral
+against the stock samples line-by-line to find what actually changed (my bet,
+given what's ruled out so far, is something in the extended/periodic
+advertising parameter values, the PAST subscribe parameters, or Kconfig -- not
+the GATT/slot-assignment layer, since minimal-repro already showed that's not
+it). If the stock pair *doesn't* sync anymore either: that points at something
+that changed in the environment itself since a few days ago (SDK/toolchain
+update, controller firmware, board damage) rather than in either app's code.
+
+— Alejandro (session assisted by Claude), 2026-07-31
+
 <!-- New entries go above this line -->
