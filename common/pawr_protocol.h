@@ -55,10 +55,13 @@
  *   3 = 5 subevents, 10s interval                 -- isolates INTERVAL
  *       (valid: 5 * 40ms = 200ms subevent train fits easily in either
  *       interval, so this is a clean single-variable change from mode 1)
+ *       CONFIRMED WORKING over a full 30-min run both sides, 2026-08-01.
+ *   4 = 10 subevents, 10s interval                 -- binary search step
+ *       (valid: 10 * 40ms = 400ms subevent train, fits easily in 10s)
  * Remove this whole knob once the trigger is found and the real fix (buffer
  * pool sizing, most likely) is identified and applied instead.
  */
-#define APP_SCALE_TEST 3
+#define APP_SCALE_TEST 4
 
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
@@ -75,6 +78,9 @@
 #elif APP_SCALE_TEST == 3
 #define NUM_SUBEVENTS             5
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- interval isolation */
+#elif APP_SCALE_TEST == 4
+#define NUM_SUBEVENTS             10
+#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
 #define NUM_SUBEVENTS             20
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
