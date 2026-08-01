@@ -1,0 +1,27 @@
+[14:09:28.995] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[14:09:28.998] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[14:09:28.998] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[14:09:28.998] [00:00:00.000,854] [0m<inf> udc_nrf: Initialized[0m
+[14:09:28.999] Starting Periodic Advertising Demo (central)
+[14:09:28.999] [00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[14:09:29.000]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[14:09:29.000]                                             74 6c ac 75                                      |tl.u             [0m
+[14:09:29.001] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[14:09:29.002] [00:00:00.003,753] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[14:09:29.002] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[14:09:29.002] [00:00:00.004,638] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[14:09:29.003] [00:00:00.004,760] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[14:09:29.003] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[14:09:29.004] Connected (err 0x00)
+[14:09:29.004] PAST sent
+[14:09:29.004] Discovery started
+[14:09:29.005] Characteristic handle: 14
+[14:09:29.005] Write started
+[14:09:29.005] PAwR config written: subevent 0
+[14:09:39.289] Disconnected, reason 0x16 
+[14:09:39.289] Scanning successfully started
+[14:09:40.749] >>> Node 01 (subevent 0): skin_temp=29.50C humidity=46.0% seq=1
+[14:09:50.748] >>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.4% seq=2
+[14:10:00.748] >>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.4% seq=3
+[14:10:10.748] >>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.5% seq=4
+[14:10:20.747] >>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.6% seq=5

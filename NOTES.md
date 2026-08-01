@@ -854,4 +854,30 @@ of guessing a value and running a full 30-min soak on the first try.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — 6/6 looks promising: clean short capture, zero gaps
+
+Stepped down to `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_RSP_TX_BUFFER_COUNT=6` /
+`..._RX_BUFFER_COUNT=6` (from the broken 12/12 attempt, and up from the
+default 3/2). Short capture right after flashing --
+`logs/central_20260801_140928.log`, pushed. **Full clean cycle**: boot,
+connect, PAST sent, discovery, GATT write, clean disconnect, scanning
+resumed, then **5 consecutive readings with zero gaps** (seq 1,2,3,4,5, no
+misses at all in this window):
+
+```
+>>> Node 01 (subevent 0): skin_temp=29.50C humidity=46.0% seq=1
+>>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.4% seq=2
+>>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.4% seq=3
+>>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.5% seq=4
+>>> Node 01 (subevent 0): skin_temp=29.50C humidity=45.6% seq=5
+```
+
+Promising, but same caution as always applies -- a short window isn't proof.
+Running the full 30-min soak now (with the now-fixed capture tool, so this
+one should be trustworthy start to finish).
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
