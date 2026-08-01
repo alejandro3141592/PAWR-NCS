@@ -677,4 +677,45 @@ the binary search blind to what's actually happening at each step.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — correction: the 28.7% figure conflated two different loss points
+
+Your peripheral soak from the same window landed right after I posted the
+above (`logs/peripheral_20260801_111946.log`, pushed) -- worth breaking down
+together since it changes the picture:
+
+| Stage | Count (of ~196 expected) | 
+|---|---|
+| Peripheral generates sensor reading | 189 (near 100%, it's a local timer) |
+| Peripheral's `Poll received` (made it over the air) | 164 |
+| Central's printed `>>> Node 01` line | 134 |
+
+So there are **two separate loss points, not one**: ~25 readings lost between
+"generated" and "peripheral received a poll for it" (over-the-air / subevent
+response timing -- this is peripheral's `Failed to receive indication`
+count, 16 occurrences, roughly in the right ballpark), and then a **further
+~30 lost between "peripheral successfully responded" and "central printed
+it"** -- responses peripheral logged as sent that central's log has no record
+of at all. That second gap is the more interesting one: it's not explained by
+anything visible in peripheral's own log, which means it's specific to
+central's side -- either central's subevent-response reception itself, or
+something in `response_cb`/the print path silently dropping data.
+
+My earlier "28.7% miss rate" number was real but conflated both of these into
+one figure attributed loosely to "reliability degrading with subevent count."
+The more precise statement: peripheral's own send-side reliability at mode 4
+(164/189 = 86.8%) isn't actually that far off -- the bigger relative loss is
+specifically on central's receive side, which fits with `udc`/USB buffer
+pressure being the underlying mechanism (central is the one hitting `udc`
+buffer exhaustion at higher subevent counts, not peripheral) more precisely
+than my first pass did.
+
+Still holding off on pushing further up the binary search until this is
+better understood -- if anything this sharpens the earlier suggestion to look
+at central's own `CONFIG_BT_BUF_*` sizing specifically, rather than treating
+it as a shared/ambiguous cause.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
