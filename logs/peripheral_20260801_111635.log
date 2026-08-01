@@ -1,0 +1,27 @@
+[11:16:36.957] [00:00:00.000,518] [0m<inf> udc_nrf: Preinit[0m
+[11:16:36.960] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[11:16:36.961] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[11:16:36.961] [00:00:00.003,814] [0m<inf> udc_nrf: Initialized[0m
+[11:16:36.961] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[11:16:36.962] Node ID: 1
+[11:16:36.962] [00:00:00.004,180] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[11:16:36.963]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[11:16:36.963]                                             74 6c ac 75                                      |tl.u             [0m
+[11:16:36.963] [00:00:00.006,835] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[11:16:36.964] [00:00:00.006,866] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[11:16:36.964] [00:00:00.006,896] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[11:16:36.964] [00:00:00.007,812] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[11:16:36.965] [00:00:00.007,904] [0m<inf> bt_hci_core: Identity: F9:FC:23:FC:61:11 (random)[0m
+[11:16:36.965] [00:00:00.007,934] [0m<inf> b[SENSORS] node 1 seq 1 temp=27.50C humidity=48.3% flags=0x00
+[11:16:46.949] Timed out while synchronizing
+[11:16:46.950] Waiting for periodic sync...
+[11:16:46.952] [SENSORS] node 1 seq 2 temp=27.00C humidity=48.3% flags=0x00
+[11:16:52.866] Connected, err 0x00 
+[11:16:52.868] New timing: subevent 0, response slot 0
+[11:16:52.869] Not synced yet
+[11:16:56.979] [SENSORS] node 1 seq 3 temp=27.00C humidity=48.3% flags=0x00
+[11:17:02.622] Synced to 33:44:4E:21:A0:84 (random) with 10 subevents
+[11:17:02.623] Changed sync to subevent 0
+[11:17:02.624] >>> Poll received: subevent 0, responding in slot 0
+[11:17:02.625] Periodic sync established.
+[11:17:02.625] Disconnected, reason 0x13 
