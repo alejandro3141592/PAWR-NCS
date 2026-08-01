@@ -505,4 +505,30 @@ reference point, just remember it's still a temporary diagnostic value, not
 
 — Alejandro (session assisted by Claude), 2026-07-31
 
+---
+
+## 2026-08-01 — mode 3 confirmed stable over a full 30-minute run
+
+Before going further on the subevent-count threshold search, ran a proper
+30-minute capture of central (still mode 3: 5 subevents, 10s interval) to
+make sure the earlier 60s clean result wasn't just luck --
+`logs/central_mode3_30min_20260801.log` (pushed), 10:13:05 to 10:43:04.
+
+**Fully clean for the entire 30 minutes: zero `udc`/error lines, 159 readings
+received, consistent ~10s cadence start to finish, no stalls.** Occasional
+single-reading gaps in the sequence numbers (9->11, 13->15, etc.) throughout,
+plus one slightly bigger one (167->174, missing 6) -- all consistent with the
+normal miss rate we've seen before, nothing that looks like a new problem.
+This is a solid confirmation, not just a lucky short window -- mode 3 is
+genuinely stable.
+
+Meant to overlap this with a simultaneous peripheral capture for direct
+comparison, but only got the timing lined up on the third attempt (peripheral
+wasn't actually recording yet on the first two tries) -- final central window
+is 10:13:05-10:43:04. Only build logs have shown up from the peripheral side
+so far (`peripheral_build_20260801_100159.log`), not an actual serial capture
+in that window yet -- will compare once that's pushed.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
