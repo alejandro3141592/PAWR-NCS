@@ -639,4 +639,42 @@ interval) on central.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — mode 4's 30-min soak: no hang, but 10x higher miss rate than mode 3
+
+Ran the full 30-min soak on mode 4 -- `logs/central_mode4_30min_20260801.log`
+(pushed), 11:19:24-11:49:11. **No `udc` errors, no hang, ran the entire
+window.** But it's not as clean as mode 3 looked at first glance:
+
+| | seq range | received | miss rate |
+|---|---|---|---|
+| Mode 3 (5 subevents) | 9-190 (182 expected) | 177 | **2.7%** |
+| Mode 4 (10 subevents) | 9-196 (188 expected) | 134 | **28.7%** |
+
+That's a real, roughly 10x jump in missed readings, not noise -- lots of small
+1-2 sequence gaps spread throughout the whole run (not clustered at one point
+in time), plus one slightly bigger one (37->43, missing 5). No resync/
+disconnect events like mode 3's one blip -- this looks like a steady-state
+reliability degradation, not an intermittent failure.
+
+**This changes how I'd frame the investigation.** It's not just "find the
+subevent count where it hangs" -- there's apparently a reliability *gradient*
+starting well before the hard `udc` failure at 20. Worth checking your
+peripheral-side capture from the same window for the miss-rate on your end too
+(central's `>>> Node 01` count only reflects what made it all the way back to
+central -- doesn't distinguish "peripheral never sent it" from "central's
+subevent poll missed it" from "response collided/got dropped over the air").
+That distinction matters for what the actual fix should be.
+
+**Given this, I'd hold off pushing straight to 15 or a higher count next.**
+Might be more useful to understand *why* the miss rate jumped 10x between 5
+and 10 subevents first (worth checking `CONFIG_BT_BUF_ACL_RX_COUNT_EXTRA=1`
+and the other `CONFIG_BT_BUF_*` values noted a few entries back -- small
+counts there could plausibly explain exactly this kind of graceful-degradation-
+then-hard-failure pattern as subevent count rises) rather than just continuing
+the binary search blind to what's actually happening at each step.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
