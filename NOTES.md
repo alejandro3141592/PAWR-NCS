@@ -794,4 +794,30 @@ Running that soak now before deciding whether this fix actually helped.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — found and fixed a real tooling bug: 30-min soak silently died at 5.5 minutes
+
+The buffer-fix soak I just started stopped writing at 13:06:38 -- only ~5.5
+minutes into the requested 30, with no `udc` errors and nothing that looked
+like a crash. **`tools/Watch-SerialLog.ps1`'s read loop only caught
+`System.TimeoutException` from `$sp.ReadLine()`; any other exception (port
+closed unexpectedly, USB hiccup, etc.) fell through uncaught, straight into
+the `finally` block, which closed everything cleanly and printed a completely
+normal-looking "Log saved to ..." message.** A truncated capture was
+indistinguishable from a successful full-length one just by looking at the
+tail -- exactly the kind of thing that could have quietly invalidated a
+result without anyone noticing.
+
+Fixed: broadened the catch to handle any read error by attempting to
+close+reopen the port and continue, and the final message now reports actual
+elapsed time vs. requested duration so a short capture can't look identical
+to a full one again. Pushed. This wasn't specific to the buffer-count test --
+it's been a latent bug in the tool the whole time; earlier 30-min soaks (mode
+3, mode 4) happened not to hit it, so their results still stand.
+
+Restarting the buffer-fix soak now with the fixed tool.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->

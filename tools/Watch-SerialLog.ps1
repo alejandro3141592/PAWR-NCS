@@ -85,6 +85,29 @@ try {
             $line = $sp.ReadLine()
         } catch [System.TimeoutException] {
             continue
+        } catch {
+            # Anything other than a read timeout (port unexpectedly closed,
+            # USB hiccup, etc.) used to fall through uncaught and silently
+            # end the whole capture early via the try/finally below -- no
+            # error text, just a short log with a normal-looking "Log saved"
+            # footer, which made a truncated capture look successful. Try to
+            # recover instead: close and reopen the port, then keep going
+            # until the requested duration actually elapses.
+            $ts = Get-Date -Format 'HH:mm:ss.fff'
+            $note = "[$ts] *** read error: $($_.Exception.GetType().Name): $($_.Exception.Message) -- reopening port ***"
+            Write-Output $note
+            $writer.WriteLine($note)
+            try { if ($sp.IsOpen) { $sp.Close() } } catch {}
+            Start-Sleep -Milliseconds 500
+            try {
+                $sp.Open()
+            } catch {
+                $failMsg = "[$ts] *** could not reopen $Port : $($_.Exception.Message) -- stopping capture ***"
+                Write-Output $failMsg
+                $writer.WriteLine($failMsg)
+                break
+            }
+            continue
         }
         $ts = Get-Date -Format 'HH:mm:ss.fff'
         $entry = "[$ts] $line"
@@ -94,5 +117,6 @@ try {
 } finally {
     $writer.Close()
     if ($sp.IsOpen) { $sp.Close() }
-    Write-Output "`nLog saved to $OutFile"
+    $elapsed = ((Get-Date) - $startTime).TotalSeconds
+    Write-Output "`nLog saved to $OutFile ($([math]::Round($elapsed))s elapsed of $DurationSeconds requested)"
 }
