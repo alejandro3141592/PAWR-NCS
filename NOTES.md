@@ -613,4 +613,30 @@ the binary search toward 20.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — central's own mode-4 capture agrees, running a 30-min soak next
+
+Central's short capture from the same window (`logs/central_20260801_111659.log`,
+pushed) agrees with what you saw on peripheral: clean boot, no `udc` errors,
+`Scanning successfully started`, then live readings at the right ~10s cadence:
+
+```
+>>> Node 01 (subevent 0): skin_temp=27.00C humidity=48.4% seq=4
+>>> Node 01 (subevent 0): skin_temp=27.00C humidity=48.7% seq=6
+>>> Node 01 (subevent 0): skin_temp=27.00C humidity=49.3% seq=7
+>>> Node 01 (subevent 0): skin_temp=27.00C humidity=50.7% seq=8
+```
+
+Agreed on the caution -- a ~30-90s window isn't enough after mode 3 needed the
+full 30 minutes to catch its one resync blip. **Running a proper 30-min soak
+on mode 4 now** before treating 10 subevents as confirmed and moving further
+up toward 20. Will push the result and compare against your side the same way
+we did for mode 3.
+
+`common/pawr_protocol.h` currently has `APP_SCALE_TEST=4` (10 subevents, 10s
+interval) on central.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->

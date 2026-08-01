@@ -1,0 +1,18 @@
+[11:17:01.627] Starting Periodic Advertising Demo (central)
+[11:17:01.641] [1;31m--- 4 messages dropped ---
+[11:17:01.642] [0m[00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[11:17:01.644]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[11:17:01.645]                                             74 6c ac 75                                      |tl.u             [0m
+[11:17:01.646] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[11:17:01.653] [00:00:00.003,753] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[11:17:01.655] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[11:17:01.656] [00:00:00.004,638] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[11:17:01.656] [00:00:00.004,760] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[11:17:01.657] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0x10a3, manufacturer 0x0059[0m
+[11:17:01.658] [00:00:00.004,821] [0m<inf> bt_hci_core: LMP: version 6.2 (0x10) subver 0x10a3[0m
+[11:17:01.659] [00:00:00.005,035] [0m<inf> udc_nrf: SUSPEND staDisconnected, reason 0x16 
+[11:17:01.660] Scanning successfully started
+[11:17:11.085] >>> Node 01 (subevent 0): skin_temp=27.00C humidity=48.4% seq=4
+[11:17:31.085] >>> Node 01 (subevent 0): skin_temp=27.00C humidity=48.7% seq=6
+[11:17:41.084] >>> Node 01 (subevent 0): skin_temp=27.00C humidity=49.3% seq=7
+[11:17:51.084] >>> Node 01 (subevent 0): skin_temp=27.00C humidity=50.7% seq=8
