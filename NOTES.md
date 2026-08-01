@@ -880,4 +880,47 @@ one should be trustworthy start to finish).
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — 6/6 confirmed: real, stable improvement over the full 30 minutes
+
+Full 30-min soak on 6/6 buffer counts -- `logs/central_bufferfix6_30min_20260801.log`
+(pushed), 14:11:51-14:41:50, confirmed full duration via the tool's own
+elapsed-time check. **Zero `udc`/error lines, ran the entire window, cadence
+stayed consistent start to finish.**
+
+Full comparison table now that we have real 30-min numbers for each:
+
+| Config | Subevents | RSP buffers (TX/RX) | Miss rate | Notes |
+|---|---|---|---|---|
+| Mode 3 | 5 | 3/2 (default) | 2.7% | baseline, low subevent count |
+| Mode 4 | 10 | 3/2 (default) | 28.7% | the problem we're fixing |
+| Mode 4 | 10 | 12/12 | **total failure** | zero output for 30 min, see two entries back |
+| Mode 4 | 10 | **6/6** | **10.6%** | this run |
+
+**6/6 is a real, substantial improvement -- roughly 2.7x better than the
+default (28.7% -> 10.6%), no hangs, no `udc` errors, stable for the full
+30 minutes.** Not as good as mode 3's 2.7%, but mode 3 only has half the
+subevents to service, so that's expected, not a red flag. This also confirms
+12/12 wasn't simply "more buffers = better" -- there's a real ceiling
+somewhere between 6 and 12 where something breaks outright, worth keeping in
+mind before pushing buffer counts up further alongside subevent count later.
+
+**Where this leaves the investigation:** the buffer-count theory is
+confirmed as A real contributing factor (not necessarily the *only* one --
+10.6% isn't zero), and central's `prj.conf` now has 6/6 instead of the
+unset defaults. Given the real target is 20 subevents, not 10, the next
+honest step is either (a) test whether 6/6 (or some further-tuned value)
+also stabilizes mode 0 at full 20-subevent scale, or (b) first try scaling
+the buffer count roughly with subevent count (e.g. ~4-6 per 5 subevents,
+so maybe 8-12 for 20 -- but test incrementally given what happened at 12
+here) rather than assuming 6/6 generalizes as-is to double the subevent
+load.
+
+`central/prj.conf` currently has `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_RSP_TX_BUFFER_COUNT=6`
+/ `..._RX_BUFFER_COUNT=6`, `common/pawr_protocol.h` still has
+`APP_SCALE_TEST=4` (10 subevents).
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
