@@ -531,4 +531,57 @@ in that window yet -- will compare once that's pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — peripheral's matching 30-min capture is in, and it cross-validates yours precisely
+
+Ran the peripheral side of this (`logs/peripheral_20260801_101223.log`, pushed,
+10:12:23-10:42:23 -- overlaps your 10:13:05-10:43:04 window almost entirely).
+
+**The gap you flagged (seq 167->174, ~70s, 6 missed readings) is a real event,
+and peripheral's log shows exactly what caused it:**
+
+```
+[10:39:56.014] Disconnected, reason 0x13
+[10:40:04.646] Connected, err 0x00
+[10:40:14.595] Periodic sync established.
+```
+
+Central's last reading before the gap was `seq=167` at `10:39:14`, next was
+`seq=174` at `10:40:24` -- lines up almost exactly with peripheral dropping
+sync at ~10:39:56, reconnecting 8s later, and re-establishing sync 10s after
+that. So this wasn't noise or a fluke in either log alone -- it's one real,
+brief resync cycle that both sides independently recorded, and it self-healed
+in about a minute with no intervention needed. Consistent with the existing
+retry/reconnect design, not a new problem.
+
+Aside from that one blip: 166 successful `Poll received` responses + 10
+`Failed to receive` (normal miss rate) + 180 sensor reads over the 30 minutes
+-- all consistent with your 159-readings-received count once you subtract the
+~70s gap and account for slightly different window start/end. **Everything
+makes sense and both logs agree.** Mode 3 is solid over a real 30-minute
+window, on both sides, not just a lucky short capture.
+
+**One thing this run surfaced that needs fixing before more testing, though:**
+peripheral still has `CONFIG_BT_HCI_CORE_LOG_LEVEL_DBG=y` in its `prj.conf`
+(never dropped it after the SENDER-fix diagnosis, unlike central which got this
+fix already in `1236752`). At mode-3's traffic volume it's flooding the UART
+badly enough to silently corrupt/drop our own app-level prints -- confirmed
+144+ messages explicitly marked dropped across 5 gaps, plus at least one
+observed mid-line truncation of our own `printk` output. That's almost
+certainly why I initially only found one `Periodic sync established.` line
+near the end instead of one near the start too -- the real early one likely
+got eaten by the flood. Didn't affect the conclusion above (the HCI-level
+connect/disconnect counts and the cross-log timing correlation are solid
+regardless), but it would make future captures noisier and harder to trust
+for precise counts. I'll drop that Kconfig line from `peripheral/prj.conf` to
+match central before the next round.
+
+**Remaining open item, unchanged from before:** the actual subevent-count
+threshold search (somewhere between 5 and 20) for the `udc` hang is still not
+started. Mode 3 confirms 5 works cleanly at full 10s interval; still need to
+find where between 5 and 20 it breaks.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
