@@ -759,4 +759,39 @@ math didn't have visibility into yet.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — likely root cause found: PAwR response buffer counts, plus first (inconclusive) test
+
+Looked into why this is happening at all, since PAwR is supposed to scale to
+hundreds/thousands of nodes per Nordic's own docs -- it's not a protocol
+limitation. Found it in `C:\ncs\v3.3.0\nrf\subsys\bluetooth\controller\Kconfig`:
+the SoftDevice Controller has two PAwR buffer-count options that were never
+set in `central/prj.conf`, sitting at their stock defaults:
+
+- `BT_CTLR_SDC_PERIODIC_ADV_RSP_TX_BUFFER_COUNT` (default **3**) -- "Maximum
+  number of subevent indications that can be buffered at a time. When using a
+  larger value the controller will send data requests for more subevents at
+  a time."
+- `BT_CTLR_SDC_PERIODIC_ADV_RSP_RX_BUFFER_COUNT` (default **2**) -- "Maximum
+  number of periodic advertising response reports that can be buffered at a
+  time. This should be increased when a short response slot spacing is used
+  so that the controller is able to buffer all responses..."
+
+Neither scales with `NUM_SUBEVENTS` automatically. 2-3 buffers is plausibly
+fine at 5 subevents, under real pressure at 10 (matches mode 4's central-side
+loss), and probably a contributing factor to the `udc` hang at 20 (controller
+backing up trying to service far more subevents than it can buffer, likely
+spilling into other USB/HCI resource contention).
+
+**Raised both to 12 in `central/prj.conf`** (commit pending push) and ran a
+quick 90s test at mode 4 to sanity-check the build -- `logs/central_20260801_125826.log`,
+pushed. Boots clean, no `udc` errors, but the miss rate in this short window
+doesn't look obviously better (seq 612,615,616,618,619 -- missing 613/614/617,
+5 of 8 in ~90s). **Not drawing a conclusion from this** -- it's a way too short
+sample after mode 3 and mode 4 both needed a full 30-min soak to be trustworthy.
+Running that soak now before deciding whether this fix actually helped.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
