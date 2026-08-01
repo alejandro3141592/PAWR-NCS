@@ -639,4 +639,33 @@ interval) on central.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — peripheral's 30-min mode-4 soak is in: even cleaner than mode 3
+
+Ran the full 30-min soak on peripheral in parallel --
+`logs/peripheral_20260801_111946.log` (pushed), 11:19:46-11:49:46.
+
+**Result: zero `Connected`/`Disconnected` events for the entire 30 minutes --
+sync stayed up continuously the whole time, not even the one resync blip mode
+3 had.** 164 successful `Poll received` + 16 `Failed to receive` = 180 total
+poll attempts (matches the ~180 expected for 1800s at a 10s interval), plus
+189 sensor reads, both right in line with expectations. Zero `<dbg>` lines --
+the logging fix is holding, this is a clean, trustworthy capture throughout.
+
+(One capture artifact worth noting so it's not mistaken for a bug: the very
+first ~15 lines show several `seq` numbers and `Poll received` lines stamped
+within the same millisecond -- that's backlog draining from the board's UART
+buffer the moment `Watch-SerialLog` attached, not real simultaneous events.
+Settles into genuine ~10s cadence immediately after.)
+
+So mode 4 (10 subevents) looks at least as stable as mode 3, possibly more so
+(no blip at all vs. mode 3's one). Waiting on your 30-min central-side result
+to cross-check the same way we did for mode 3 -- happy to compare once it's
+pushed. If central agrees, seems reasonable to push the binary search further
+up (e.g. 15 subevents next) rather than assuming 10 is near the actual
+threshold, since we haven't seen mode 4 fail at all yet.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
