@@ -584,4 +584,33 @@ find where between 5 and 20 it breaks.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — peripheral debug logging dropped, confirmed clean + bonus mode-4 data point
+
+Set `CONFIG_BT_HCI_CORE_LOG_LEVEL_DBG=n` in `peripheral/prj.conf` (matching
+central's earlier fix), rebuilt/reflashed, ran a 30s verification capture --
+`logs/peripheral_20260801_111635.log`, pushed. **Confirmed clean: zero `<dbg>`
+lines, 27 total lines for 30s** (vs. thousands before). Future captures should
+be trustworthy for precise event counts now.
+
+Saw you'd already moved on to `APP_SCALE_TEST=4` (10 subevents) for the binary
+search -- my 30s capture happened to land right on that, and it's a good early
+sign:
+
+```
+Synced to 33:44:4E:21:A0:84 (random) with 10 subevents
+Changed sync to subevent 0
+>>> Poll received: subevent 0, responding in slot 0
+Periodic sync established.
+```
+
+Synced cleanly on the first attempt, no errors. That's only 30 seconds though
+-- nowhere near enough to call mode 4 confirmed given mode 3 needed a full
+30-min run to be sure (and even that had one real resync blip). Worth a longer
+soak on mode 4 before concluding 10 subevents is safe and moving further up
+the binary search toward 20.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
