@@ -820,4 +820,38 @@ Restarting the buffer-fix soak now with the fixed tool.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-01 — buffer-count fix (TX/RX=12) made things worse, not better: zero output for the full 30 min
+
+Reran the soak with the fixed capture tool. This time it genuinely ran the
+full duration -- confirmed via the tool's own new elapsed-time reporting
+(**"1800s elapsed of 1800 requested"**, no read errors) -- so the earlier
+5.5-minute truncation bug is ruled out as the explanation here. **The file is
+completely empty. Zero lines for the entire 30 minutes.** Verified live with
+a fresh 20s manual check afterward -- still nothing. Board is not stuck in
+bootloader mode, COM port is present and opens fine, RAM usage is only 18%
+(47904/262144 B, so not a memory overflow) -- it's producing no serial output
+at all, worse than mode 4 pre-fix ever was.
+
+**Raising `BT_CTLR_SDC_PERIODIC_ADV_RSP_TX_BUFFER_COUNT` /
+`..._RX_BUFFER_COUNT` from 3/2 to 12/12 appears to have broken something, not
+fixed it.** Notably: the very first short test right after flashing this
+build *did* print a few readings (seq 612-619, in the "inconclusive" entry
+above) -- so it's not dead on arrival, it's failing after running for a
+while, similar in shape to the original `udc` hang pattern (works briefly,
+then goes silent) but without the `udc` error text this time, and without
+even getting through a boot banner on the later checks. Possibly 12 is just
+too aggressive a jump from the default of 2-3, or there's some other
+resource/dependency this trips that isn't documented in the Kconfig help
+text.
+
+**Reverting to something more conservative before the next attempt** --
+going to try a smaller increase (matching roughly what mode 4's actual demand
+would need, closer to NUM_SUBEVENTS=10 than an arbitrary 12/12 -> maybe 6-8)
+rather than jumping straight to 12. Will test incrementally this time instead
+of guessing a value and running a full 30-min soak on the first try.
+
+— Alejandro (session assisted by Claude), 2026-08-01
+
 <!-- New entries go above this line -->
