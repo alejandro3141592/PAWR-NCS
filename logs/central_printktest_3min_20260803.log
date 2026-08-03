@@ -1,0 +1,49 @@
+[08:48:50.242] Disconnected, reason 0x22 
+[08:48:50.246] Scanning successfully started
+[08:49:09.547] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:49:09.547] Connected (err 0x00)
+[08:49:09.547] PAST sent
+[08:49:09.549] Discovery started
+[08:49:09.558] Characteristic handle: 14
+[08:49:09.559] Write started
+[08:49:09.559] PAwR config written: subevent 0
+[08:49:16.553] Disconnected, reason 0x08 
+[08:49:19.865] Scanning successfully started
+[08:49:29.516] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:49:29.518] Connected (err 0x00)
+[08:49:29.519] PAST sent
+[08:49:29.519] Discovery started
+[08:49:29.519] Characteristic handle: 14
+[08:49:29.519] Write started
+[08:49:29.519] PAwR config written: subevent 0
+[08:49:36.353] Disconnected, reason 0x08 
+[08:49:40.494] Scanning successfully started
+[08:49:49.517] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:49:49.518] Connected (err 0x00)
+[08:49:49.518] PAST sent
+[08:49:49.518] Discovery started
+[08:49:50.897] Characteristic handle: 14
+[08:49:50.899] Write started
+[08:49:50.899] PAwR config written: subevent 0
+[08:49:55.502] Disconnected, reason 0x08 
+[08:50:01.108] Scanning successfully started
+[08:50:09.516] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:50:09.516] Connected (err 0x00)
+[08:50:09.517] PAST sent
+[08:50:09.517] Discovery started
+[08:50:09.517] Characteristic handle: 14
+[08:50:09.517] Write started
+[08:50:09.518] PAwR config written: subevent 0
+[08:50:16.851] Disconnected, reason 0x08 
+[08:50:20.207] Scanning successfully started
+[08:50:29.512] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:50:29.513] Connected (err 0x00)
+[08:50:29.513] PAST sent
+[08:50:29.513] Discovery started
+[08:50:32.456] Characteristic handle: 14
+[08:50:32.457] Write started
+[08:50:32.457] PAwR config written: subevent 0
+[08:50:39.509] >>> Node 01 (subevent 0): skin_temp=26.00C humidity=40.8% seq=12
+[08:50:42.800] Disconnected, reason 0x16 
+[08:50:42.801] Scanning successfully started
+[08:51:09.509] >>> Node 01 (subevent 0): skin_temp=26.00C humidity=38.4% seq=15

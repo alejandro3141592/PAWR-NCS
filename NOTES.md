@@ -923,4 +923,52 @@ load.
 
 — Alejandro (session assisted by Claude), 2026-08-01
 
+---
+
+## 2026-08-03 — new lead: reducing printk volume alone avoids the udc hang at full 20-subevent scale
+
+User's hypothesis: the `udc: Failed to allocate net_buf` hang might be
+`printk`/USB-console load itself competing with BLE for shared resources,
+not (or not only) the PAwR response buffer counts -- worth checking since
+this board's console *is* USB CDC-ACM (confirmed via `zephyr,console =
+&board_cdc_acm_uart` in the generated devicetree, same USB class as the
+failing endpoint 0x80 -- no separate physical UART or RTT probe set up this
+session).
+
+**Test setup, isolated from the buffer-count fix on purpose:**
+- `central/src/main.c`'s `response_cb` (fires once per received response,
+  per subevent, per interval -- the hottest print path, up to 20x every 10s
+  at full scale) collapsed from up to 4 separate `printk` calls down to 1.
+- `central/prj.conf` buffer counts **reverted to SDK defaults (3/2)** --
+  undoing the 6/6 fix from 2026-08-01, specifically so this result isn't
+  confounded with that.
+- `APP_SCALE_TEST` set to `0` (full production: 20 subevents, 10s interval)
+  -- the actual target scale, where the hang has always been worst.
+
+**Result: zero `udc`/error lines over a full 3-minute capture**
+(`logs/central_printktest_3min_20260803.log`, pushed) -- the first time all
+session a 20-subevent config has survived this long without the hard USB
+hang. Previously, unmodified mode-0 hung within seconds of
+"Scanning successfully started" every single time.
+
+**Not a clean win yet, though -- flagging honestly:** the onboarding cycle
+shows repeated `0x08` (CONN_TIMEOUT) disconnects before finally succeeding
+(4 failed attempts, then one that got all the way through GATT write and
+started receiving data). This is consistent with the connection-timing
+race documented back in Summary.md/PROJECT_STATUS.md fix #6 -- that fix's
+margin was tuned assuming the buffer-count fix was also in place; reverting
+buffers to defaults for this test likely reopened that timing sensitivity.
+So: **the udc hang specifically looks avoided by the printk reduction, but
+onboarding reliability at 20 subevents is still rough without the buffer
+fix too.**
+
+**Next logical test:** combine both fixes -- reduced printk (now permanent
+in `response_cb`) *and* restore the 6/6 buffer counts, both at full
+20-subevent scale, and see if that's the combination that's actually stable.
+Haven't done that yet; wanted to report the isolated printk-only result
+first since it's informative on its own (confirms the user's hypothesis
+has real merit, independent of buffer sizing).
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
