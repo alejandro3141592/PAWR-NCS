@@ -22,8 +22,10 @@
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/hci.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/kernel.h>
+#include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 
 #include "pawr_protocol.h"
@@ -84,8 +86,49 @@ static void status_led_init(void)
 static const struct device *const dev_temp = DEVICE_DT_GET_OR_NULL(DT_NODELABEL(max30205));
 static const struct device *const dev_sht4x = DEVICE_DT_GET_ANY(sensirion_sht4x);
 
+/* The in-tree "lm75" driver is register-compatible with the MAX30205 (same
+ * temperature register layout/address), which is why it works at all, but
+ * its sensor_channel_get() conversion (lm75_temp_to_sensor_value() in
+ * lm75.c) is written for genuine LM75 hardware's 9-bit/0.5C resolution --
+ * it right-shifts the raw 16-bit register by 7 bits before converting,
+ * discarding almost all precision. The MAX30205 itself has real 16-bit/
+ * (1/256)C = ~0.0039C resolution per its datasheet, and our wire format
+ * (int16_t temp_cdeg, centi-degrees) already has ample room for that -- so
+ * this reads the same physical register directly, independent of the lm75
+ * driver instance, to recover the sensor's actual resolution instead of
+ * changing the wire format at all. See NOTES.md 2026-08-03.
+ */
+#define MAX30205_REG_TEMP 0x00
+static const struct i2c_dt_spec max30205_i2c = I2C_DT_SPEC_GET(DT_NODELABEL(max30205));
+
 static bool temp_ok;
 static bool sht4x_ok;
+
+/* Reads the MAX30205's raw 16-bit temperature register and converts
+ * straight to centi-degrees C using its real 1/256C LSB, bypassing the
+ * lm75 driver's lossy 0.5C-resolution conversion. Returns 0 on success.
+ */
+static int max30205_read_temp_cdeg(int16_t *out_cdeg)
+{
+	uint8_t buf[2];
+	int err;
+
+	err = i2c_burst_read_dt(&max30205_i2c, MAX30205_REG_TEMP, buf, sizeof(buf));
+	if (err) {
+		return err;
+	}
+
+	int16_t raw = (int16_t)sys_get_be16(buf);
+
+	/* raw * (1/256) C, converted to centi-degrees: raw * 100 / 256. Use
+	 * a wider intermediate type to avoid overflow (raw can be up to
+	 * ~16000 in magnitude for realistic skin-temperature ranges, and
+	 * *100 could otherwise approach int16_t's range).
+	 */
+	*out_cdeg = (int16_t)(((int32_t)raw * 100) / 256);
+
+	return 0;
+}
 
 static uint16_t s_seq;
 static struct sensor_payload latest_payload;
@@ -97,6 +140,11 @@ static void sensors_init(void)
 		return;
 	}
 
+	/* Still checked via the lm75 driver's own device handle even though
+	 * actual reads bypass it (see max30205_read_temp_cdeg) -- this
+	 * confirms the shared I2C bus/device came up correctly at boot,
+	 * which the raw register read also depends on.
+	 */
 	if (dev_temp && device_is_ready(dev_temp)) {
 		temp_ok = true;
 	} else {
@@ -125,10 +173,7 @@ static void sensors_read(struct sensor_payload *out)
 	} else {
 		struct sensor_value val;
 
-		if (temp_ok && sensor_sample_fetch(dev_temp) == 0 &&
-		    sensor_channel_get(dev_temp, SENSOR_CHAN_AMBIENT_TEMP, &val) == 0) {
-			temp_cdeg = (int16_t)sensor_value_to_centi(&val);
-		} else {
+		if (!temp_ok || max30205_read_temp_cdeg(&temp_cdeg) != 0) {
 			flags |= SENSOR_PAYLOAD_FLAG_TEMP_INVALID;
 		}
 
