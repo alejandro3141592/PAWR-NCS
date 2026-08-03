@@ -41,9 +41,18 @@
 .PARAMETER SkipFlash
     Build only; don't wait for/flash the bootloader drive or monitor.
 
+.PARAMETER NodeId
+    Peripheral only: overrides CONFIG_APP_NODE_ID (1-17) for this build via
+    -DCONFIG_APP_NODE_ID=N, so a physical board's reported node_id doesn't
+    have to match whatever is checked into peripheral/Kconfig's default.
+    Also switches the build directory to peripheral/build_node<N> so builds
+    for different physical boards don't clobber each other's incremental
+    build cache. Ignored for -App central.
+
 .EXAMPLE
     ./Sync-And-Build.ps1 -App central
     ./Sync-And-Build.ps1 -App peripheral -MonitorSeconds 120
+    ./Sync-And-Build.ps1 -App peripheral -NodeId 2 -SkipGit
 #>
 param(
     [Parameter(Mandatory = $true)]
@@ -53,6 +62,8 @@ param(
     [string]$Board = 'xiao_ble/nrf52840',
     [string]$CommitMessage,
     [int]$MonitorSeconds = 60,
+    [ValidateRange(1, 17)]
+    [int]$NodeId = 0,
     [switch]$SkipGit,
     [switch]$SkipFlash
 )
@@ -67,7 +78,11 @@ param(
 $ErrorActionPreference = 'Continue'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $appDir = Join-Path $repoRoot $App
-$buildDir = Join-Path $appDir 'build'
+if ($App -eq 'peripheral' -and $NodeId -gt 0) {
+    $buildDir = Join-Path $appDir "build_node$NodeId"
+} else {
+    $buildDir = Join-Path $appDir 'build'
+}
 
 function Write-Step {
     param([string]$Text)
@@ -143,7 +158,8 @@ $env:ZEPHYR_BASE = 'C:\ncs\v3.3.0\zephyr'
 $python = "$tc\opt\bin\python.exe"
 
 Write-Step "Running pristine west build for $App (board: $Board)..."
-$buildLog = Join-Path $repoRoot "logs\${App}_build_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+$buildLogPrefix = if ($App -eq 'peripheral' -and $NodeId -gt 0) { "${App}_node${NodeId}" } else { $App }
+$buildLog = Join-Path $repoRoot "logs\${buildLogPrefix}_build_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $buildLog) | Out-Null
 
 $buildArgs = @(
@@ -156,6 +172,9 @@ $buildArgs = @(
     '-DDEBUG_THREAD_INFO=Off',
     "-D${App}_DEBUG_THREAD_INFO=Off"
 )
+if ($App -eq 'peripheral' -and $NodeId -gt 0) {
+    $buildArgs += "-DCONFIG_APP_NODE_ID=$NodeId"
+}
 
 & $python @buildArgs 2>&1 | Tee-Object -FilePath $buildLog | ForEach-Object { Write-Output $_ }
 $buildExit = $LASTEXITCODE
@@ -253,7 +272,8 @@ if (-not $comPort) {
 # than the port-detection loop above already used.
 Start-Sleep -Seconds 5
 
-$logFile = Join-Path $repoRoot "logs\${App}_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+$logNamePrefix = if ($App -eq 'peripheral' -and $NodeId -gt 0) { "${App}_node${NodeId}" } else { $App }
+$logFile = Join-Path $repoRoot "logs\${logNamePrefix}_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 Write-Step "Capturing $MonitorSeconds s of $comPort output to $logFile ..."
 # Watch-SerialLog.ps1 sets its own ErrorActionPreference='Stop' and can
 # Write-Error (e.g. port already open elsewhere) -- that becomes a

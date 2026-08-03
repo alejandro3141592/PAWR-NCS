@@ -2,6 +2,7 @@
 build/
 build2/
 */build/
+*/build_node*/
 
 # CMake / Ninja stray files if ever configured outside build/
 CMakeCache.txt
