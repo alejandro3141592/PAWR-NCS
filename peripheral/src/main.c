@@ -277,6 +277,7 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 	}
 }
 
+#if defined(CONFIG_SHELL)
 /* "dump" shell command context: shell_print()'d directly rather than
  * buffered, since a full log (up to ~1440 rows for a 4h run) doesn't need
  * to live in RAM all at once -- fcb_walk() streams one entry at a time.
@@ -350,6 +351,7 @@ static int cmd_storage_dump(const struct shell *sh, size_t argc, char **argv)
 }
 
 SHELL_CMD_REGISTER(dump, NULL, "Dump the on-board sensor reading log as CSV", cmd_storage_dump);
+#endif /* CONFIG_SHELL */
 
 static void sensor_read_work_handler(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(sensor_read_work, sensor_read_work_handler);
