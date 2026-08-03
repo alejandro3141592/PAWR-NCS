@@ -15,6 +15,11 @@ compile_commands.json
 Thumbs.db
 .DS_Store
 
+# Local per-board identity, not shared project content -- each physical
+# peripheral board has its own node_id.txt, not something to sync/overwrite
+# via git when multiple people/boards use this same checkout.
+peripheral/node_id.txt
+
 # Claude Code local session state, not shared project content
 .claude/
 

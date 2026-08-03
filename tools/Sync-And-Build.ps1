@@ -49,10 +49,17 @@
     for different physical boards don't clobber each other's incremental
     build cache. Ignored for -App central.
 
+    If omitted, falls back to the contents of peripheral/node_id.txt (a
+    single integer, gitignored -- each physical board's own local file, not
+    synced between machines). If that file is also missing or empty, no
+    override is applied and Kconfig's own default (1) is used.
+
 .EXAMPLE
     ./Sync-And-Build.ps1 -App central
     ./Sync-And-Build.ps1 -App peripheral -MonitorSeconds 120
     ./Sync-And-Build.ps1 -App peripheral -NodeId 2 -SkipGit
+    # or just edit peripheral/node_id.txt once, then:
+    ./Sync-And-Build.ps1 -App peripheral
 #>
 param(
     [Parameter(Mandatory = $true)]
@@ -67,6 +74,20 @@ param(
     [switch]$SkipGit,
     [switch]$SkipFlash
 )
+
+if ($App -eq 'peripheral' -and $NodeId -eq 0) {
+    $nodeIdFile = Join-Path (Split-Path -Parent $PSScriptRoot) 'peripheral\node_id.txt'
+    if (Test-Path $nodeIdFile) {
+        $fileContent = (Get-Content $nodeIdFile -Raw -ErrorAction SilentlyContinue).Trim()
+        $parsedNodeId = 0
+        if ([int]::TryParse($fileContent, [ref]$parsedNodeId) -and $parsedNodeId -ge 1 -and $parsedNodeId -le 17) {
+            $NodeId = $parsedNodeId
+            Write-Output "Using CONFIG_APP_NODE_ID=$NodeId from peripheral\node_id.txt"
+        } elseif ($fileContent) {
+            Write-Output "WARNING: peripheral\node_id.txt contains '$fileContent', not a valid node ID (1-17) -- ignoring, using Kconfig default."
+        }
+    }
+}
 
 
 # Deliberately NOT 'Stop': native tools (git, west/python) routinely write
