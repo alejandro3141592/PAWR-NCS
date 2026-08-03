@@ -1115,4 +1115,44 @@ One clean cycle could still be luck rather than a real fix -- running a
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — correction: the 30-min soak got interrupted, and the partial data shows the fix isn't as clean as the first test suggested
+
+The soak from the previous entry only ran ~11.5 minutes (10:34:30-10:46:07)
+before the session it was running in closed unexpectedly -- not the full 30.
+**Important: the partial data on hand is more representative than the single
+clean first attempt turned out to be, and it's not good news.**
+
+`logs/central_20subevent_fix_30min_20260803.log` (pushed, partial/incomplete
+-- only ~11.5 min, kept for the data it does have):
+- **9x `0x08` CONN_TIMEOUT** across 14 connection attempts in that window --
+  so the parallel-connection-establishment + interval-alignment fix did NOT
+  eliminate the 0x08s at steady state, despite the first attempt connecting
+  clean on try 1. That first result was not representative.
+- **2x genuine `udc: Failed to allocate net_buf` errors** -- the original
+  hang symptom recurred twice in 11.5 minutes, even with reduced printk and
+  the 6/6 buffer counts both still active. Board didn't fully lock up either
+  time (confirmed still alive and receiving data afterward via a live check),
+  but the underlying resource-exhaustion condition this session has been
+  chasing all day is clearly still reachable at 20 subevents.
+
+So: **today's full set of fixes (reduced printk, 6/6 buffers, parallel
+connection establishment, interval alignment) together reduce the frequency
+of both failure modes at 20 subevents, but don't eliminate either one.**
+This is consistent with the pattern all session -- every individual fix has
+helped, none has been a complete solution at full scale, and problems that
+look clean over a 90s window keep turning out to need the full 30-min
+treatment to see their real behavior.
+
+(Also: the session interruption left an orphaned PowerShell process holding
+COM140 open, requiring a manual `Stop-Process` before the port was usable
+again -- not a code bug, just noting it in case it happens again.)
+
+**Restarting a full, uninterrupted 30-min soak now** to get a real number
+for the 0x08 and udc rates at 20 subevents with today's fixes, rather than
+relying on this partial window.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
