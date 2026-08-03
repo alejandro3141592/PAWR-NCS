@@ -1,0 +1,43 @@
+[08:55:36.569] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[08:55:36.572] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[08:55:36.572] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[08:55:36.572] [00:00:00.000,823] [0m<inf> udc_nrf: Initialized[0m
+[08:55:36.572] Starting Periodic Advertising Demo (central)
+[08:55:36.574] [00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[08:55:36.574]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[08:55:36.574]                                             74 6c ac 75                                      |tl.u             [0m
+[08:55:36.575] [00:00:00.003,692] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[08:55:36.575] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[08:55:36.577] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[08:55:36.577] [00:00:00.004,638] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[08:55:36.577] [00:00:00.004,730] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[08:55:36.577] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0Disconnected, reason 0x08 
+[08:55:39.165] Scanning successfully started
+[08:55:39.166] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:55:39.166] Connected (err 0x00)
+[08:55:39.167] PAST sent
+[08:55:39.167] Discovery started
+[08:55:39.167] Characteristic handle: 14
+[08:55:39.167] Write started
+[08:55:39.168] PAwR config written: subevent 0
+[08:55:49.618] Disconnected, reason 0x08 
+[08:55:49.618] Scanning successfully started
+[08:55:59.507] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:55:59.508] Connected (err 0x00)
+[08:55:59.508] PAST sent
+[08:55:59.509] Discovery started
+[08:55:59.509] Characteristic handle: 14
+[08:55:59.509] Write started
+[08:55:59.509] PAwR config written: subevent 0
+[08:56:05.117] Disconnected, reason 0x08 
+[08:56:09.908] Scanning successfully started
+[08:56:19.503] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[08:56:19.503] Connected (err 0x00)
+[08:56:19.503] PAST sent
+[08:56:19.505] Discovery started
+[08:56:19.505] Characteristic handle: 14
+[08:56:19.505] Write started
+[08:56:19.505] PAwR config written: subevent 0
+[08:56:29.966] Disconnected, reason 0x16 
+[08:56:29.966] Scanning successfully started
+[08:56:48.525] >>> Node 01 (subevent 0): skin_temp=26.50C humidity=38.6% seq=18
