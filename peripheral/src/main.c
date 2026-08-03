@@ -236,6 +236,33 @@ static void storage_fcb_init(void)
 	};
 
 	err = fcb_init(FIXED_PARTITION_ID(storage_partition), &storage_fcb);
+	if (err == -ENOMSG) {
+		/* -ENOMSG means a sector's on-flash header magic matched
+		 * neither "erased" nor our own magic -- i.e. this partition
+		 * holds leftover data from something else, not a truly blank
+		 * area (confirmed on real hardware 2026-08-03: this is the
+		 * first time this partition has ever been written by this
+		 * project). Standard FCB recovery: erase the whole partition
+		 * once and retry fcb_init(), same as formatting a blank area.
+		 */
+		const struct flash_area *fap;
+
+		printk("[STORAGE] Flash log area has foreign data, erasing and retrying\n");
+
+		err = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fap);
+		if (!err) {
+			err = flash_area_erase(fap, 0, fap->fa_size);
+			flash_area_close(fap);
+		}
+
+		if (err) {
+			printk("[STORAGE] Failed to erase flash log area (err %d)\n", err);
+			return;
+		}
+
+		err = fcb_init(FIXED_PARTITION_ID(storage_partition), &storage_fcb);
+	}
+
 	if (err) {
 		printk("[STORAGE] Failed to init flash log (err %d)\n", err);
 		return;
