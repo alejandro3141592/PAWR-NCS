@@ -31,6 +31,25 @@
 
 #include "pawr_protocol.h"
 
+/* Diagnostic experiment (2026-08-03, see NOTES.md): the onboarding GATT
+ * connection sees repeated 0x08 (CONN_TIMEOUT) disconnects at 20 subevents,
+ * even with the udc-hang fixes (reduced printk + larger PAwR response
+ * buffers) in place -- suspected radio contention between the busy
+ * 20-subevent periodic advertising train and the new connection attempt.
+ * This flag stops periodic advertising for the connect step specifically,
+ * to see if removing that contention entirely clears the 0x08s. It resumes
+ * right after PAST is sent (not at full onboarding completion), because the
+ * post-PAST hold below is waiting for the peripheral to actually receive a
+ * periodic advertising event -- there's nothing to receive while stopped.
+ *
+ * This is a TEMPORARY diagnostic to confirm/deny the contention theory, not
+ * a proposed fix: it desyncs every already-synced peripheral, not just the
+ * one onboarding, since stopping periodic advertising stops the train for
+ * everyone. That cost is invisible with 1 test peripheral but would be
+ * real at the 17-node target. Remove once the experiment's result is in.
+ */
+#define APP_STOP_PAWR_DURING_ONBOARDING 1
+
 #define PACKET_SIZE 5
 #define NAME_LEN    30
 
@@ -148,6 +167,9 @@ static void request_cb(struct bt_le_ext_adv *adv, const struct bt_le_per_adv_dat
 }
 
 static struct bt_conn *default_conn;
+#if APP_STOP_PAWR_DURING_ONBOARDING
+static struct bt_le_ext_adv *pawr_adv;
+#endif
 
 static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response_info *info,
 		     struct net_buf_simple *buf)
@@ -311,6 +333,13 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	 * in the original smoke test -- the default's tight timeout was
 	 * getting hit (0x08 CONN_TIMEOUT) under that contention.
 	 */
+#if APP_STOP_PAWR_DURING_ONBOARDING
+	err = bt_le_per_adv_stop(pawr_adv);
+	if (err) {
+		printk("Failed to stop periodic advertising before connect (err %d)\n", err);
+	}
+#endif
+
 	err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, onboard_conn_param,
 				&default_conn);
 	if (err) {
@@ -372,7 +401,9 @@ struct pawr_timing {
 int main(void)
 {
 	int err;
+#if !APP_STOP_PAWR_DURING_ONBOARDING
 	struct bt_le_ext_adv *pawr_adv;
+#endif
 	struct bt_gatt_discover_params discover_params;
 	struct bt_gatt_write_params write_params;
 	struct pawr_timing sync_config;
@@ -456,6 +487,17 @@ int main(void)
 
 		printk("PAST sent\n");
 
+#if APP_STOP_PAWR_DURING_ONBOARDING
+		/* Resume now, not at full onboarding completion -- the
+		 * post-PAST hold below needs a live periodic train for the
+		 * peripheral to actually sync to.
+		 */
+		err = bt_le_per_adv_start(pawr_adv);
+		if (err) {
+			printk("Failed to resume periodic advertising after PAST (err %d)\n", err);
+		}
+#endif
+
 #if APP_MINIMAL_REPRO
 		/* Minimal-repro mode: skip the dynamic GATT slot-assignment
 		 * dance entirely and rely on the peripheral's built-in
@@ -538,6 +580,18 @@ disconnect:
 		}
 
 disconnected:
+#if APP_STOP_PAWR_DURING_ONBOARDING
+		/* Catch-all: every path through the loop reaches here. If PAST
+		 * was sent successfully, periodic advertising is already
+		 * running again (resumed right after "PAST sent" above) and
+		 * this is a harmless already-started no-op/error. If we got
+		 * here via an early failure (disconnected before remote info,
+		 * or PAST send itself failed) it was never resumed -- this is
+		 * the only place that covers both without duplicating the
+		 * resume call at every early-exit site.
+		 */
+		(void)bt_le_per_adv_start(pawr_adv);
+#endif
 		k_sem_take(&sem_disconnected, K_FOREVER);
 
 		bt_conn_unref(default_conn);
