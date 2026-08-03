@@ -1078,4 +1078,41 @@ PAST itself.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — user's two follow-up suggestions: first attempt onboards cleanly on the very first try
+
+User's next two ideas, both real Nordic-documented mechanisms for exactly
+this kind of concurrency:
+
+1. **`sdc_hci_cmd_vs_allow_parallel_connection_establishments`** -- an SDC
+   feature literally described as enabling "establishing connections through
+   the initiator and a periodic advertiser with responses simultaneously,"
+   disabled by default, reset on every `HCI Reset`. Added a call to
+   `hci_vs_sdc_allow_parallel_connection_establishments()` (via
+   `<bluetooth/hci_vs_sdc.h>`) right after `bt_enable()` in `main()`, enabling
+   it once at boot before any connection/advertising activity starts.
+2. **Connection interval aligned to the subevent interval.** Changed
+   `onboard_conn_param` from `0x0C` (15ms) to `0x20` (40ms) -- an exact match
+   to `PAWR_SUBEVENT_INTERVAL` -- per Nordic's own scheduling-doc guidance
+   (colliding roles should share a common factor in their intervals so they
+   land on predictable boundaries instead of drifting past each other).
+
+Retired the stop-PAwR-during-onboarding experiment (`APP_STOP_PAWR_DURING_ONBOARDING`
+set back to `0`) in favor of these two, since they don't have that
+experiment's fatal flaw of needing periodic advertising to be running for
+PAST to succeed.
+
+**Result: connected on the very first attempt** -- `logs/central_20260803_103134.log`
+(pushed), full clean cycle (`Connected (err 0x00)` -> `PAST sent` ->
+`Discovery started` -> `PAwR config written` -> clean `0x16` disconnect, not
+`0x08`), then live sensor data. **Zero retries needed**, unlike every
+previous 20-subevent test this session, all of which needed 3-4 connection
+attempts before one succeeded. Zero `udc` errors too.
+
+One clean cycle could still be luck rather than a real fix -- running a
+30-min soak now to confirm this holds, same as every other fix tested today.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
