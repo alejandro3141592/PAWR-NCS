@@ -29,26 +29,23 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
 
+#include <bluetooth/hci_vs_sdc.h>
+
 #include "pawr_protocol.h"
 
-/* Diagnostic experiment (2026-08-03, see NOTES.md): the onboarding GATT
- * connection sees repeated 0x08 (CONN_TIMEOUT) disconnects at 20 subevents,
- * even with the udc-hang fixes (reduced printk + larger PAwR response
- * buffers) in place -- suspected radio contention between the busy
- * 20-subevent periodic advertising train and the new connection attempt.
- * This flag stops periodic advertising for the connect step specifically,
- * to see if removing that contention entirely clears the 0x08s. It resumes
- * right after PAST is sent (not at full onboarding completion), because the
- * post-PAST hold below is waiting for the peripheral to actually receive a
- * periodic advertising event -- there's nothing to receive while stopped.
- *
- * This is a TEMPORARY diagnostic to confirm/deny the contention theory, not
- * a proposed fix: it desyncs every already-synced peripheral, not just the
- * one onboarding, since stopping periodic advertising stops the train for
- * everyone. That cost is invisible with 1 test peripheral but would be
- * real at the 17-node target. Remove once the experiment's result is in.
+/* Retired experiment (2026-08-03, see NOTES.md): stopping periodic
+ * advertising during the onboarding connect step did eliminate the 0x08
+ * CONN_TIMEOUTs (confirmed the radio-contention theory), but broke PAST
+ * itself -- bt_le_per_adv_set_info_transfer() needs the periodic advertising
+ * set actually running to have anything to transfer sync info about, and it
+ * was stopped at exactly the moment PAST gets sent. Replaced by two
+ * non-disruptive mitigations below: sdc_hci_cmd_vs_allow_parallel_connection_
+ * establishments (a real SDC feature specifically for "initiator + PAwR
+ * advertiser at the same time") and a connection interval that's a clean
+ * multiple of PAWR_SUBEVENT_INTERVAL so the two schedules land on
+ * predictable boundaries instead of colliding unpredictably.
  */
-#define APP_STOP_PAWR_DURING_ONBOARDING 1
+#define APP_STOP_PAWR_DURING_ONBOARDING 0
 
 #define PACKET_SIZE 5
 #define NAME_LEN    30
@@ -272,17 +269,26 @@ static bool data_cb(struct bt_data *data, void *user_data)
 	}
 }
 
-/* Short interval (15ms) / long supervision timeout (10s), the opposite
- * direction from an earlier attempt at 100-150ms. Per the SoftDevice
- * Controller's scheduling docs, periodic advertising is scheduled like a
- * central-role timing-activity that can collide with this GATT connection,
- * and a *slow* connection interval gives fewer chances per second to
- * recover from a dropped connection event -- a single collision with the
- * ~800ms subevent-train burst (20 subevents x 40ms) could eat 5-8+
- * consecutive connection events at a 100-150ms interval, most of the way
- * to a supervision timeout on its own. A short interval gives many more
- * retry opportunities in the same window, while the long timeout still
- * tolerates the occasional dropped event without tearing down the link.
+/* Short interval / long supervision timeout (10s), the opposite direction
+ * from an earlier attempt at 100-150ms. Per the SoftDevice Controller's
+ * scheduling docs, periodic advertising is scheduled like a central-role
+ * timing-activity that can collide with this GATT connection, and a *slow*
+ * connection interval gives fewer chances per second to recover from a
+ * dropped connection event -- a single collision with the ~800ms
+ * subevent-train burst (20 subevents x 40ms) could eat 5-8+ consecutive
+ * connection events at a 100-150ms interval, most of the way to a
+ * supervision timeout on its own. A short interval gives many more retry
+ * opportunities in the same window, while the long timeout still tolerates
+ * the occasional dropped event without tearing down the link.
+ *
+ * 2026-08-03: changed from 0x0C (15ms) to 0x20 (40ms) -- a clean multiple
+ * of PAWR_SUBEVENT_INTERVAL (also 40ms) -- per Nordic's own scheduling
+ * guidance to give colliding roles a common factor in their intervals so
+ * they land on predictable, repeating boundaries instead of drifting past
+ * each other unpredictably. Combined with
+ * hci_vs_sdc_allow_parallel_connection_establishments (see main(), enabled
+ * at boot) as the other half of addressing the persistent 0x08
+ * CONN_TIMEOUTs seen at 20-subevent scale -- see NOTES.md 2026-08-03.
  */
 /* Supervision timeout must have real margin over the ~10s post-PAST hold
  * below (per_adv_params.interval_max * 5 / 4), not just equal it -- at
@@ -293,7 +299,7 @@ static bool data_cb(struct bt_data *data, void *user_data)
  * cycles, both taking ~9.4-11.4s). 18s gives ~8s of margin over the 10s hold.
  */
 static struct bt_le_conn_param onboard_conn_param_storage =
-	BT_LE_CONN_PARAM_INIT(0x0C, 0x0C, 0, BT_GAP_MS_TO_CONN_TIMEOUT(18000));
+	BT_LE_CONN_PARAM_INIT(0x20, 0x20, 0, BT_GAP_MS_TO_CONN_TIMEOUT(18000));
 static const struct bt_le_conn_param *onboard_conn_param = &onboard_conn_param_storage;
 
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
@@ -428,6 +434,25 @@ int main(void)
 	if (err) {
 		printk("Bluetooth init failed (err %d)\n", err);
 		return 0;
+	}
+
+	/* Without this, the controller may not cleanly support running the
+	 * initiator (onboarding connections) and a PAwR advertiser at the
+	 * same time -- this is the SDC's own purpose-built feature for that
+	 * exact combination, disabled by default. See NOTES.md 2026-08-03.
+	 * Disabled again after any HCI Reset, so must be (re-)enabled here
+	 * every boot, before any connection attempts.
+	 */
+	{
+		sdc_hci_cmd_vs_allow_parallel_connection_establishments_t parallel_conn_params = {
+			.enable = 1,
+		};
+
+		err = hci_vs_sdc_allow_parallel_connection_establishments(&parallel_conn_params);
+		if (err) {
+			printk("Failed to enable parallel connection establishment (err %d)\n",
+			       err);
+		}
 	}
 
 	/* Create a non-connectable advertising set */
