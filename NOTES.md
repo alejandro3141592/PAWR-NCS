@@ -971,4 +971,50 @@ has real merit, independent of buffer sizing).
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — combined fix (reduced printk + 6/6 buffers) confirms udc hang is gone, but a separate connection-timing issue remains
+
+Restored `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_RSP_TX_BUFFER_COUNT=6` /
+`..._RX_BUFFER_COUNT=6` (the confirmed 10-subevent fix from 2026-08-01) on
+top of the already-permanent reduced-`printk` change, both at full
+20-subevent production scale (`APP_SCALE_TEST=0`). 90s test --
+`logs/central_20260803_085536.log`, pushed.
+
+**Good news: zero `udc`/`Failed to allocate net_buf` lines, no hard hang,
+reached steady state and received live sensor data (seq=18) by the end.**
+Double-checked -- the only `udc` matches in the log are the normal `<inf>`
+boot lines (`Preinit`, `Initialized`), not the error. Confirms both fixes
+together keep the USB hang gone at the real target scale, not just the
+printk-only test from earlier today.
+
+**But there's a separate, still-unresolved issue: 3 consecutive `0x08`
+(CONN_TIMEOUT) disconnects during onboarding before the 4th attempt finally
+succeeded** -- same pattern seen in the isolated printk-only test earlier
+today, so **restoring the buffer counts didn't fix this on its own either.**
+Given it shows up consistently regardless of buffer count (3/2 or 6/6), this
+looks like a genuinely separate problem from the udc hang -- most likely
+radio contention specifically during the onboarding GATT connection, since
+central is juggling a much busier 20-subevent periodic advertising train at
+the same time it's trying to hold a new GATT connection open. This is the
+same category of issue the supervision-timeout margin fix (fix #6 in
+PROJECT_STATUS.md) was meant to address, but that fix was tuned/verified at
+lower subevent counts and may not have enough margin at 20.
+
+**So, current state:** udc hang = fixed (2 independent contributing causes
+addressed: printk volume + buffer sizing). Onboarding reliability at 20
+subevents = still rough, ~75% of connection attempts timing out before one
+succeeds. Not blocking (it does eventually succeed and receive data), but
+worth fixing before calling 20 subevents production-ready -- 3 retries taking
+~50 seconds before first successful sync isn't acceptable for 17 real nodes
+onboarding in sequence.
+
+**Next step:** look at the onboarding connection parameters
+(`onboard_conn_param` in `central/src/main.c`) specifically at 20-subevent
+scale -- the current values may need the same kind of retuning the buffer
+counts needed (i.e., don't assume the existing margin scales to 4x the
+subevent count just because it worked at 5).
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
