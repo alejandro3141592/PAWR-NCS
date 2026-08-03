@@ -1,0 +1,27 @@
+[11:53:30.852] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[11:53:30.862] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[11:53:30.863] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[11:53:30.863] [00:00:00.003,784] [0m<inf> udc_nrf: Initialized[0m
+[11:53:30.864] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[11:53:30.864] Node ID: 2
+[11:53:30.864] [00:00:00.004,150] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[11:53:30.865]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[11:53:30.866]                                             74 6c ac 75                                      |tl.u             [0m
+[11:53:30.867] [00:00:00.006,805] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[11:53:30.867] [00:00:00.006,835] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[11:53:30.868] [00:00:00.006,866] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[11:53:30.868] [00:00:00.007,751] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[11:53:30.868] [00:00:00.007,873] [0m<inf> bt_hci_core: Identity: C0:62:5B:01:98:EA (random)[0m
+[11:53:30.869] [00:00:00.007,904] [0m<inf> b[SENSORS] node 2 seq 1 temp=29.00C humidity=38.9% flags=0x00
+[11:53:30.869] Disconnected, reason 0x13 
+[11:53:35.347] >>> Poll received: subevent 0, responding in slot 0
+[11:53:40.862] [SENSORS] node 2 seq 2 temp=29.00C humidity=43.6% flags=0x00
+[11:53:45.348] Failed to receive indication: subevent 0
+[11:53:50.871] [SENSORS] node 2 seq 3 temp=29.00C humidity=40.5% flags=0x00
+[11:53:55.347] >>> Poll received: subevent 0, responding in slot 0
+[11:54:00.882] [SENSORS] node 2 seq 4 temp=29.00C humidity=39.3% flags=0x00
+[11:54:05.345] >>> Poll received: subevent 0, responding in slot 0
+[11:54:10.891] [SENSORS] node 2 seq 5 temp=29.00C humidity=40.0% flags=0x00
+[11:54:15.345] >>> Poll received: subevent 0, responding in slot 0
+[11:54:20.901] [SENSORS] node 2 seq 6 temp=29.00C humidity=39.8% flags=0x00
+[11:54:25.345] Failed to receive indication: subevent 0
