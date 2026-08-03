@@ -1,0 +1,43 @@
+[09:29:53.251] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[09:29:53.253] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[09:29:53.253] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[09:29:53.254] [00:00:00.000,854] [0m<inf> udc_nrf: Initialized[0m
+[09:29:53.254] Starting Periodic Advertising Demo (central)
+[09:29:53.255] [00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[09:29:53.255]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[09:29:53.256]                                             74 6c ac 75                                      |tl.u             [0m
+[09:29:53.257] [00:00:00.003,692] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[09:29:53.257] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[09:29:53.258] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[09:29:53.258] [00:00:00.004,638] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[09:29:53.258] [00:00:00.004,730] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[09:29:53.259] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0Disconnected, reason 0x22 
+[09:29:53.259] Scanning successfully started
+[09:29:58.458] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[09:29:58.459] Connected (err 0x00)
+[09:29:58.459] [00:00:15.937,927] [1;33m<wrn> bt_hci_core: opcode 0x205b status 0x0c [0m
+[09:29:58.459] Failed to send PAST (err -13)
+[09:30:08.608] Disconnected, reason 0x16 
+[09:30:08.609] Scanning successfully started
+[09:30:18.461] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[09:30:18.462] Connected (err 0x00)
+[09:30:18.462] [00:00:35.947,998] [1;33m<wrn> bt_hci_core: opcode 0x205b status 0x0c [0m
+[09:30:18.462] Failed to send PAST (err -13)
+[09:30:28.623] Disconnected, reason 0x16 
+[09:30:28.623] Scanning successfully started
+[09:30:38.461] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[09:30:38.461] Connected (err 0x00)
+[09:30:38.461] [00:00:55.983,215] [1;33m<wrn> bt_hci_core: opcode 0x205b status 0x0c [0m
+[09:30:38.463] Failed to send PAST (err -13)
+[09:30:48.692] Disconnected, reason 0x16 
+[09:30:48.693] Scanning successfully started
+[09:30:58.455] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[09:30:58.456] Connected (err 0x00)
+[09:30:58.456] [00:01:15.934,173] [1;33m<wrn> bt_hci_core: opcode 0x205b status 0x0c [0m
+[09:30:58.456] Failed to send PAST (err -13)
+[09:31:08.623] Disconnected, reason 0x16 
+[09:31:08.623] Scanning successfully started
+[09:31:18.460] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[09:31:18.462] Connected (err 0x00)
+[09:31:18.462] [00:01:35.943,237] [1;33m<wrn> bt_hci_core: opcode 0x205b status 0x0c [0m
+[09:31:18.462] Failed to send PAST (err -13)
