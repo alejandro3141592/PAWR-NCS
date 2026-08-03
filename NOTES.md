@@ -1017,4 +1017,65 @@ subevent count just because it worked at 5).
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — user's stop-PAwR-during-onboarding experiment: confirms the contention theory, but PAST needs advertising running to send at all
+
+User's suggestion: stop periodic advertising entirely during the onboarding
+connect step, to test whether radio contention (busy 20-subevent train vs.
+new GATT connection) is really what's causing the `0x08` timeouts.
+Implemented as a temporary diagnostic flag,
+`APP_STOP_PAWR_DURING_ONBOARDING` in `central/src/main.c` -- stops
+periodic advertising in `device_found()` right before `bt_conn_le_create()`,
+resumes it right after `PAST sent` (not at full onboarding completion,
+since the existing post-PAST hold needs a live periodic train for the
+peripheral to sync to), with a catch-all resume on the early-failure paths
+via the `disconnected:` label. Explicitly a diagnostic, not a proposed fix
+-- it desyncs every already-synced peripheral, not just the one onboarding,
+since stopping periodic advertising stops it for everyone. Invisible with 1
+test peripheral, would be a real cost at 17 nodes.
+
+**Result: `0x08` is completely gone -- every connection attempt succeeds
+cleanly now (`Connected (err 0x00)`).** Confirms the contention theory for
+that specific symptom.
+
+**But something new appeared: every attempt now fails at the PAST send
+itself.**
+
+```
+<wrn> bt_hci_core: opcode 0x205b status 0x0c
+Failed to send PAST (err -13)
+```
+
+`0x205b` = PAST (`LE Periodic Advertising Set Info Transfer`, confirmed
+earlier in this project). HCI status `0x0c` = **Command Disallowed** -- the
+controller refuses to execute PAST at all in this state. This is almost
+certainly self-inflicted by the diagnostic's own ordering, not a new bug:
+`bt_le_per_adv_set_info_transfer()` needs the periodic advertising set to
+actually be running to have anything to transfer sync info *about* --
+periodic advertising is stopped at exactly the moment PAST is attempted in
+this flag's current sequencing (stop -> connect -> **PAST while still
+stopped** -> resume). Chicken-and-egg: can't send PAST while stopped, but
+the flag's whole point was to be stopped during the connect step, which is
+also when PAST gets sent.
+
+**So: this experiment has already answered its question (yes, the
+contention theory is correct for the `0x08`s), but the flag as currently
+sequenced can't be used as an actual fix without restructuring the order --
+periodic advertising would need to resume sometime between "connection
+established" and "PAST attempted," not stay stopped through both.** Two
+ways to explore that if useful: (a) resume right after `Connected` fires
+(before PAST), which narrows the contention-free window to just the connect
+handshake itself rather than covering PAST too, or (b) accept PAST has to
+happen while periodic advertising is running and this approach only ever
+helps the connect step specifically, using `onboard_conn_param` retuning
+(the option from the previous entry) for whatever contention remains during
+PAST itself.
+
+`APP_STOP_PAWR_DURING_ONBOARDING` is currently `1` in `central/src/main.c`
+-- central is not currently completing onboarding at all in this state
+(every attempt fails at PAST). Don't leave it here.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
