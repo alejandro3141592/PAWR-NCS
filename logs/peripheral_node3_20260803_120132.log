@@ -1,0 +1,27 @@
+[12:01:33.191] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[12:01:33.192] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:01:33.193] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:01:33.193] [00:00:00.003,814] [0m<inf> udc_nrf: Initialized[0m
+[12:01:33.194] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:01:33.194] Node ID: 3
+[12:01:33.195] [00:00:00.004,180] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:01:33.195]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:01:33.196]                                             74 6c ac 75                                      |tl.u             [0m
+[12:01:33.197] [00:00:00.006,866] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:01:33.198] [00:00:00.006,896] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[12:01:33.198] [00:00:00.006,927] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[12:01:33.200] [00:00:00.007,812] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[12:01:33.201] [00:00:00.007,904] [0m<inf> bt_hci_core: Identity: E8:42:DE:66:C6:28 (random)[0m
+[12:01:33.202] [00:00:00.007,934] [0m<inf> b[SENSORS] node 3 seq 1 temp=28.50C humidity=43.3% flags=0x00
+[12:01:33.202] Disconnected, reason 0x13 
+[12:01:35.330] >>> Poll received: subevent 0, responding in slot 0
+[12:01:43.200] [SENSORS] node 3 seq 2 temp=28.50C humidity=42.3% flags=0x00
+[12:01:53.211] [SENSORS] node 3 seq 3 temp=28.50C humidity=41.5% flags=0x00
+[12:01:55.332] Failed to receive indication: subevent 0
+[12:02:03.220] [SENSORS] node 3 seq 4 temp=28.50C humidity=41.8% flags=0x00
+[12:02:05.329] >>> Poll received: subevent 0, responding in slot 0
+[12:02:13.230] [SENSORS] node 3 seq 5 temp=28.50C humidity=41.6% flags=0x00
+[12:02:15.330] Failed to receive indication: subevent 0
+[12:02:19.853] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:02:19.853] *** could not reopen COM63 : Exception calling "Open" with "0" argument(s): "The port 'COM63' does not exist." -- stopping capture ***
