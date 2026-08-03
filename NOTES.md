@@ -1254,4 +1254,32 @@ config-related.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — correction from user: both findings above explained by physical placement, not bugs
+
+Per the user directly: **there was no Node 04 in this test at all** -- only
+5 physical boards were actually deployed (matches central's log, which never
+saw a 6th address). Not a missing/broken node, just not part of this test.
+
+**And the Node 05 reconnect-storm has a simple physical explanation: node
+placement.** User put Node 03 at 1m from the central/gateway and Node 05 at
+2m, specifically to start probing range. Node 03 (1m) was one of the 4
+rock-solid nodes with zero reconnects the whole hour; Node 05 (2m) is the one
+that reconnected 57+ times. **This lines up as straightforward BLE range/
+signal attenuation on this hardware/antenna setup, not a firmware or protocol
+bug** -- consistent with the `RF noise?` warnings already seen in that node's
+disconnects, which I'd flagged as a symptom without knowing the distance
+context.
+
+This is useful, concrete data for the real 17-node deployment: whatever
+this hardware's reliable range ceiling is, it's somewhere between 1m
+(rock-solid) and 2m (frequent reconnects) under these test conditions
+(indoor, whatever obstacles/interference were present). Worth deliberately
+mapping this out further -- e.g. a range sweep at fixed distances (1m, 1.5m,
+2m, 2.5m...) with everything else held constant -- before finalizing where
+the 17 real nodes can physically go relative to the hub.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
