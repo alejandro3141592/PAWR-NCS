@@ -1,0 +1,34 @@
+[12:03:44.994] [00:00:00.000,488] [0m<inf> udc_nrf: Preinit[0m
+[12:03:44.996] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:03:44.996] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:03:44.997] [00:00:00.003,784] [0m<inf> udc_nrf: Initialized[0m
+[12:03:44.997] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:03:44.997] Node ID: 4
+[12:03:44.998] [00:00:00.004,150] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:03:44.998]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:03:45.001]                                             74 6c ac 75                                      |tl.u             [0m
+[12:03:45.002] [00:00:00.006,805] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:03:45.003] [00:00:00.006,835] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[12:03:45.004] [00:00:00.006,866] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[12:03:45.004] [00:00:00.007,781] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[12:03:45.005] [00:00:00.007,873] [0m<inf> bt_hci_core: Identity: CA:D9:20:A2:05:60 (random)[0m
+[12:03:45.005] [00:00:00.007,904] [0m<inf> b[SENSORS] node 4 seq 1 temp=29.00C humidity=36.7% flags=0x00
+[12:03:47.568] New timing: subevent 4, response slot 0
+[12:03:47.568] Not synced yet
+[12:03:51.577] Disconnected, reason 0x08 
+[12:03:54.985] Timed out while synchronizing
+[12:03:54.985] Waiting for periodic sync...
+[12:03:54.986] [SENSORS] node 4 seq 2 temp=28.50C humidity=36.3% flags=0x00
+[12:03:57.298] Connected, err 0x00 
+[12:04:05.015] [SENSORS] node 4 seq 3 temp=28.50C humidity=36.0% flags=0x00
+[12:04:14.986] Timed out while synchronizing
+[12:04:14.986] [SENSORS] node 4 seq 4 temp=28.50C humidity=35.9% flags=0x00
+[12:04:24.427] Disconnected, reason 0x13 
+[12:04:24.428] Waiting for periodic sync...
+[12:04:24.429] Connected, err 0x00 
+[12:04:24.429] [SENSORS] node 4 seq 5 temp=28.50C humidity=35.9% flags=0x00
+[12:04:28.207] New timing: subevent 4, response slot 0
+[12:04:28.208] Not synced yet
+[12:04:30.776] Disconnected, reason 0x08 
+[12:04:35.044] [SENSORS] node 4 seq 6 temp=28.50C humidity=35.8% flags=0x00
+[12:04:44.428] Timed out while synchronizing
