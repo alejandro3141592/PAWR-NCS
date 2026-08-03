@@ -1,0 +1,25 @@
+[11:59:18.641] [00:00:00.000,518] [0m<inf> udc_nrf: Preinit[0m
+[11:59:18.645] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[11:59:18.646] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[11:59:18.646] [00:00:00.003,814] [0m<inf> udc_nrf: Initialized[0m
+[11:59:18.647] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[11:59:18.647] Node ID: 5
+[11:59:18.649] [00:00:00.004,180] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[11:59:18.650]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[11:59:18.651]                                             74 6c ac 75                                      |tl.u             [0m
+[11:59:18.652] [00:00:00.006,835] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[11:59:18.652] [00:00:00.006,866] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[11:59:18.653] [00:00:00.006,896] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[11:59:18.653] [00:00:00.007,812] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[11:59:18.654] [00:00:00.007,904] [0m<inf> bt_hci_core: Identity: F6:8A:50:0C:25:95 (random)[0m
+[11:59:18.655] [00:00:00.007,934] [0m<inf> b[SENSORS] node 5 seq 1 temp=29.00C humidity=39.9% flags=0x00
+[11:59:18.656] Disconnected, reason 0x08 
+[11:59:28.631] Timed out while synchronizing
+[11:59:28.633] Waiting for periodic sync...
+[11:59:28.634] [SENSORS] node 5 seq 2 temp=28.50C humidity=39.5% flags=0x00
+[11:59:28.634] Connected, err 0x00 
+[11:59:30.375] New timing: subevent 0, response slot 0
+[11:59:30.376] Not synced yet
+[11:59:32.835] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[11:59:32.835] *** could not reopen COM60 : Exception calling "Open" with "0" argument(s): "The port 'COM60' does not exist." -- stopping capture ***
