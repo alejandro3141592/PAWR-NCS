@@ -1346,4 +1346,52 @@ Worth doing before the first real long run, not just the write side.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — first real-hardware test of the 3 peripheral additions found 2 bugs, both fixed
+
+Built and flashed node 2 with all three of today's additions (temp-resolution
+fix, FCB flash logging, `dump` shell command) together for the first time on
+real hardware. Found two separate problems:
+
+**Bug 1: `CONFIG_SHELL=y` hung the board completely -- zero serial output at
+all**, not even the boot banner, confirmed across 3 capture attempts including
+one right after a manual reset (ruled out a capture-timing fluke). Isolated
+via bisection: guarded the whole `dump` command block (`cmd_storage_dump`,
+`storage_dump_walk_cb`, `SHELL_CMD_REGISTER`) in `peripheral/src/main.c` with
+`#if defined(CONFIG_SHELL)`, set `CONFIG_SHELL=n` in `prj.conf`, rebuilt --
+**full output came back immediately**, confirming the shell backend on our
+already-fragile USB-CDC console transport (see the earlier `udc` buffer-
+exhaustion bug from higher in this file) is the trigger. Haven't dug into
+*why* yet (possibly the shell subsystem's own boot-time banner/prompt
+exhausting the same net_buf pool before our first `printk` flushes) --
+`CONFIG_SHELL` is off for now, so the `dump` command is currently unavailable.
+**Open question for whoever picks this up next: is it worth investigating
+further to get `dump` working, or is a debug-probe/bootloader-side flash read
+an acceptable fallback for retrieving the log after long runs?**
+
+**Bug 2 (found once bug 1 was fixed and output came back): FCB flash log
+failed to init** with `err -35` (`-ENOMSG`) -- Zephyr's FCB code returns this
+specifically when a sector's on-flash header magic matches neither "erased"
+nor our own magic, i.e. the "Storage" partition had leftover data from
+something else (this is the first time this exact partition has ever been
+written by this project, so this was always going to surface on first real
+use, not a regression). Fixed with the standard FCB recovery idiom in
+`storage_fcb_init()`: on `-ENOMSG`, erase the whole partition
+(`flash_area_open`/`flash_area_erase`/`flash_area_close`) and retry
+`fcb_init()` once. **Confirmed working**:
+```
+[STORAGE] Flash log area has foreign data, erasing and retrying
+[STORAGE] Flash log ready (8 sectors)
+```
+Flash logging is now genuinely functional on real hardware, not just
+compiling cleanly.
+
+Both fixes are in `peripheral/src/main.c`/`prj.conf`, committed and pushed.
+Node 2 is currently running with: temp-resolution fix (working, confirmed
+real fractional readings like 29.42C), FCB flash logging (working), `dump`
+shell command (disabled pending the open question above).
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
