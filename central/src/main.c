@@ -181,18 +181,20 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 		last_seen_ms[info->subevent] = k_uptime_get();
 	}
 
-	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u",
+	/* Single printk call instead of up to 4 -- this callback fires once
+	 * per received response, per subevent, per interval (up to
+	 * NUM_SUBEVENTS times every PAWR_INTERVAL_MS), so at higher subevent
+	 * counts it's a genuinely hot path competing for the same USB
+	 * CDC-ACM console transport that's also seeing "udc: Failed to
+	 * allocate net_buf" under load -- see NOTES.md 2026-08-03. Fewer,
+	 * larger writes reduce that pressure vs. many small ones.
+	 */
+	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s\n",
 	       payload.node_id, info->subevent,
 	       payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
-	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq);
-
-	if (payload.flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID) {
-		printk("  [FLAG: TEMP_FAIL]");
-	}
-	if (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) {
-		printk("  [FLAG: HUMIDITY_FAIL]");
-	}
-	printk("\n");
+	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq,
+	       (payload.flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID) ? "  [FLAG: TEMP_FAIL]" : "",
+	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "");
 }
 
 static const struct bt_le_ext_adv_cb adv_cb = {

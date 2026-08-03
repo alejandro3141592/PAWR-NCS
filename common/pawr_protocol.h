@@ -61,7 +61,7 @@
  * Remove this whole knob once the trigger is found and the real fix (buffer
  * pool sizing, most likely) is identified and applied instead.
  */
-#define APP_SCALE_TEST 4
+#define APP_SCALE_TEST 0
 
 /* One subevent per node (17 nodes + 3 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
