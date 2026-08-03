@@ -1190,4 +1190,68 @@ production-ready, given the variance already seen between runs today.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — first real multi-node test: 5 peripherals, 1-hour capture. Node 04 never appeared; one node reconnects constantly
+
+Full 1-hour capture of central with all 5 of your freshly-flashed peripherals
+(nodes 2-6) connected simultaneously -- `logs/central_5node_1hour_20260803.log`
+(pushed), 12:08:56-13:08:56, confirmed full 3600s via the capture tool's own
+elapsed-time check. First time this session more than 1 peripheral has ever
+been tested at once.
+
+**Good news first:** 20-subevent scale genuinely handles multiple concurrent
+nodes -- 4 of the 5 nodes (01, 02, 03, 06) onboarded once, each got a
+distinct subevent slot with no collisions, and stayed synced and reporting
+for the entire hour without needing to reconnect at all. Zero `udc: Failed
+to allocate net_buf` errors the whole hour. Reading counts for those 4:
+Node 01: 240, Node 02: 343, Node 03: 232, Node 06: 296 -- all in a
+reasonable, consistent range for an hour at a 10s interval.
+
+**Two real problems, though:**
+
+1. **Node 04 has zero readings, the entire hour.** Only 3 distinct
+   Bluetooth addresses ever appear anywhere in central's log (one of which
+   is the original always-on test peripheral, `F9:FC:23:FC:61:11`) -- Node 04
+   never shows up as a connection attempt at all. This isn't a central-side
+   onboarding/slot issue; central never even sees this peripheral trying to
+   advertise. Points at Node 04's own hardware/firmware -- worth checking
+   whether that board is actually powered, running the flashed firmware,
+   and advertising as `"PAwR sync sample"` (the exact name central scans
+   for) before looking anywhere else.
+
+2. **One peripheral (address `F6:8A:50:0C:25:95`, believe this is Node 05
+   given the low reading count below and matching subevent 3) reconnects
+   *constantly* -- roughly every 1-2 minutes, all hour, 57+ separate
+   onboarding attempts.** Each cycle bounces through a mix of failure modes:
+   `<wrn> bt_conn: ... failed to establish. RF noise?` / disconnect `0x3E`
+   before remote info is even available, `Timed out during GATT discovery`,
+   and `0x08` CONN_TIMEOUT -- sometimes succeeding (`PAwR config written:
+   subevent 3`, consistently the same slot each time thanks to the
+   address-keyed slot reuse) before dropping again shortly after. Node 05's
+   reading count (78) is far below the other 4 nodes' 232-343, consistent
+   with spending much of the hour re-onboarding instead of receiving polls.
+   Central's own connection-parameter/buffer fixes from earlier today don't
+   look like the cause here, since the other 4 nodes on the identical
+   central build are rock-solid -- this looks specific to that one physical
+   peripheral (RF/antenna/power issue on that board, or something
+   board-specific in its own BLE stack init) rather than a central-side or
+   protocol-level bug.
+
+**Also, for the record:** 19 `0x08` timeouts total across the hour (all
+attributable to the one struggling peripheral's repeated reconnect attempts,
+not spread across the other 4) -- so the earlier fix isn't "broken" by
+multi-node load, the timeouts are concentrated entirely on the one node with
+its own separate problem.
+
+**Suggested next steps:** check Node 04's physical setup first (power,
+correct firmware flashed, antenna/board fault) since central never even
+detects it. For Node 05 specifically, worth trying a straight reflash or
+swapping to a different physical board with the same `node_id.txt` (2) to
+see if the problem follows the board or the slot/config -- that would
+distinguish a hardware fault on that specific unit from something
+config-related.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
