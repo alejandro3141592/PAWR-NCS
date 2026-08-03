@@ -1282,4 +1282,68 @@ the 17 real nodes can physically go relative to the hub.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — two peripheral additions: full sensor resolution, and on-board flash logging for long runs
+
+**1. Temperature resolution fix.** The generic Zephyr `lm75` driver we reuse
+for the MAX30205 (register-compatible, but a distinct/finer part) was
+truncating readings to 0.5C steps -- its `sensor_channel_get()` conversion
+right-shifts the raw 16-bit register by 7 bits before converting, which is
+correct for genuine LM75 hardware's 9-bit resolution but throws away almost
+all of the MAX30205's real 16-bit/~0.0039C native resolution (per its
+datasheet). Added `max30205_read_temp_cdeg()` in `peripheral/src/main.c`,
+which reads the same physical register directly via a plain `i2c_dt_spec`
+(bypassing the lossy driver conversion entirely) and converts straight to
+centi-degrees using the sensor's real 1/256C LSB. **No wire format change**
+-- `sensor_payload.temp_cdeg` was already centi-degree resolution, more than
+fine enough; this was purely a peripheral-side read-path bug. (Checked the
+SHT4x humidity path too -- that driver already preserves full native
+resolution all the way through, no equivalent bug there.)
+
+**2. On-board flash logging**, for the ~4h unattended runs user is planning.
+User's question: is local flash storage viable, and should we log
+everything or just what fails to transmit? Answers:
+- **Viable, comfortably.** The board already has a dedicated 32KB "Storage"
+  devicetree partition, separate from application code (see
+  `nrf52840_partition_uf2_sdv7.dtsi`). At the current 10s interval, 4h is
+  ~1440 records * 8 bytes = ~11.2KB -- well under 32KB with real margin.
+  Flash endurance (10k erase cycles/page per nRF52840 spec) isn't a
+  meaningful concern at this write volume even over years of repeated runs.
+- **Log everything, not just failures** -- PAwR gives the peripheral no
+  delivery acknowledgment for its subevent responses, so there's no way for
+  it to know on-device which readings central actually received. Logging
+  only "failed" ones isn't implementable without a much bigger protocol
+  change (a return ack channel).
+- Skipped the timestamp field idea (`timestamp_ms` in the payload) per
+  user's decision -- true wall-clock sync between central/peripheral would
+  be needed for cross-device latency and isn't worth the complexity; PAwR's
+  own `periodic_event_counter` already gives a shared, sync-free way to
+  correlate which cycle a reading belongs to if that's ever needed later.
+
+**Implementation:** `peripheral/prj.conf` now has `CONFIG_FLASH=y`,
+`CONFIG_FLASH_MAP=y`, `CONFIG_FCB=y`. New `storage_fcb_init()` (called once
+at boot) sets up a Flash Circular Buffer over the "Storage" partition;
+`storage_fcb_append()` (called every sensor-read cycle, right alongside the
+existing over-the-air send) writes each `sensor_payload` record. Flash
+write failures are logged but never block the primary PAwR path -- this is
+a fallback, not a new dependency.
+
+**Real gotcha hit and fixed while building this, worth remembering:**
+`CONFIG_FCB` only `depends on` `CONFIG_FLASH_MAP` in its Kconfig -- it does
+NOT `select` it. Setting `CONFIG_FCB=y` alone left `FLASH_MAP` silently
+off, and the build failed at link time with undefined references to
+`fcb_init`/`fcb_append`/`flash_area_write`/`flash_area_get_sectors` (not a
+compile error, so it wasn't obvious from the source alone). Fixed by adding
+`CONFIG_FLASH_MAP=y` explicitly. Confirmed building cleanly now
+(`peripheral/build_node1`), **not yet flashed/tested on real hardware** --
+user asked to hold off touching the physical peripheral board for now.
+
+Reading back the flash log (for actually retrieving the data after a run)
+hasn't been built yet -- would need either a GATT/serial dump command, or
+pulling the board and reading it via a debug probe/bootloader-side tool.
+Worth doing before the first real long run, not just the write side.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
