@@ -19,4 +19,30 @@ config APP_SIMULATE_SENSORS
 	  drifting fake temperature/humidity values instead. Useful for
 	  exercising the PAwR protocol path without I2C hardware attached.
 
+config APP_SERIAL_LOGGING
+	bool "Enable diagnostic printk() output over the serial console"
+	default y
+	help
+	  Disable for real unattended field deployment to avoid any chance of
+	  the serial console -- a USB-CDC transport already shown fragile
+	  under load this session (see the "udc: Failed to allocate net_buf"
+	  and CONFIG_SHELL boot hangs in NOTES.md) -- being a source of
+	  problems. Does not affect BLE/PAwR behavior or on-board flash
+	  logging, only the printk() diagnostic messages. See APP_LOG() in
+	  main.c.
+
+config APP_DUMP_ON_BOOT
+	bool "Dump the on-board flash sensor log as CSV over serial at boot"
+	default n
+	help
+	  One-shot retrieval mode: at boot, print every reading stored in the
+	  on-board flash log (see storage_fcb_* in main.c) as CSV over the
+	  plain printk() console, then continue normal PAwR operation as
+	  usual. Build with this set, flash the specific physical board whose
+	  log you want, and capture its serial output right after boot
+	  (tools/Watch-SerialLog.ps1) -- the CSV is between the header row and
+	  the trailing "# N rows" line. Replaces the earlier shell-based
+	  "dump" command, which hung the board's console (see NOTES.md
+	  2026-08-03).
+
 source "Kconfig.zephyr"
