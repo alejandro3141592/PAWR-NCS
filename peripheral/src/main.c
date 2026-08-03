@@ -26,6 +26,7 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/fs/fcb.h>
 #include <zephyr/kernel.h>
+#include <zephyr/shell/shell.h>
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
@@ -275,6 +276,80 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 		printk("[STORAGE] fcb_append_finish failed (err %d)\n", err);
 	}
 }
+
+/* "dump" shell command context: shell_print()'d directly rather than
+ * buffered, since a full log (up to ~1440 rows for a 4h run) doesn't need
+ * to live in RAM all at once -- fcb_walk() streams one entry at a time.
+ */
+struct storage_dump_ctx {
+	const struct shell *sh;
+	uint32_t count;
+};
+
+static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
+{
+	struct storage_dump_ctx *ctx = arg;
+	struct sensor_payload payload;
+	int err;
+
+	if (loc_ctx->loc.fe_data_len != sizeof(payload)) {
+		/* Skip anything that isn't one of our own fixed-size
+		 * records (shouldn't normally happen, but fcb_walk() just
+		 * walks whatever is on flash).
+		 */
+		return 0;
+	}
+
+	err = flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
+			       sizeof(payload));
+	if (err) {
+		shell_error(ctx->sh, "# read error at entry %u (err %d)", ctx->count, err);
+		return 0;
+	}
+
+	shell_print(ctx->sh, "%u,%u,0x%02x,%u,%d.%02u,%u.%u", payload.node_id, payload.seq,
+		    payload.flags, ctx->count, payload.temp_cdeg / 100,
+		    abs(payload.temp_cdeg % 100), payload.humidity_pct10 / 10,
+		    payload.humidity_pct10 % 10);
+
+	ctx->count++;
+
+	return 0;
+}
+
+/* "dump" -- prints every stored reading as CSV over the shell's own
+ * console (same USB-CDC transport already captured by
+ * tools/Watch-SerialLog.ps1), oldest first. Redirect/copy the shell
+ * session's output and trim to the CSV lines (between the header row and
+ * the trailing "# N rows" line) to get a clean .csv file.
+ */
+static int cmd_storage_dump(const struct shell *sh, size_t argc, char **argv)
+{
+	struct storage_dump_ctx ctx = { .sh = sh, .count = 0 };
+	int err;
+
+	ARG_UNUSED(argc);
+	ARG_UNUSED(argv);
+
+	if (!storage_fcb_ok) {
+		shell_error(sh, "Flash log not available (storage_fcb_init failed at boot)");
+		return -ENODEV;
+	}
+
+	shell_print(sh, "node_id,seq,flags,row,temp_c,humidity_pct");
+
+	err = fcb_walk(&storage_fcb, NULL, storage_dump_walk_cb, &ctx);
+	if (err) {
+		shell_error(sh, "fcb_walk failed (err %d)", err);
+		return err;
+	}
+
+	shell_print(sh, "# %u rows", ctx.count);
+
+	return 0;
+}
+
+SHELL_CMD_REGISTER(dump, NULL, "Dump the on-board sensor reading log as CSV", cmd_storage_dump);
 
 static void sensor_read_work_handler(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(sensor_read_work, sensor_read_work_handler);
