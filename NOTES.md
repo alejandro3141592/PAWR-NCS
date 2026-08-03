@@ -1394,4 +1394,53 @@ shell command (disabled pending the open question above).
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — resolved the open shell question: replaced with printk-based retrieval, added a production-quiet toggle
+
+Per the user directly: **not worth chasing why `CONFIG_SHELL` hung the
+console** -- dropped it entirely rather than debug it further. Two things
+added instead:
+
+**1. Retrieval without shell.** Removed the shell-based `dump` command
+(`cmd_storage_dump`, `storage_dump_walk_cb`, `SHELL_CMD_REGISTER`,
+`CONFIG_SHELL`, the `#include <zephyr/shell/shell.h>`) entirely. Replaced
+with a new Kconfig option, `CONFIG_APP_DUMP_ON_BOOT` (default `n`): when set,
+`main()` calls `storage_dump_all()` right after `storage_fcb_init()`, which
+walks the FCB and prints the whole log as CSV over plain `printk()` -- the
+same console path already proven reliable all session -- then continues
+normal PAwR operation as usual. To retrieve a specific board's log: build
+with `CONFIG_APP_DUMP_ON_BOOT=y`, flash that board, capture its serial output
+right after boot (`tools/Watch-SerialLog.ps1`), the CSV is between the
+header row and the trailing `# N rows` line. **Tested and confirmed working
+on node 2**: dumped 139 real stored rows (`2,7,0x00,131,31.31,33.8` etc.)
+cleanly, then resumed normal sync/response operation immediately after.
+Reverted `CONFIG_APP_DUMP_ON_BOOT` back to `n` (its default) once confirmed --
+it's opt-in per build, not something to leave on.
+
+**2. Production-quiet toggle.** New Kconfig option `CONFIG_APP_SERIAL_LOGGING`
+(default `y`). Added an `APP_LOG(fmt, ...)` macro in `main.c` (wraps `printk`
+in `if (IS_ENABLED(CONFIG_APP_SERIAL_LOGGING))`, so the disabled branch is
+compile-time dead code, zero runtime cost) and converted every existing
+diagnostic `printk()` call in the file to `APP_LOG()` -- boot banner, sensor
+reads, connect/disconnect, sync state, storage status, all of it. Set
+`CONFIG_APP_SERIAL_LOGGING=n` before flashing for real unattended field
+deployment to eliminate any chance of the serial console -- a USB-CDC
+transport this session already showed fragile under load twice (`udc`
+buffer exhaustion, and the `CONFIG_SHELL` hang) -- being a source of
+problems at all. Deliberately does **not** affect the new dump-on-boot
+output (still plain, unconditional `printk()`) -- a dump build is a
+distinct, intentional retrieval session and shouldn't go silent just
+because the quiet flag was left on from a production build.
+
+Both changes are peripheral-only (central wasn't touched -- let me know if
+you want the same quiet-logging toggle mirrored there for symmetry, central
+usually runs on a bench/gateway machine so the same USB-CDC fragility
+concern is less pressing, but happy to add it if useful). Confirmed working
+on node 2 with default settings (serial logging on, dump-on-boot off) after
+reverting the test flag -- normal boot, flash log init, and sync all
+unaffected. Committed and pushed.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->
