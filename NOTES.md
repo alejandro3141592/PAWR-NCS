@@ -1155,4 +1155,39 @@ relying on this partial window.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
+## 2026-08-03 — full 30-min soak, uninterrupted this time: zero 0x08, zero udc errors
+
+Re-ran the soak start to finish, 10:49:02-11:19:02 --
+`logs/central_20subevent_fix_30min_v2_20260803.log` (pushed), confirmed full
+1800s via the capture tool's own elapsed-time check. **Zero `0x08`
+CONN_TIMEOUT, zero `udc: Failed to allocate net_buf` errors, for the entire
+30 minutes.** Only 4 connection attempts total in that window (central only
+retries onboarding roughly once per periodic interval when nothing new needs
+onboarding), all clean -- 3 clean `0x16` disconnects, 106 sensor readings
+received throughout with no gaps in the pattern suggesting instability.
+
+One new, different, and clearly benign thing showed up once: at 11:00:56,
+`<wrn> bt_conn: conn ... failed to establish. RF noise?` / disconnect reason
+`0x3E` (Connection Failed to be Established -- a different HCI code from
+0x08), immediately followed by a successful retry on the very next
+connection attempt less than a second later. This reads as ordinary
+transient RF-level noise, not a resource-exhaustion pattern like the 0x08s
+or udc errors -- flagging it for completeness, not as a concern.
+
+**So: the previous entry's correction was itself about an unusually bad
+partial window, not the new steady state.** Between the two runs (11.5 min
+partial with 9x 0x08 + 2x udc errors, vs. this full 30 min with zero of
+either), the honest read is that today's combined fixes (reduced printk,
+6/6 buffers, parallel connection establishment, interval alignment) have
+greatly reduced the frequency of both failure modes at 20 subevents, to the
+point of not occurring at all in this run -- but the interrupted run proves
+they haven't been mathematically proven to zero, and more/longer soaks would
+be needed before calling this fully solved. Worth running a few more
+independent 30-min soaks (or longer) before treating 20-subevent scale as
+production-ready, given the variance already seen between runs today.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
 <!-- New entries go above this line -->

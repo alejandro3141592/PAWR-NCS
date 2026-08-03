@@ -1,0 +1,139 @@
+[10:49:08.720] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=682
+[10:49:08.722] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=683
+[10:49:08.723] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=684
+[10:49:08.724] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.7% seq=686
+[10:49:08.724] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=687
+[10:49:08.725] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=688
+[10:49:08.725] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.3% seq=691
+[10:49:16.691] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.2% seq=692
+[10:49:36.690] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.9% seq=694
+[10:49:46.690] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.4% seq=695
+[10:49:56.690] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.3% seq=696
+[10:50:06.690] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.4% seq=697
+[10:50:26.689] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.4% seq=699
+[10:50:36.688] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=700
+[10:50:46.687] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=701
+[10:51:06.687] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=703
+[10:51:16.687] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=704
+[10:51:36.686] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=706
+[10:51:46.685] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=707
+[10:51:56.685] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=708
+[10:52:16.684] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=710
+[10:52:26.684] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=711
+[10:52:46.683] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=713
+[10:52:56.682] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=714
+[10:53:16.682] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=716
+[10:53:26.681] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=717
+[10:53:46.681] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=719
+[10:53:56.680] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=720
+[10:54:06.680] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.7% seq=721
+[10:54:16.680] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=36.9% seq=722
+[10:54:26.679] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=36.5% seq=723
+[10:54:36.678] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=35.9% seq=724
+[10:54:46.679] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=35.7% seq=725
+[10:55:16.677] >>> Node 01 (subevent 0): skin_temp=29.00C humidity=35.2% seq=728
+[10:56:06.676] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=34.8% seq=733
+[10:56:16.676] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=34.8% seq=734
+[10:56:46.676] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[10:56:46.676] Connected (err 0x00)
+[10:56:46.678] PAST sent
+[10:56:46.680] Discovery started
+[10:56:46.681] Characteristic handle: 14
+[10:56:46.681] Write started
+[10:56:46.682] PAwR config written: subevent 0
+[10:56:57.764] Disconnected, reason 0x16 
+[10:56:57.764] Scanning successfully started
+[10:57:06.674] >>> Node 01 (subevent 0): skin_temp=29.00C humidity=34.7% seq=739
+[10:57:16.673] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=34.8% seq=740
+[10:57:26.672] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=35.4% seq=741
+[10:57:36.672] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=36.0% seq=742
+[10:57:56.671] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=36.8% seq=744
+[10:58:06.671] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.1% seq=745
+[10:58:16.670] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.3% seq=746
+[10:58:36.670] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.5% seq=748
+[10:58:46.669] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.6% seq=749
+[10:58:56.668] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=37.9% seq=750
+[10:59:26.668] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.0% seq=753
+[10:59:36.667] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.0% seq=754
+[10:59:56.667] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.0% seq=756
+[11:00:06.667] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.2% seq=757
+[11:00:36.804] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[11:00:36.804] Connected (err 0x00)
+[11:00:36.804] PAST sent
+[11:00:36.804] Discovery started
+[11:00:36.805] Characteristic handle: 14
+[11:00:36.805] Write started
+[11:00:36.805] PAwR config written: subevent 0
+[11:00:47.806] Disconnected, reason 0x16 
+[11:00:47.808] Scanning successfully started
+[11:00:56.300] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[11:00:56.301] Connected (err 0x00)
+[11:00:56.301] [00:29:30.331,115] [1;33m<wrn> bt_conn: conn 0x20002660 failed to establish. RF noise?[0m
+[11:00:56.301] Disconnected, reason 0x3E 
+[11:00:56.303] Disconnected before remote info available
+[11:00:56.303] Scanning successfully started
+[11:00:56.303] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[11:00:56.303] Connected (err 0x00)
+[11:00:56.303] PAST sent
+[11:00:56.303] Discovery started
+[11:00:57.616] Characteristic handle: 14
+[11:00:57.616] Write started
+[11:00:57.616] PAwR config written: subevent 0
+[11:01:07.855] Disconnected, reason 0x16 
+[11:01:07.856] Scanning successfully started
+[11:01:26.663] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.3% seq=765
+[11:01:56.663] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.4% seq=768
+[11:02:06.662] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.4% seq=769
+[11:02:16.661] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=770
+[11:02:26.661] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=771
+[11:02:36.661] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.4% seq=772
+[11:02:46.660] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=773
+[11:03:26.659] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.4% seq=777
+[11:03:56.657] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.6% seq=780
+[11:04:06.658] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.5% seq=781
+[11:04:16.657] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.7% seq=782
+[11:04:36.656] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.7% seq=784
+[11:04:46.656] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.8% seq=785
+[11:04:56.656] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=786
+[11:05:06.655] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=787
+[11:05:26.654] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=789
+[11:05:36.655] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=790
+[11:05:56.653] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=792
+[11:07:16.650] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=800
+[11:07:26.650] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=801
+[11:07:36.649] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.5% seq=802
+[11:07:46.650] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=803
+[11:07:56.649] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=804
+[11:08:06.648] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.8% seq=805
+[11:08:16.648] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.7% seq=806
+[11:08:26.647] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=807
+[11:08:46.647] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=809
+[11:08:56.646] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=810
+[11:09:16.645] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.0% seq=812
+[11:09:26.646] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=813
+[11:09:36.645] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=814
+[11:09:46.644] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=815
+[11:09:56.644] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=816
+[11:10:06.644] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=817
+[11:10:26.643] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=819
+[11:10:36.642] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=820
+[11:10:46.643] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=821
+[11:11:26.641] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.7% seq=825
+[11:11:46.640] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=827
+[11:12:16.639] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=830
+[11:12:26.638] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.0% seq=831
+[11:12:56.637] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=834
+[11:13:06.637] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=835
+[11:13:16.637] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=836
+[11:13:36.636] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.6% seq=838
+[11:13:46.635] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=839
+[11:14:06.635] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.0% seq=841
+[11:15:16.632] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=848
+[11:16:06.631] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=853
+[11:16:16.630] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.8% seq=854
+[11:16:46.628] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.1% seq=857
+[11:16:56.628] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.2% seq=858
+[11:17:36.628] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.0% seq=862
+[11:17:56.626] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.0% seq=864
+[11:18:16.625] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=39.1% seq=866
+[11:18:56.624] >>> Node 01 (subevent 0): skin_temp=28.50C humidity=38.9% seq=870
