@@ -1,0 +1,26 @@
+[16:26:22.758] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[16:26:22.760] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[16:26:22.761] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[16:26:22.761] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[16:26:22.762] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[16:26:22.762] Node ID: 2
+[16:26:22.762] [STORAGE] Flash log area has foreign data, erasing and retrying
+[16:26:22.763] [00:00:00.090,057] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[16:26:22.764] [00:00:00.175,506] [0m<inf> udc_nrf: Reset[0m
+[16:26:22.765] [00:00:00.175,628] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[16:26:22.765] [00:00:00.261,596] [0m<inf> udc_nrf: Reset[0m
+[16:26:22.765] [STORAGE] Flash log ready (8 sectors)
+[16:26:22.766] [00:00:00.691,589] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[16:26:22.766]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[16:26:22.767]                                             74 6c ac 75                                      |tl.u             [0m
+[16:26:22.767] [00:00:00.694,427] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[16:26:22.767] [00:00:00.694,458] [0m<inf> bt_hci_core: HW Varia[SENSORS] node 2 seq 3 temp=29.26C humidity=33.7% flags=0x00
+[16:26:24.800] Failed to receive indication: subevent 0
+[16:26:32.772] [SENSORS] node 2 seq 4 temp=29.33C humidity=33.6% flags=0x00
+[16:26:34.798] >>> Poll received: subevent 0, responding in slot 0
+[16:26:42.787] [SENSORS] node 2 seq 5 temp=29.18C humidity=33.5% flags=0x00
+[16:26:44.799] >>> Poll received: subevent 0, responding in slot 0
+[16:26:52.801] [SENSORS] node 2 seq 6 temp=29.03C humidity=33.4% flags=0x00
+[16:26:54.798] >>> Poll received: subevent 0, responding in slot 0
+[16:27:02.817] [SENSORS] node 2 seq 7 temp=29.10C humidity=33.3% flags=0x00
+[16:27:04.799] Failed to receive indication: subevent 0
