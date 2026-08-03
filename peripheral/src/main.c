@@ -24,7 +24,9 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
+#include <zephyr/fs/fcb.h>
 #include <zephyr/kernel.h>
+#include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 
@@ -192,12 +194,95 @@ static void sensors_read(struct sensor_payload *out)
 	out->humidity_pct10 = humidity_pct10;
 }
 
+/* ======================================================
+ * ON-BOARD FLASH LOG (fallback storage for long unattended runs)
+ *
+ * The board's internal "Storage" devicetree partition (32KB, separate from
+ * application code -- see nrf52840_partition_uf2_sdv7.dtsi) is used as a
+ * Flash Circular Buffer: every sensor_payload produced is appended here as
+ * well as sent over the air, so a multi-hour run has a complete local
+ * record even if central misses some over-the-air responses (PAwR gives
+ * the peripheral no delivery acknowledgment, so there's no way to log only
+ * the ones that failed -- see NOTES.md 2026-08-03). At the current 10s
+ * interval, a full 4-hour run is ~1440 records * 8 bytes = ~11.2KB, well
+ * under the 32KB partition -- no wraparound expected in normal use, but if
+ * the buffer does fill, FCB's circular behavior means oldest records are
+ * overwritten first, not that appends start failing.
+ * ====================================================== */
+
+#define STORAGE_FCB_SECTOR_MAX 8 /* 32KB partition / 4KB pages, see devicetree */
+
+static struct flash_sector storage_fcb_sectors[STORAGE_FCB_SECTOR_MAX];
+static struct fcb storage_fcb;
+static bool storage_fcb_ok;
+
+static void storage_fcb_init(void)
+{
+	uint32_t sector_cnt = ARRAY_SIZE(storage_fcb_sectors);
+	int err;
+
+	err = flash_area_get_sectors(FIXED_PARTITION_ID(storage_partition), &sector_cnt,
+				      storage_fcb_sectors);
+	if (err) {
+		printk("[STORAGE] Failed to get flash sectors (err %d)\n", err);
+		return;
+	}
+
+	storage_fcb = (struct fcb){
+		.f_magic = 0x50415752, /* "PAWR", arbitrary non-0xFFFFFFFF marker */
+		.f_sector_cnt = sector_cnt,
+		.f_sectors = storage_fcb_sectors,
+	};
+
+	err = fcb_init(FIXED_PARTITION_ID(storage_partition), &storage_fcb);
+	if (err) {
+		printk("[STORAGE] Failed to init flash log (err %d)\n", err);
+		return;
+	}
+
+	storage_fcb_ok = true;
+	printk("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
+}
+
+/* Appends one payload to the flash log. Failure here is logged but never
+ * blocks reporting over the air -- flash logging is a fallback, not a
+ * dependency for the primary PAwR data path.
+ */
+static void storage_fcb_append(const struct sensor_payload *payload)
+{
+	struct fcb_entry loc;
+	int err;
+
+	if (!storage_fcb_ok) {
+		return;
+	}
+
+	err = fcb_append(&storage_fcb, sizeof(*payload), &loc);
+	if (err) {
+		printk("[STORAGE] fcb_append failed (err %d)\n", err);
+		return;
+	}
+
+	err = flash_area_write(storage_fcb.fap, FCB_ENTRY_FA_DATA_OFF(loc), payload,
+				sizeof(*payload));
+	if (err) {
+		printk("[STORAGE] flash_area_write failed (err %d)\n", err);
+		return;
+	}
+
+	err = fcb_append_finish(&storage_fcb, &loc);
+	if (err) {
+		printk("[STORAGE] fcb_append_finish failed (err %d)\n", err);
+	}
+}
+
 static void sensor_read_work_handler(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(sensor_read_work, sensor_read_work_handler);
 
 static void sensor_read_work_handler(struct k_work *work)
 {
 	sensors_read(&latest_payload);
+	storage_fcb_append(&latest_payload);
 
 	printk("[SENSORS] node %u seq %u temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
 	       latest_payload.node_id, latest_payload.seq,
@@ -392,6 +477,7 @@ int main(void)
 
 	status_led_init();
 	sensors_init();
+	storage_fcb_init();
 
 	err = bt_enable(NULL);
 	if (err) {
