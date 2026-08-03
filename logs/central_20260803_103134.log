@@ -1,0 +1,25 @@
+[10:31:38.804] [00:00:00.000,457] [0m<inf> udc_nrf: Preinit[0m
+[10:31:38.808] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[10:31:38.808] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[10:31:38.809] [00:00:00.000,823] [0m<inf> udc_nrf: Initialized[0m
+[10:31:38.809] Starting Periodic Advertising Demo (central)
+[10:31:38.810] [00:00:00.001,159] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[10:31:38.810]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[10:31:38.811]                                             74 6c ac 75                                      |tl.u             [0m
+[10:31:38.813] [00:00:00.003,692] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[10:31:38.814] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[10:31:38.814] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[10:31:38.815] [00:00:00.004,669] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[10:31:38.816] [00:00:00.004,760] [0m<inf> bt_hci_core: Identity: E2:67:67:7D:3F:69 (random)[0m
+[10:31:38.816] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0Scanning successfully started
+[10:31:43.592] Found peripheral F9:FC:23:FC:61:11 (random), connecting...
+[10:31:43.593] Connected (err 0x00)
+[10:31:43.593] PAST sent
+[10:31:43.594] Discovery started
+[10:31:43.594] Characteristic handle: 14
+[10:31:43.595] Write started
+[10:31:43.595] PAwR config written: subevent 0
+[10:31:54.422] Disconnected, reason 0x16 
+[10:31:54.422] Scanning successfully started
+[10:32:16.730] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.0% seq=590
+[10:32:56.729] >>> Node 01 (subevent 0): skin_temp=28.00C humidity=38.0% seq=594
