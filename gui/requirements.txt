@@ -1,3 +1,6 @@
 paho-mqtt
 PyQt5
 matplotlib
+streamlit
+plotly
+pandas

@@ -38,6 +38,7 @@ gui/config.json
 gui/sensor_data.db
 gui/sensor_data.db-*
 gui/*.csv
+*.png
 
 # Python bytecode cache
 __pycache__/

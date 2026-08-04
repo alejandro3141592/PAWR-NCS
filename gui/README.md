@@ -1,21 +1,18 @@
 # PAwR sensor dashboard (GUI)
 
 Desktop app (PyQt5) that subscribes to the MQTT broker `gateway_9151`
-publishes to, shows one row per node (latest temperature, humidity,
-sequence number, flags, last-seen time) in a live table, logs every reading
-to a local SQLite database, and plots a history chart for whichever node is
-selected.
+publishes to, shows one row per node in a live table, plots a history chart,
+and presents an interactive 17-body-part human silhouette map with custom sensor node
+assignment and live thermal color indicators.
 
 ```
 gateway_9151 --MQTT/TLS--> HiveMQ Cloud --MQTT/TLS--> this GUI --> SQLite (gui/sensor_data.db)
 ```
 
-Adapted from a prior, richer version of this GUI (body-silhouette mapping,
-heart rate, SpO2, multi-channel-per-node) built for a different sensor set.
-`gateway_9151` currently only publishes per-node temperature and humidity
-(see `../gateway_9151/src/mqtt/mqtt_publisher.c`), so this version is a
-plain per-node table instead of the body silhouette -- no HR/SpO2/channel
-concepts exist here since nothing produces that data.
+Features 2 central tabs:
+- **📊 Table & History**: Live node table & history chart.
+- **👤 Body Silhouette**: 17 anatomical body part zones with interactive node mapping,
+  thermal color indicators (blue -> cyan -> green -> yellow -> red), and thermoregulation summary stats.
 
 ## Setup
 
@@ -31,21 +28,32 @@ cp config.example.json config.json
 # edit config.json, set "password" to the real HiveMQ Cloud password
 ```
 
-## Running
+## Running Options
 
+### Option 1: Desktop Application (PyQt5)
 ```sh
 python sensor_gui.py
 ```
 
-- **Table**: one row per node ID seen since launch, sorted by node ID.
-  Click a row to select it and show its history chart.
+### Option 2: Web Dashboard (Streamlit)
+```sh
+streamlit run streamlit_app.py
+```
+- Open in any web browser on your PC, laptop, or tablet on your local network (e.g., `http://localhost:8501`).
+
+---
+
+### Features in Both Applications
+- **Table & History**: One row per node ID, live temperature/humidity updates, dual-axis history plots backed by SQLite.
+- **19 Body Parts Silhouette**: Interactive human body map with Front and Back vector/Plotly views, 19 body part badges (including Neck on Back View, hands, and split feet) displaying assigned Node IDs and real-time thermal color indicators.
+- **Node Assignment & Persistence**: Dropdown assignment for nodes 1–19 auto-saved to `body_mapping.json`.
 - **Flags column**: `OK`, or `TEMP_FAIL`/`HUM_FAIL` (see
   `SENSOR_PAYLOAD_FLAG_TEMP_INVALID`/`_HUMIDITY_INVALID` in
   `../common/pawr_protocol.h`) if the peripheral itself flagged that
   reading as invalid.
 - **History chart**: dual-axis time series (temperature, humidity) for the
   selected node. Time range: 1 h / 6 h / 24 h / 7 d, backed by the SQLite
-  log (not just what's arrived since the GUI was opened).
+  log.
 - **Export CSV...**: dumps the entire `readings` table to a CSV file.
 
 ## Database
