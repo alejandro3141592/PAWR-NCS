@@ -1,0 +1,20 @@
+[16:52:33.222] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[16:52:33.225] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[16:52:33.226] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[16:52:33.226] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[16:52:33.227] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[16:52:33.228] Node ID: 2
+[16:52:33.228] [00:00:00.008,117] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[16:52:33.229] [STORAGE] Flash log ready (8 sectors)
+[16:52:33.229] [00:00:00.009,735] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[16:52:33.232]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[16:52:33.233]                                             74 6c ac 75                                      |tl.u             [0m
+[16:52:33.234] [00:00:00.012,359] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[16:52:33.235] [00:00:00.012,390] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[16:52:33.236] [00:00:00.012,420] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[16:52:33.237] [00:00:00.013,336] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[16:52:33.238] [00:00:00[SENSORS] node 2 seq 1 temp=29.46C humidity=34.9% flags=0x00
+[16:52:43.209] Timed out while synchronizing
+[16:52:43.209] Waiting for periodic sync...
+[16:52:43.209] [SENSORS] node 2 seq 2 temp=29.82C humidity=34.6% flags=0x00
+[16:52:53.250] [SENSORS] node 2 seq 3 temp=30.00C humidity=34.4% flags=0x00

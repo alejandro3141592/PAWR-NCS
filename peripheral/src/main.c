@@ -26,12 +26,27 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/fs/fcb.h>
 #include <zephyr/kernel.h>
-#include <zephyr/shell/shell.h>
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
 
 #include "pawr_protocol.h"
+
+/* Diagnostic output toggle: CONFIG_APP_SERIAL_LOGGING defaults to y for
+ * development, but should be set to n for real deployment (17 unattended
+ * field nodes) to avoid any chance of the serial console -- a USB-CDC
+ * transport already shown this session to be fragile under load (see the
+ * earlier "udc: Failed to allocate net_buf" hang, and the CONFIG_SHELL boot
+ * hang) -- being a source of problems at all. IS_ENABLED() makes the
+ * disabled branch dead code eliminated at compile time, not a runtime
+ * check, so this has zero cost when off. See NOTES.md 2026-08-03.
+ */
+#define APP_LOG(fmt, ...)                                                                        \
+	do {                                                                                       \
+		if (IS_ENABLED(CONFIG_APP_SERIAL_LOGGING)) {                                      \
+			printk(fmt, ##__VA_ARGS__);                                               \
+		}                                                                                  \
+	} while (0)
 
 #define NAME_LEN 30
 
@@ -73,7 +88,7 @@ static void status_led_blip(void)
 static void status_led_init(void)
 {
 	if (!gpio_is_ready_dt(&status_led)) {
-		printk("Status LED device not ready\n");
+		APP_LOG("Status LED device not ready\n");
 		return;
 	}
 
@@ -139,7 +154,7 @@ static struct sensor_payload latest_payload;
 static void sensors_init(void)
 {
 	if (IS_ENABLED(CONFIG_APP_SIMULATE_SENSORS)) {
-		printk("[SENSORS] Simulated mode enabled, skipping real sensor init\n");
+		APP_LOG("[SENSORS] Simulated mode enabled, skipping real sensor init\n");
 		return;
 	}
 
@@ -151,13 +166,13 @@ static void sensors_init(void)
 	if (dev_temp && device_is_ready(dev_temp)) {
 		temp_ok = true;
 	} else {
-		printk("[WARN] Skin temperature sensor not ready\n");
+		APP_LOG("[WARN] Skin temperature sensor not ready\n");
 	}
 
 	if (dev_sht4x && device_is_ready(dev_sht4x)) {
 		sht4x_ok = true;
 	} else {
-		printk("[WARN] Humidity sensor not ready\n");
+		APP_LOG("[WARN] Humidity sensor not ready\n");
 	}
 }
 
@@ -225,7 +240,7 @@ static void storage_fcb_init(void)
 	err = flash_area_get_sectors(FIXED_PARTITION_ID(storage_partition), &sector_cnt,
 				      storage_fcb_sectors);
 	if (err) {
-		printk("[STORAGE] Failed to get flash sectors (err %d)\n", err);
+		APP_LOG("[STORAGE] Failed to get flash sectors (err %d)\n", err);
 		return;
 	}
 
@@ -236,13 +251,40 @@ static void storage_fcb_init(void)
 	};
 
 	err = fcb_init(FIXED_PARTITION_ID(storage_partition), &storage_fcb);
+	if (err == -ENOMSG) {
+		/* -ENOMSG means a sector's on-flash header magic matched
+		 * neither "erased" nor our own magic -- i.e. this partition
+		 * holds leftover data from something else, not a truly blank
+		 * area (confirmed on real hardware 2026-08-03: this is the
+		 * first time this partition has ever been written by this
+		 * project). Standard FCB recovery: erase the whole partition
+		 * once and retry fcb_init(), same as formatting a blank area.
+		 */
+		const struct flash_area *fap;
+
+		APP_LOG("[STORAGE] Flash log area has foreign data, erasing and retrying\n");
+
+		err = flash_area_open(FIXED_PARTITION_ID(storage_partition), &fap);
+		if (!err) {
+			err = flash_area_erase(fap, 0, fap->fa_size);
+			flash_area_close(fap);
+		}
+
+		if (err) {
+			APP_LOG("[STORAGE] Failed to erase flash log area (err %d)\n", err);
+			return;
+		}
+
+		err = fcb_init(FIXED_PARTITION_ID(storage_partition), &storage_fcb);
+	}
+
 	if (err) {
-		printk("[STORAGE] Failed to init flash log (err %d)\n", err);
+		APP_LOG("[STORAGE] Failed to init flash log (err %d)\n", err);
 		return;
 	}
 
 	storage_fcb_ok = true;
-	printk("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
+	APP_LOG("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
 }
 
 /* Appends one payload to the flash log. Failure here is logged but never
@@ -260,29 +302,37 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 
 	err = fcb_append(&storage_fcb, sizeof(*payload), &loc);
 	if (err) {
-		printk("[STORAGE] fcb_append failed (err %d)\n", err);
+		APP_LOG("[STORAGE] fcb_append failed (err %d)\n", err);
 		return;
 	}
 
 	err = flash_area_write(storage_fcb.fap, FCB_ENTRY_FA_DATA_OFF(loc), payload,
 				sizeof(*payload));
 	if (err) {
-		printk("[STORAGE] flash_area_write failed (err %d)\n", err);
+		APP_LOG("[STORAGE] flash_area_write failed (err %d)\n", err);
 		return;
 	}
 
 	err = fcb_append_finish(&storage_fcb, &loc);
 	if (err) {
-		printk("[STORAGE] fcb_append_finish failed (err %d)\n", err);
+		APP_LOG("[STORAGE] fcb_append_finish failed (err %d)\n", err);
 	}
 }
 
-/* "dump" shell command context: shell_print()'d directly rather than
- * buffered, since a full log (up to ~1440 rows for a 4h run) doesn't need
- * to live in RAM all at once -- fcb_walk() streams one entry at a time.
+/* Retrieval mechanism (replaces the earlier shell-based "dump" command,
+ * dropped 2026-08-03 after CONFIG_SHELL hung the board's console completely
+ * -- see NOTES.md). Prints the whole flash log as CSV over the plain
+ * printk() console instead, which is the same path already proven reliable
+ * all session, no extra subsystem needed. Gated by CONFIG_APP_DUMP_ON_BOOT:
+ * build with that set, flash the specific board whose log you want, and
+ * capture its serial output right after boot (tools/Watch-SerialLog.ps1) --
+ * the CSV is between the header row and the trailing "# N rows" line.
+ * Deliberately unconditional on CONFIG_APP_SERIAL_LOGGING (the "quiet
+ * production" toggle just below): a dump-mode build is a distinct,
+ * intentional retrieval session, not something that should go silent
+ * because the quiet flag happened to be left on from a production build.
  */
 struct storage_dump_ctx {
-	const struct shell *sh;
 	uint32_t count;
 };
 
@@ -303,53 +353,39 @@ static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 	err = flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
 			       sizeof(payload));
 	if (err) {
-		shell_error(ctx->sh, "# read error at entry %u (err %d)", ctx->count, err);
+		printk("# read error at entry %u (err %d)\n", ctx->count, err);
 		return 0;
 	}
 
-	shell_print(ctx->sh, "%u,%u,0x%02x,%u,%d.%02u,%u.%u", payload.node_id, payload.seq,
-		    payload.flags, ctx->count, payload.temp_cdeg / 100,
-		    abs(payload.temp_cdeg % 100), payload.humidity_pct10 / 10,
-		    payload.humidity_pct10 % 10);
+	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u\n", payload.node_id, payload.seq, payload.flags,
+	       ctx->count, payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
+	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10);
 
 	ctx->count++;
 
 	return 0;
 }
 
-/* "dump" -- prints every stored reading as CSV over the shell's own
- * console (same USB-CDC transport already captured by
- * tools/Watch-SerialLog.ps1), oldest first. Redirect/copy the shell
- * session's output and trim to the CSV lines (between the header row and
- * the trailing "# N rows" line) to get a clean .csv file.
- */
-static int cmd_storage_dump(const struct shell *sh, size_t argc, char **argv)
+static void storage_dump_all(void)
 {
-	struct storage_dump_ctx ctx = { .sh = sh, .count = 0 };
+	struct storage_dump_ctx ctx = { .count = 0 };
 	int err;
 
-	ARG_UNUSED(argc);
-	ARG_UNUSED(argv);
-
 	if (!storage_fcb_ok) {
-		shell_error(sh, "Flash log not available (storage_fcb_init failed at boot)");
-		return -ENODEV;
+		printk("# flash log not available (storage_fcb_init failed at boot)\n");
+		return;
 	}
 
-	shell_print(sh, "node_id,seq,flags,row,temp_c,humidity_pct");
+	printk("node_id,seq,flags,row,temp_c,humidity_pct\n");
 
 	err = fcb_walk(&storage_fcb, NULL, storage_dump_walk_cb, &ctx);
 	if (err) {
-		shell_error(sh, "fcb_walk failed (err %d)", err);
-		return err;
+		printk("# fcb_walk failed (err %d)\n", err);
+		return;
 	}
 
-	shell_print(sh, "# %u rows", ctx.count);
-
-	return 0;
+	printk("# %u rows\n", ctx.count);
 }
-
-SHELL_CMD_REGISTER(dump, NULL, "Dump the on-board sensor reading log as CSV", cmd_storage_dump);
 
 static void sensor_read_work_handler(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(sensor_read_work, sensor_read_work_handler);
@@ -359,7 +395,7 @@ static void sensor_read_work_handler(struct k_work *work)
 	sensors_read(&latest_payload);
 	storage_fcb_append(&latest_payload);
 
-	printk("[SENSORS] node %u seq %u temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
+	APP_LOG("[SENSORS] node %u seq %u temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
 	       latest_payload.node_id, latest_payload.seq,
 	       latest_payload.temp_cdeg / 100, abs(latest_payload.temp_cdeg % 100),
 	       latest_payload.humidity_pct10 / 10, latest_payload.humidity_pct10 % 10,
@@ -380,7 +416,7 @@ static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_s
 	int err;
 
 	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
-	printk("Synced to %s with %d subevents\n", le_addr, info->num_subevents);
+	APP_LOG("Synced to %s with %d subevents\n", le_addr, info->num_subevents);
 
 	default_sync = sync;
 
@@ -391,9 +427,9 @@ static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_s
 
 	err = bt_le_per_adv_sync_subevent(sync, &params);
 	if (err) {
-		printk("Failed to set subevents to sync to (err %d)\n", err);
+		APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 	} else {
-		printk("Changed sync to subevent %d\n", subevents[0]);
+		APP_LOG("Changed sync to subevent %d\n", subevents[0]);
 	}
 
 	gpio_pin_set_dt(&status_led, 1);
@@ -408,7 +444,7 @@ static void term_cb(struct bt_le_per_adv_sync *sync,
 
 	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
 
-	printk("Sync terminated (reason %d)\n", info->reason);
+	APP_LOG("Sync terminated (reason %d)\n", info->reason);
 
 	default_sync = NULL;
 
@@ -429,7 +465,7 @@ static void recv_cb(struct bt_le_per_adv_sync *sync,
 	if (buf) {
 		static const uint16_t company_id = 0xFFFF;
 
-		printk(">>> Poll received: subevent %d, responding in slot %d\n", info->subevent,
+		APP_LOG(">>> Poll received: subevent %d, responding in slot %d\n", info->subevent,
 		       pawr_timing.response_slot);
 
 		net_buf_simple_reset(&rsp_buf);
@@ -446,12 +482,12 @@ static void recv_cb(struct bt_le_per_adv_sync *sync,
 
 		err = bt_le_per_adv_set_response_data(sync, &rsp_params, &rsp_buf);
 		if (err) {
-			printk("Failed to send response (err %d)\n", err);
+			APP_LOG("Failed to send response (err %d)\n", err);
 		} else {
 			status_led_blip();
 		}
 	} else {
-		printk("Failed to receive indication: subevent %d\n", info->subevent);
+		APP_LOG("Failed to receive indication: subevent %d\n", info->subevent);
 	}
 }
 
@@ -479,7 +515,7 @@ static ssize_t write_timing(struct bt_conn *conn, const struct bt_gatt_attr *att
 
 	memcpy(&pawr_timing, buf, len);
 
-	printk("New timing: subevent %d, response slot %d\n", pawr_timing.subevent,
+	APP_LOG("New timing: subevent %d, response slot %d\n", pawr_timing.subevent,
 	       pawr_timing.response_slot);
 
 	struct bt_le_per_adv_sync_subevent_params params;
@@ -494,12 +530,12 @@ static ssize_t write_timing(struct bt_conn *conn, const struct bt_gatt_attr *att
 	if (default_sync) {
 		err = bt_le_per_adv_sync_subevent(default_sync, &params);
 		if (err) {
-			printk("Failed to set subevents to sync to (err %d)\n", err);
+			APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 		} else {
-			printk("Changed sync to subevent %d\n", subevents[0]);
+			APP_LOG("Changed sync to subevent %d\n", subevents[0]);
 		}
 	} else {
-		printk("Not synced yet\n");
+		APP_LOG("Not synced yet\n");
 	}
 
 	return len;
@@ -512,7 +548,7 @@ BT_GATT_SERVICE_DEFINE(pawr_svc, BT_GATT_PRIMARY_SERVICE(&pawr_svc_uuid.uuid),
 
 void connected(struct bt_conn *conn, uint8_t err)
 {
-	printk("Connected, err 0x%02X %s\n", err, bt_hci_err_to_str(err));
+	APP_LOG("Connected, err 0x%02X %s\n", err, bt_hci_err_to_str(err));
 
 	if (err) {
 		default_conn = NULL;
@@ -528,7 +564,7 @@ void disconnected(struct bt_conn *conn, uint8_t reason)
 	bt_conn_unref(default_conn);
 	default_conn = NULL;
 
-	printk("Disconnected, reason 0x%02X %s\n", reason, bt_hci_err_to_str(reason));
+	APP_LOG("Disconnected, reason 0x%02X %s\n", reason, bt_hci_err_to_str(reason));
 
 	k_sem_give(&sem_disconnected);
 }
@@ -547,16 +583,20 @@ int main(void)
 	struct bt_le_per_adv_sync_transfer_param past_param;
 	int err;
 
-	printk("Starting Periodic Advertising with Responses Synchronization Demo (peripheral)\n");
-	printk("Node ID: %u\n", CONFIG_APP_NODE_ID);
+	APP_LOG("Starting Periodic Advertising with Responses Synchronization Demo (peripheral)\n");
+	APP_LOG("Node ID: %u\n", CONFIG_APP_NODE_ID);
 
 	status_led_init();
 	sensors_init();
 	storage_fcb_init();
 
+	if (IS_ENABLED(CONFIG_APP_DUMP_ON_BOOT)) {
+		storage_dump_all();
+	}
+
 	err = bt_enable(NULL);
 	if (err) {
-		printk("Bluetooth init failed (err %d)\n", err);
+		APP_LOG("Bluetooth init failed (err %d)\n", err);
 
 		return 0;
 	}
@@ -573,7 +613,7 @@ int main(void)
 	past_param.options = BT_LE_PER_ADV_SYNC_TRANSFER_OPT_NONE;
 	err = bt_le_per_adv_sync_transfer_subscribe(NULL, &past_param);
 	if (err) {
-		printk("PAST subscribe failed (err %d)\n", err);
+		APP_LOG("PAST subscribe failed (err %d)\n", err);
 
 		return 0;
 	}
@@ -604,12 +644,12 @@ int main(void)
 
 		err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
 		if (err && err != -EALREADY) {
-			printk("Advertising failed to start (err %d)\n", err);
+			APP_LOG("Advertising failed to start (err %d)\n", err);
 
 			return 0;
 		}
 
-		printk("Waiting for periodic sync...\n");
+		APP_LOG("Waiting for periodic sync...\n");
 		/* Central connects, sends PAST, discovers, writes the
 		 * assignment, then deliberately holds the connection open a
 		 * bit past one full periodic advertising interval before
@@ -621,21 +661,21 @@ int main(void)
 		 */
 		err = k_sem_take(&sem_per_sync, K_MSEC(PAWR_INTERVAL_MS * 2));
 		if (err) {
-			printk("Timed out while synchronizing\n");
+			APP_LOG("Timed out while synchronizing\n");
 
 			continue;
 		}
 
-		printk("Periodic sync established.\n");
+		APP_LOG("Periodic sync established.\n");
 
 		err = k_sem_take(&sem_per_sync_lost, K_FOREVER);
 		if (err) {
-			printk("failed (err %d)\n", err);
+			APP_LOG("failed (err %d)\n", err);
 
 			return 0;
 		}
 
-		printk("Periodic sync lost.\n");
+		APP_LOG("Periodic sync lost.\n");
 	} while (true);
 
 	return 0;
