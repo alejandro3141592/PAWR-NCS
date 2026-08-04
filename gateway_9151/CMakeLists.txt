@@ -7,6 +7,7 @@ project(pawr_gateway_9151)
 target_sources(app PRIVATE
     src/main.c
     ../common/uart_frame.c
+    ../common/sensor_log.c
     src/uart/uart_receiver.c
     src/mqtt/mqtt_publisher.c
 )

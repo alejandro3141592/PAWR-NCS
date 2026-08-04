@@ -26,7 +26,7 @@
 
 /* Arbitrary byte unlikely to appear as the first byte of a real frame often;
  * framing sync is start-byte + fixed-length only (no escaping) since node_id
- * (payload byte 0) is 1-17 and START_BYTE is chosen outside that range.
+ * (payload byte 0) is 1-50 and START_BYTE is chosen outside that range.
  */
 #define UART_FRAME_START_BYTE 0xA5
 

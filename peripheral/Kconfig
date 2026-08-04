@@ -3,9 +3,9 @@
 mainmenu "PAwR peripheral sensor node"
 
 config APP_NODE_ID
-	int "This node's human-readable ID, stamped into its reported payload (1-17)"
+	int "This node's human-readable ID, stamped into its reported payload (1-50)"
 	default 1
-	range 1 17
+	range 1 50
 	help
 	  Does NOT determine subevent/slot assignment (central assigns that
 	  dynamically over GATT) -- this is only a label so central's printed

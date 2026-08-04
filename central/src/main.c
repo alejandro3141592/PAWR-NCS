@@ -33,6 +33,7 @@
 
 #include "pawr_protocol.h"
 #include "gateway_uart_tx.h"
+#include "sensor_log.h"
 
 /* Retired experiment (2026-08-03, see NOTES.md): stopping periodic
  * advertising during the onboarding connect step did eliminate the 0x08
@@ -197,6 +198,7 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	memcpy(&payload, buf->data, sizeof(payload));
 
 	gateway_uart_tx_send(&payload);
+	sensor_log_append(&payload);
 
 	if (info->subevent < NUM_SUBEVENTS) {
 		slot_taken[info->subevent] = true;
@@ -436,6 +438,17 @@ int main(void)
 	 * gateway_uart_tx_send() just no-ops in that case. See gateway_uart_tx.h.
 	 */
 	gateway_uart_tx_init();
+
+	/* Fallback local record of every payload received over PAwR, in case
+	 * the UART link to the gateway board (or the gateway's own MQTT/LTE
+	 * hop) is down -- same rationale/mechanism as peripheral's on-board
+	 * flash log, see common/sensor_log.h.
+	 */
+	sensor_log_init();
+
+	if (IS_ENABLED(CONFIG_APP_DUMP_LOG_ON_BOOT)) {
+		sensor_log_dump_all();
+	}
 
 	/* Initialize the Bluetooth Subsystem */
 	err = bt_enable(NULL);

@@ -60,7 +60,7 @@ copy finishes.
 
 ## peripheral (Seeed XIAO nRF52840 -- skin sensor node)
 
-**Build** (set `-DCONFIG_APP_NODE_ID=N` to this board's node number, 1-17;
+**Build** (set `-DCONFIG_APP_NODE_ID=N` to this board's node number, 1-50;
 omit it to use whatever's already in `peripheral/prj.conf`/`peripheral/node_id.txt`):
 
 ```powershell

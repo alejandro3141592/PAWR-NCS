@@ -8,5 +8,6 @@ target_sources(app PRIVATE
     src/main.c
     src/gateway_uart_tx.c
     ../common/uart_frame.c
+    ../common/sensor_log.c
 )
 target_include_directories(app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../common)

@@ -33,7 +33,7 @@
 #include "pawr_protocol.h"
 
 /* Diagnostic output toggle: CONFIG_APP_SERIAL_LOGGING defaults to y for
- * development, but should be set to n for real deployment (17 unattended
+ * development, but should be set to n for real deployment (50 unattended
  * field nodes) to avoid any chance of the serial console -- a USB-CDC
  * transport already shown this session to be fragile under load (see the
  * earlier "udc: Failed to allocate net_buf" hang, and the CONFIG_SHELL boot

@@ -1,0 +1,20 @@
+[09:33:08.256] >>> Node 02 (subevent 0): skin_temp=30.00C humidity=45.0% seq=14
+[09:33:08.261] >>> Node 02 (subevent 0): skin_temp=30.00C humidity=45.1% seq=15
+[09:33:08.262] >>> Node 02 (subevent 0): skin_temp=30.00C humidity=45.4% seq=16
+[09:33:08.263] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.6% seq=17
+[09:33:08.263] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.8% seq=18
+[09:33:08.264] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.2% seq=20
+[09:33:08.265] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=48.1% seq=21
+[09:33:08.266] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.6% seq=22
+[09:33:08.267] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.4% seq=23
+[09:33:08.267] [00:06:43.242,797] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[09:33:08.267] [00:06:44.591,857] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[09:33:08.269] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.2% seq=24
+[09:33:08.269] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=47.5% seq=26
+[09:33:08.270] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.3% seq=27
+[09:33:08.271] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=47.4% seq=28
+[09:33:08.271] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=47.5% seq=29>>> Node 02 (subevent 0): skin_temp=29.00C humidity=48.8% seq=98
+[09:33:18.255] >>> Node 02 (subevent 0): skin_temp=29.00C humidity=46.8% seq=99
+[09:33:28.255] >>> Node 02 (subevent 0): skin_temp=29.00C humidity=46.9% seq=100
+[09:33:38.254] >>> Node 02 (subevent 0): skin_temp=29.00C humidity=47.4% seq=101
+[09:33:48.254] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=46.6% seq=102

@@ -63,11 +63,26 @@
  */
 #define APP_SCALE_TEST 0
 
-/* One subevent per node (17 nodes + 3 spare), one response slot per
+/* One subevent per node (50 nodes + 5 spare), one response slot per
  * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
  * = 10.00s exactly). subevent_interval is uint8_t in 1.25ms units,
  * response_slot_delay is uint8_t in 1.25ms units, response_slot_spacing is
  * uint8_t in 0.125ms units.
+ *
+ * 2026-08-04: raised from 20 to 55 (50 nodes + 5 spare, up from 17+3) for
+ * the 50-node deployment target. Subevent train span scales linearly with
+ * NUM_SUBEVENTS (55 * 40ms = 2200ms), still comfortably inside the 10s
+ * interval (4.5x headroom, vs. 12.5x at 20) -- no interval/subevent_interval
+ * change needed, this is a straightforward capacity increase, not a new
+ * timing regime. response_slot_delay/response_slot_spacing are per-subevent
+ * constants (not per-count), so that budget is unaffected by the count
+ * change. What DOES need re-validation on real hardware at this scale: the
+ * SDC's PAwR TX/RX buffer counts (see central/prj.conf) -- confirmed by
+ * hard experience (NOTES.md 2026-08-01) that these do NOT scale
+ * automatically with subevent count, and guessing too high (12/12 at 20
+ * subevents) broke things worse than the stock default, so treat the
+ * scaled-up buffer values below as an unverified starting point, not a
+ * proven-safe setting, until soak-tested.
  */
 #if APP_MINIMAL_REPRO
 #define NUM_SUBEVENTS             5
@@ -82,7 +97,7 @@
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             20
+#define NUM_SUBEVENTS             55
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1

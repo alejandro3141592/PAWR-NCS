@@ -113,8 +113,13 @@ both were in place.
    when you're ready to decide how to expose it securely.
 2. **Message queue sizing** (`K_MSGQ_DEFINE(frame_msgq, ..., 8, 4)` in
    `src/main.c`) is a rough guess (8 slots), not measured -- revisit once
-   real traffic (up to 17 nodes/10s cadence) is flowing and it's clear
-   whether frames are ever actually dropped for queue-full reasons.
+   real traffic (up to 50 nodes/10s cadence, see NOTES.md 2026-08-04 for the
+   NUM_SUBEVENTS 20->55 change) is flowing and it's clear whether frames are
+   ever actually dropped for queue-full reasons. Worth flagging: 8 slots was
+   never re-validated against the 50-node worst case (up to 50 frames in a
+   ~2.2s subevent train, vs. central forwarding them over UART as fast as
+   `uart_poll_out()` can clock 11 bytes at 115200 baud -- MQTT publish is the
+   actual bottleneck downstream of this queue, not the UART link).
 3. **Not yet soak-tested.** Confirmed working over short sessions; hasn't
    been run for hours at a time the way `central`/`peripheral` have.
 

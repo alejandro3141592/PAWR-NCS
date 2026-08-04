@@ -1,0 +1,18 @@
+[10:41:33.894] [00:00:00.000,457] [0m<inf> udc_nrf: Preinit[0m
+[10:41:33.898] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[10:41:33.898] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[10:41:33.899] [00:00:00.000,823] [0m<inf> udc_nrf: Initialized[0m
+[10:41:33.899] Starting Periodic Advertising Demo (central)
+[10:41:33.899] [GW-UART] Ready
+[10:41:33.900] [00:00:00.001,190] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[10:41:33.902]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[10:41:33.903]                                             74 6c ac 75                                      |tl.u             [0m
+[10:41:33.903] [00:00:00.003,723] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[10:41:33.904] [00:00:00.003,753] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[10:41:33.904] [00:00:00.003,753] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[10:41:33.905] [00:00:00.004,669] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[10:41:33.906] [00:00:00.004,760] [0m<inf> bt_hci_core: Identity: F4:AE:CD:49:BF:69 (random)[0m
+[10:41:33.906] [00:00:00.004,791] [0m<inf> bt_hci_core: HCI: version 6.2 [00:01:19.639,892] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[10:41:33.907] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.9% seq=3
+[10:41:36.897] [00:01:22.645,355] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[10:41:44.273] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=44.7% seq=4

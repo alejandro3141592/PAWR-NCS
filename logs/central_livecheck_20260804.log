@@ -1,0 +1,8 @@
+[09:18:37.516] [00:03:48.459,777] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[09:18:37.520] >>> Node 02 (subevent 0): skin_temp=32.00C humidity=42.3% seq=6
+[09:18:37.521] >>> Node 02 (subevent 0): skin_temp=31.00C humidity=43.3% seq=7
+[09:18:37.521] >>> Node 02 (subevent 0): skin_temp=30.00C humidity=43.7% seq=8
+[09:18:37.522] >>> Node 02 (subevent 0): skin_temp=30.00C humidity=44.6% seq=9
+[09:18:37.522] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.3% seq=10
+[09:18:38.289] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.8% seq=11
+[09:18:58.288] >>> Node 02 (subevent 0): skin_temp=29.50C humidity=45.0% seq=13

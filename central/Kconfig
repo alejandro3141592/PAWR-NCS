@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "PAwR central hub"
+
+config APP_DUMP_LOG_ON_BOOT
+	bool "Dump the on-board flash sensor log as CSV over serial at boot"
+	default n
+	help
+	  One-shot retrieval mode: at boot, print every payload recorded in
+	  the on-board flash log (see common/sensor_log.h) as CSV over
+	  printk(), then continue normal operation as usual. Same mechanism
+	  as peripheral's CONFIG_APP_DUMP_ON_BOOT -- capture serial output
+	  right after boot to retrieve the CSV.
+
+source "Kconfig.zephyr"

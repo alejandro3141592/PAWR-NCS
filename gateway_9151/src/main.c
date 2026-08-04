@@ -14,6 +14,7 @@
 #include <modem/lte_lc.h>
 
 #include "pawr_protocol.h"
+#include "sensor_log.h"
 #include "uart/uart_receiver.h"
 #include "mqtt/mqtt_publisher.h"
 
@@ -60,6 +61,15 @@ static void on_uart_frame(const struct sensor_payload *payload)
 	       payload->node_id, payload->seq, payload->flags, payload->temp_cdeg,
 	       payload->humidity_pct10);
 
+	/* Fallback local record of every frame received from central, in case
+	 * this gateway's own MQTT/LTE hop is down for a while -- same
+	 * mechanism as peripheral's and central's on-board flash log, see
+	 * common/sensor_log.h. Logged here (on receipt), not after a
+	 * successful/failed publish, so the record is complete regardless of
+	 * what happens downstream.
+	 */
+	sensor_log_append(payload);
+
 	int err = k_msgq_put(&frame_msgq, payload, K_NO_WAIT);
 
 	if (err) {
@@ -71,6 +81,12 @@ static void on_uart_frame(const struct sensor_payload *payload)
 int main(void)
 {
 	printk("[MAIN] PAwR nRF9151 gateway starting\n");
+
+	sensor_log_init();
+
+	if (IS_ENABLED(CONFIG_APP_DUMP_LOG_ON_BOOT)) {
+		sensor_log_dump_all();
+	}
 
 	int err = uart_receiver_init(on_uart_frame);
 

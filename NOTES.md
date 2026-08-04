@@ -8,6 +8,132 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-04 — scaled to 50 nodes; dropped gateway_9151's button-dump feature after a real console mystery
+
+**Scaled from 17/20 to 50/55 nodes/subevents.** `NUM_SUBEVENTS` in
+`common/pawr_protocol.h` raised 20 -> 55 (50 nodes + 5 spare, matching the
+existing "+3 spare" convention scaled up). Subevent train span scales
+linearly (55 * 40ms = 2200ms), still well inside the 10s interval (4.5x
+headroom vs. 12.5x at 20) -- no interval/subevent_interval/response-slot
+timing change needed, this is a straightforward capacity increase, not a
+new timing regime. `peripheral/Kconfig`'s `APP_NODE_ID` range widened 1-17
+-> 1-50, plus matching doc/comment updates in `common/uart_frame.h`,
+`peripheral/src/main.c`, `tools/Sync-And-Build.ps1` (including its
+`-NodeId` `ValidateRange`), `BUILD_AND_FLASH.md`, and `gateway_9151/README.md`.
+
+**Buffer counts scaled proportionally, explicitly flagged as unverified.**
+`central/prj.conf`'s `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_RSP_TX/RX_BUFFER_COUNT`
+raised 6/6 -> 15/15 (20->55 is 2.75x, 6*2.75~=16.5, rounded to 15) as a
+starting guess only. Worth remembering why this is flagged so cautiously:
+the 2026-08-01 entries below found that these values do NOT scale
+automatically with `NUM_SUBEVENTS`, that 6/6 was the result of real
+incremental soak-testing (not a first guess), and that jumping too far too
+fast (12/12, only 2x up from 6/6, no subevent-count change at all)
+*broke* things worse than the stock default (zero serial output for a full
+30-min soak) rather than improving them. 15/15 has NOT been soak-tested at
+55-subevent scale -- treat it as a starting point for the same
+incremental-step methodology (small step, short capture, then a full
+30-min soak) before trusting it unattended.
+
+**gateway_9151's button-triggered flash-log dump (added earlier today) was
+removed after failing to get working and eating a lot of diagnostic time.**
+The feature itself (`dump_button.c`/`.h`, `INPUT_CALLBACK_DEFINE` on
+BUTTON1/sw0, `CONFIG_GPIO`+`CONFIG_INPUT`) built and flashed successfully
+(confirmed via `nrfutil device fw-verify` matching the on-device image), but
+produced **zero serial output on either console port after flashing** --
+not even the very first `printk` line in `main()`, across many capture
+attempts, multiple resets (including a full `RESET_SYSTEM`), and a
+double-checked port identity (`nrfutil device list` showed COM143 = vcom:0/
+console, COM142 = vcom:1 -- the *opposite* of `BUILD_AND_FLASH.md`'s
+"lower-numbered port is typically VCOM0" heuristic, which is now suspect
+and shouldn't be trusted without confirming via `nrfutil device list` on
+each machine/setup). Went as far as reading the CPU's program counter
+directly over the J-Link (`nrfutil device cpu-register-read`) -- confirmed
+the core is genuinely alive and healthy, sitting normally in Zephyr's idle
+thread (`arch_cpu_idle`'s `wfi`), not crashed or hung. So the board is
+running; something about the console UART path itself (not app logic) is
+the mystery, and it wasn't resolved even after trying a separate serial
+terminal app outside this session's tooling. **Parked, not solved** -- the
+board's actual `CONFIG_APP_DUMP_LOG_ON_BOOT` + reflash retrieval path
+(already existing, unaffected by any of this) is what's actually used for
+now. If this gets revisited: start from "why is console output missing
+even though the CPU is confirmed healthy" rather than re-suspecting the
+button/input code, since that's already been ruled out as the cause (the
+very first `printk`, before any button-related code runs at all, never
+appeared either).
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
+## 2026-08-04 — central + gateway_9151 now have the same on-board flash fallback log peripheral has
+
+Extended peripheral's on-board flash log (Flash Circular Buffer in the
+"storage_partition" Partition Manager reserves, see the 2026-08-03 entry
+below) to `central` and `gateway_9151`, so all three hops have a local
+fallback record, not just the sensor nodes. Pulled the FCB init/append/dump
+logic out of `peripheral/src/main.c` into a shared `common/sensor_log.c|h`
+(byte-for-byte port, no behavior change) so central and gateway_9151 reuse
+it instead of each reimplementing the same boilerplate.
+
+- **central**: `sensor_log_append()` called in `response_cb` right where it
+  already calls `gateway_uart_tx_send()` -- logs every payload received over
+  PAwR, as a fallback for both a down UART link to the gateway and a down
+  MQTT/LTE hop on the gateway's end. New `CONFIG_APP_DUMP_LOG_ON_BOOT`
+  (central's first app-level `Kconfig`, previously only had
+  `Kconfig.sysbuild`) for retrieval, same convention as peripheral's
+  `CONFIG_APP_DUMP_ON_BOOT`.
+- **gateway_9151**: `sensor_log_append()` called in `on_uart_frame` (logged
+  on receipt from central, before the MQTT publish attempt -- so the record
+  is complete regardless of what happens downstream). Same
+  `CONFIG_APP_DUMP_LOG_ON_BOOT` convention added to its existing `Kconfig`.
+
+**gateway_9151 needed real debugging to get working, central didn't.**
+Central and peripheral share the same nRF52840 board family and got
+`CONFIG_FLASH=y`/`CONFIG_FLASH_MAP=y`/`CONFIG_FCB=y` working immediately
+(confirmed: both are plain non-TF-M targets that already have a
+`storage_partition` PM region for unrelated reasons -- turned out to be
+because their BLE stack enables one of Zephyr's Settings backends as a side
+effect, which is what actually triggers Partition Manager's
+`settings_storage` reservation, see below). gateway_9151 (nRF9151, TF-M
+`/ns`) has no BLE stack and doesn't get that for free, and hit two build
+failures before working:
+
+1. `CONFIG_FCB`+`CONFIG_FLASH`+`CONFIG_FLASH_MAP` alone (matching the flag
+   set the in-tree `nrf/samples/cellular/modem_trace_flash` sample uses on
+   this exact board/target) built fine but **failed to link**:
+   `'PM_storage_partition_ID' undeclared`. Root cause, found by tracing
+   `FIXED_PARTITION_ID(storage_partition)` through
+   `nrf/include/flash_map_pm.h` and `nrf/subsys/partition_manager/Kconfig`:
+   Partition Manager only reserves a `settings_storage`/`storage_partition`
+   region `if SETTINGS_FCB || SETTINGS_NVS || SETTINGS_ZMS || ...` (see
+   `pm.yml.settings`) -- gated on Zephyr's Settings subsystem backend
+   choice, not on `CONFIG_FCB`/`FLASH_MAP` directly. There's a separate,
+   *fixed* devicetree `storage_partition` node on this SoC
+   (`nrf91xx_partition.dtsi`, at `0xf8000`) but it's TF-M's own Protected
+   Storage partition, never registered with Partition Manager under that
+   name, so it doesn't give the non-secure app a `PM_..._ID` either way.
+2. Added `CONFIG_SETTINGS_FCB=y` alone -- **same exact link error again**.
+   Traced via `.config-trace.json`: `CONFIG_SETTINGS` was still "not set".
+   `SETTINGS_FCB` lives inside Zephyr's `menuconfig SETTINGS` block
+   (`zephyr/subsys/settings/Kconfig`), so it's implicitly gated on
+   `SETTINGS=y` too, not just its explicit `depends on FCB` -- easy to miss
+   since nothing in the symbol's own text says so.
+3. Added `CONFIG_SETTINGS=y` as well -- builds and links clean.
+   `gateway_9151/build/pm.config` now shows `PM_SETTINGS_STORAGE_ID` (8KB
+   at `0xe0000`, inside `nonsecure_storage`), same mechanism as
+   central/peripheral, just reached via an explicit two-line Kconfig
+   addition instead of a free side effect. Neither `SETTINGS` nor
+   `SETTINGS_FCB` is ever actually exercised (no `settings_subsys_init()`/
+   handler registered anywhere in this app) -- both enabled purely to
+   trigger the PM partition reservation.
+
+Not yet done: none of the three boards has been reflashed/soak-tested with
+this change on real hardware yet (verified build-only, all three targets
+compile clean as of this entry). Retrieval (`CONFIG_APP_DUMP_LOG_ON_BOOT`)
+also untested on real hardware for central/gateway_9151, though it's the
+same code path already proven working on peripheral.
+
 ## 2026-08-04 — new component: gui/ desktop dashboard (PyQt5 + SQLite)
 
 Added `gui/`, a PyQt5 desktop app that subscribes to the MQTT broker
