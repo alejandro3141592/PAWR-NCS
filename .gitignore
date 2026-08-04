@@ -29,6 +29,20 @@ gateway_9151/secrets.conf
 # BUILD_AND_FLASH.md) -- created/removed locally as needed, not committed.
 gateway_9151/boards/loopback_test.conf
 
+# GUI broker credentials -- real values only ever go in this local,
+# untracked copy. gui/config.example.json (committed) is the template.
+gui/config.json
+
+# GUI runtime data: local SQLite DB + any exported CSVs, not shared project
+# content.
+gui/sensor_data.db
+gui/sensor_data.db-*
+gui/*.csv
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
 # Claude Code local session state, not shared project content
 .claude/
 

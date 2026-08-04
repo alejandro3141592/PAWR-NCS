@@ -8,6 +8,50 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-04 — new component: gui/ desktop dashboard (PyQt5 + SQLite)
+
+Added `gui/`, a PyQt5 desktop app that subscribes to the MQTT broker
+`gateway_9151` publishes to, shows a live per-node table (temp, humidity,
+seq, flags, last-seen), logs everything to a local SQLite DB, and plots a
+history chart per node -- adapted from a much richer prior version of this
+GUI (`TempUART_reader/scripts/sensor_gui.py`, kept locally, not part of this
+repo) that was built for a different sensor set (body-silhouette mapping,
+heart rate, SpO2, multiple channels per node). None of that applies to
+`gateway_9151`'s actual output (per-node temperature + humidity only, see
+`gateway_9151/src/mqtt/mqtt_publisher.c`), so the new version is a plain
+table instead of carrying forward UI for data nothing produces.
+
+**Real bugs found and fixed during adaptation, not just copy-pasted:**
+
+1. **Hardcoded plaintext broker password** in the old
+   `TempUART_reader/scripts/sensor_gui.py` (`PASSWORD = "..."` at module
+   level). New version reads from `gui/config.json` (gitignored -- template
+   is the committed `gui/config.example.json`), same pattern as
+   `gateway_9151/secrets.conf`.
+2. **paho-mqtt v2 API break.** The old code's `mqtt.Client()` (no args) and
+   4-arg `on_connect(client, userdata, flags, rc)` are paho-mqtt v1-style --
+   confirmed the actually-installed version here is 2.1.0, which deprecates
+   the implicit `Client()` constructor and requires
+   `callback_api_version=mqtt.CallbackAPIVersion.VERSION2` plus a 5-arg
+   `on_connect(client, userdata, flags, reason_code, properties)`. Verified
+   by testing against the real installed package rather than assuming the
+   reference code's API still applied.
+3. **`seq`/`flags` silently never logged** -- caught via a real end-to-end
+   test (hardware running, GUI actually receiving and writing to SQLite):
+   every row had `seq=None` despite the gateway's JSON payload including
+   it. Root cause: `on_message` only ever parsed `nodeId`/`value` out of
+   the MQTT JSON, dropping `seq`/`flags` on the floor. Fixed by parsing
+   both and threading them through the Qt signal into the DB insert.
+
+**Confirmed working end-to-end on real hardware**: with `peripheral` +
+`central` + `gateway_9151` all running, the GUI received live data, logged
+correct rows to SQLite (`node_id=2, seq=18/19/20..., flags=0`, real
+temp/humidity values matching what the gateway published), no errors.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
 ## 2026-08-04 — CORRECTION + actually resolved: VCOM1 fix wasn't sufficient by itself; central had a real second bug (uart_fifo_fill misuse)
 
 Follow-up/correction to the entry directly below, which declared this fixed

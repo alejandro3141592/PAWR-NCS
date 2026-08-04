@@ -1,0 +1,7 @@
+{
+  "broker": "9bfedb3b92a849fb856339994755a836.s1.eu.hivemq.cloud",
+  "port": 8883,
+  "username": "test_username",
+  "password": "REPLACE_WITH_REAL_PASSWORD",
+  "use_tls": true
+}
