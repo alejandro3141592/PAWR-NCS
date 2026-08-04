@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <string.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/uart.h>
@@ -42,23 +41,22 @@ void gateway_uart_tx_send(const struct sensor_payload *payload)
 		.crc16 = uart_frame_crc16((const uint8_t *)payload, sizeof(*payload)),
 	};
 
-	const uint8_t *bytes = (const uint8_t *)&frame;
-	size_t remaining = sizeof(frame);
-
-	/* uart_fifo_fill may accept fewer bytes than requested if the FIFO is
-	 * momentarily full; loop until the whole (tiny, 11-byte) frame is
-	 * queued. This still doesn't block on the bytes actually clearing the
-	 * wire, only on FIFO space, which drains at the UART's baud rate
-	 * (~1ms for 11 bytes at 115200) -- negligible next to the ~500ms
-	 * worst-case gap between subevents.
+	/* uart_poll_out(), not uart_fifo_fill(): this is called from
+	 * response_cb, a BLE callback context, not a UART TX ISR.
+	 * uart_fifo_fill()'s own doc comment states "Result of calling this
+	 * function not from an ISR is undefined (hardware-dependent)" --
+	 * confirmed as the actual root cause of the gateway never receiving
+	 * valid frames despite a real (non-zero) voltage on the wire (see
+	 * NOTES.md 2026-08-04): TX was clocking bytes out through an
+	 * unsupported code path instead of failing outright, producing
+	 * malformed signaling. uart_poll_out() blocks until each byte is
+	 * queued and is explicitly safe to call from any context. At 11
+	 * bytes/frame and up to ~20 frames per ~10s interval, the blocking
+	 * cost here is negligible.
 	 */
-	while (remaining > 0) {
-		int sent = uart_fifo_fill(gateway_uart_dev, bytes, remaining);
+	const uint8_t *bytes = (const uint8_t *)&frame;
 
-		if (sent <= 0) {
-			break;
-		}
-		bytes += sent;
-		remaining -= sent;
+	for (size_t i = 0; i < sizeof(frame); i++) {
+		uart_poll_out(gateway_uart_dev, bytes[i]);
 	}
 }

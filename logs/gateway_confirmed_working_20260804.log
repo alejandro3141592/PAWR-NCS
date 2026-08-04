@@ -1,0 +1,46 @@
+[10:42:39.284] [U[UART] heartbeat: isr fires=99, raw bytes=99
+[10:42:42.284] [UART] heartbeat: isr fires=99, raw bytes=99
+[10:42:43.275] [UART] raw byte: 0xa5 (total 100, isr fires 100)
+[10:42:43.278] [UART] raw byte: 0x02 (total 101, isr fires 101)
+[10:42:43.284] [UART] raw byte: 0x00 (total 102, isr fires 102)
+[10:42:43.288] [UART] raw byte: 0x0a (total 103, isr fires 103)
+[10:42:43.293] [UART] raw byte: 0x00 (total 104, isr fires 104)
+[10:42:43.296] [UART] raw byte: 0xb8 (total 105, isr fires 105)
+[10:42:43.301] [UART] raw byte: 0x0b (total 106, isr fires 106)
+[10:42:43.305] [UART] raw byte: 0xc9 (total 107, isr fires 107)
+[10:42:43.310] [UART] raw byte: 0x01 (total 108, isr fires 108)
+[10:42:43.316] [UART] raw byte: 0x94 (total 109, isr fires 109)
+[10:42:43.331] [UART] raw byte: 0x00 (total 110, isr fires 110)
+[10:42:43.331] [MAIN] UART frame received: node=2 seq=10 flags=0x00 temp_cdeg=3000 humidity_pct10=457
+[10:42:45.284] [UART] heartbeat: isr fires=110, raw bytes=110
+[10:42:48.284] [UART] heartbeat: isr fires=110, raw bytes=110
+[10:42:51.284] [UART] heartbeat: isr fires=110, raw bytes=110
+[10:42:53.275] [UART] raw byte: 0xa5 (total 111, isr fires 111)
+[10:42:53.279] [UART] raw byte: 0x02 (total 112, isr fires 112)
+[10:42:53.283] [UART] raw byte: 0x00 (total 113, isr fires 113)
+[10:42:53.287] [UART] raw byte: 0x0b (total 114, isr fires 114)
+[10:42:53.293] [UART] raw byte: 0x00 (total 115, isr fires 115)
+[10:42:53.296] [UART] raw byte: 0xb8 (total 116, isr fires 116)
+[10:42:53.300] [UART] raw byte: 0x0b (total 117, isr fires 117)
+[10:42:53.305] [UART] raw byte: 0xca (total 118, isr fires 118)
+[10:42:53.309] [UART] raw byte: 0x01 (total 119, isr fires 119)
+[10:42:53.314] [UART] raw byte: 0x67 (total 120, isr fires 120)
+[10:42:53.319] [UART] raw byte: 0x10 (total 121, isr fires 121)
+[10:42:53.327] [MAIN] UART frame received: node=2 seq=11 flags=0x00 temp_cdeg=3000 humidity_pct10=458
+[10:42:53.331] [UART] heartbeat: isr fires=121, raw bytes=121
+[10:42:57.284] [UART] heartbeat: isr fires=121, raw bytes=121
+[10:43:00.284] [UART] heartbeat: isr fires=121, raw bytes=121
+[10:43:03.273] [UART] heartbeat: isr fires=121, raw bytes=121
+[10:43:03.278] [UART] raw byte: 0xa5 (total 122, isr fires 122)
+[10:43:03.282] [UART] raw byte: 0x02 (total 123, isr fires 123)
+[10:43:03.288] [UART] raw byte: 0x00 (total 124, isr fires 124)
+[10:43:03.291] [UART] raw byte: 0x0c (total 125, isr fires 125)
+[10:43:03.296] [UART] raw byte: 0x00 (total 126, isr fires 126)
+[10:43:03.300] [UART] raw byte: 0xb8 (total 127, isr fires 127)
+[10:43:03.305] [UART] raw byte: 0x0b (total 128, isr fires 128)
+[10:43:03.309] [UART] raw byte: 0xbd (total 129, isr fires 129)
+[10:43:03.313] [UART] raw byte: 0x01 (total 130, isr fires 130)
+[10:43:03.317] [UART] raw byte: 0xe8 (total 131, isr fires 131)
+[10:43:03.322] [UART] raw byte: 0x49 (total 132, isr fires 132)
+[10:43:03.329] [MAIN] UART frame received: node=2 seq=12 flags=0x00 temp_cdeg=3000 humidity_pct10=445
+[10:43:06.284] [UART] heartbeat: isr fires=132, raw bytes=132

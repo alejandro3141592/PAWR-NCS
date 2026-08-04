@@ -32,16 +32,24 @@ through the IMCU as a virtual COM port by default. Per Nordic's own
 documentation: *"When working with nrf9151dk board with an external MCU
 host, you must disable VCOM0 and VCOM1 in the Board Configurator app to
 release the UART pins for external use."* Without this, the SiP's UARTE1
-peripheral never sees any RX data at all -- confirmed the hard way over a
-multi-session investigation (see `../NOTES.md` 2026-08-03/04): correct
-devicetree/pinctrl/IRQ config, confirmed wire continuity, confirmed TX
-toggling, and even a from-scratch polled-mode (`uart_poll_in`) self-test all
-showed zero bytes ever received, on a UART with its own TX wired directly to
-its own RX. The fix was entirely on the DK hardware-config side, not code --
-no amount of firmware changes would have solved this. This isn't a
-physical switch on the board (a routing switch was checked and ruled out
-early in the investigation) -- it's IMCU firmware state set via that
-separate app.
+peripheral never sees any RX data at all.
+
+**This alone was not sufficient, though -- there was a second, real bug on
+`central`'s side too** (see `../NOTES.md` 2026-08-04 for the full
+investigation): `central/src/gateway_uart_tx.c` sent each frame using
+`uart_fifo_fill()`, an API whose own doc comment states *"Result of calling
+this function not from an ISR is undefined (hardware-dependent)"* --
+`gateway_uart_tx_send()` is called from `response_cb`, a BLE callback, not a
+UART TX ISR. This produced malformed on-wire signaling (confirmed via a
+multimeter reading a real but non-standard ~2.5V average on the RX line,
+inconsistent with either board's actual logic level) that never registered
+as valid UART framing at the receiving end -- the gateway's RX interrupt
+never fired even once, despite voltage genuinely being present on the pin.
+Fixed by switching to `uart_poll_out()`, which is documented as safe to call
+from any context. **Both fixes were required together** -- VCOM1 disabled
+*and* `uart_poll_out()` on the sender -- confirmed via a byte-for-byte raw
+UART dump on the gateway showing exactly the expected 11-byte frames once
+both were in place.
 
 ## Architecture
 

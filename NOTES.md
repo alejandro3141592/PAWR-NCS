@@ -8,6 +8,84 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-04 — CORRECTION + actually resolved: VCOM1 fix wasn't sufficient by itself; central had a real second bug (uart_fifo_fill misuse)
+
+Follow-up/correction to the entry directly below, which declared this fixed
+too early. After the VCOM1 fix, real central + real peripheral + real
+central-to-gateway wiring, the gateway still received **zero** bytes --
+same symptom as before, not a regression, just not actually fixed yet.
+
+**Re-investigated from scratch, this time with central always in the loop**
+(the earlier isolated loopback testing, while a legitimate way to test the
+gateway's own UART hardware, couldn't have caught a bug that only exists in
+central's *sending* code -- an important lesson for next time: a loopback
+test that removes one whole side of the link can prove that side's hardware
+works, but can't prove the far side's software is correct):
+
+1. Re-verified every gateway-side layer again (interrupt-driven RX ISR: zero
+   fires; ISR heartbeat confirmed alive so this wasn't a hung capture) --
+   all still correct, nothing new here.
+2. Multimeter on the DK's RX pin (P0.28) while central was actively
+   transmitting: **2.53V**, not a rail voltage (not 0V, not clean logic-high
+   for either board's domain) and not the ~1.8V idle-high measured during
+   the earlier same-board loopback test. A real, present, but *abnormal*
+   signal -- different enough from "wire is dead" to be a genuinely new
+   clue, not the same symptom restated.
+3. Chased a voltage-domain-mismatch theory (nRF9151 GPIO configurable
+   1.8V/3.3V via Board Configurator, XIAO fixed at 3.3V) far enough to
+   nearly recommend sourcing a level shifter -- correctly stopped by
+   re-comparing against the working `TempUART_reader` reference project
+   first (its actual sender, `arduino_scripts/BLE_reader.ino`, is an
+   Adafruit nRF52 -- same 3.3V logic family as the XIAO -- and that setup
+   worked with no level-shifting hardware mentioned anywhere, which made
+   the voltage-domain theory implausible as the *primary* cause).
+4. Full side-by-side diff of `TempUART_reader` vs. `gateway_9151`:
+   devicetree overlay resolves identically, and a full generated `.config`
+   diff on every `CONFIG_UART_*`/`CONFIG_SERIAL`/`CONFIG_GPIO` symbol came
+   back byte-for-byte identical between both projects' actual builds. This
+   ruled out every remaining Kconfig/devicetree theory definitively --
+   the gateway side's receive path was never the bug.
+5. That redirected attention to `central`'s send side, which had never been
+   checked this carefully before. Found it in
+   `central/src/gateway_uart_tx.c`: `gateway_uart_tx_send()` (called from
+   `response_cb`, a BLE callback) used `uart_fifo_fill()` -- whose own
+   Zephyr doc comment states *"This function is expected to be called from
+   UART interrupt handler (ISR)... Result of calling this function not from
+   an ISR is undefined (hardware-dependent)."* `uart_irq_tx_enable()` was
+   never called anywhere, so this was never valid usage -- it happened to
+   produce *something* on the wire (explaining the 2.53V, not a dead line)
+   but not standards-compliant UART framing.
+
+**Fix:** replaced with `uart_poll_out()`, explicitly documented as safe from
+any context, blocking one byte at a time until each is queued. At 11
+bytes/frame this costs nothing meaningful against the ~500ms-10s gap
+between responses.
+
+**Confirmed working immediately after flashing central with this fix**,
+gateway still running its raw-byte diagnostic build from the loopback
+investigation: clean `0xa5` start bytes, correct 11-byte frames, zero CRC
+mismatches, correctly decoded `node=2 seq=10/11/12...` matching central's
+own printed values exactly. Real end-to-end pipeline confirmed:
+`peripheral` -> BLE -> `central` -> UART -> `gateway_9151` -> MQTT/TLS/LTE
+-> HiveMQ Cloud.
+
+**Both fixes were necessary, neither alone was sufficient**:
+- VCOM1 disabled (previous entry) -- without this, the gateway's UARTE1
+  never gets any signal at all, regardless of what central sends.
+- `uart_poll_out()` instead of `uart_fifo_fill()` (this entry) -- without
+  this, central's TX never produces standards-compliant framing, so even a
+  fully-working gateway receive path sees nothing valid.
+
+Cleaned up the raw-byte/heartbeat diagnostic instrumentation from
+`gateway_9151/src/uart/uart_receiver.c` (same kind added during the earlier
+loopback investigation) now that the real root cause is confirmed and
+fixed. Both `central` and `gateway_9151` rebuilt clean and reflashed with
+production code.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
 ## 2026-08-04 — RESOLVED: gateway's UART never receiving was a DK hardware setting (VCOM1), not a code bug
 
 Closing out the investigation from the entries below. Short version: **the
