@@ -8,6 +8,279 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-04 — RESOLVED: gateway's UART never receiving was a DK hardware setting (VCOM1), not a code bug
+
+Closing out the investigation from the entries below. Short version: **the
+fix was in nRF Connect for Desktop's Board Configurator app, not in any
+firmware.** Disabled **VCOM1** for the nRF9151 DK (leaving VCOM0/console
+alone), power-cycled, and the gateway's UART link to `central` started
+working immediately -- confirmed end-to-end: `central` receiving real BLE
+sensor data -> forwarding over UART -> `gateway_9151` decoding frames ->
+publishing to HiveMQ Cloud over MQTT/TLS/LTE. No jumper, no code change
+required for the actual fix.
+
+**Why this took so long to find:** every layer that could plausibly be
+software was checked and ruled out first, in order, with real evidence at
+each step:
+- Devicetree/pinctrl/IRQ config -- all correct (confirmed against the
+  generated `zephyr.dts`/`devicetree_generated.h`, not just source files).
+- Init order (UART before modem lib, matching a known-working reference
+  project byte-for-byte in structure) -- fixed a real difference, but didn't
+  solve this bug.
+- Interrupt-driven RX (`uart_irq_rx_enable`) -- ISR confirmed to never fire
+  at all, not even once, across thousands of TX attempts.
+- Polled-mode RX (`uart_poll_in`, a completely different code path in the
+  UARTE driver, bypassing FIFO/interrupts entirely) -- also confirmed zero
+  bytes received, while `uart_poll_out` on the same instance was confirmed
+  transmitting (incrementing byte values, correct cadence).
+- Physical: wire continuity confirmed with a multimeter, correct pins
+  triple-checked against the DK's silkscreen, no visible routing switch on
+  the board.
+
+That last point turned out to be the key word -- **"visible."** The nRF9151
+DK's Arduino header UART is, by default, routed through the DK's Interface
+MCU (IMCU) as a virtual COM port (VCOM1), not exposed to the main SiP's
+UARTE1 peripheral at all -- controlled by IMCU firmware state, set via a
+separate PC app (Board Configurator), not a physical switch or anything
+visible by inspecting the board. Nordic's own documentation states this
+directly: *"When working with nrf9151dk board with an external MCU host,
+you must disable VCOM0 and VCOM1 in the Board Configurator app to release
+the UART pins for external use."* There's a real precedent for this exact
+class of gotcha on this same DK: a documented Nordic DevZone issue
+("no I2C devices ACK on i2c2 (Arduino/Qwiic header)") with the identical
+root cause on the I2C bus (`tgt-twi-ctrl` needing to be disabled) -- found
+by searching for that I2C issue and recognizing the same IMCU-routing
+pattern would apply to UART too.
+
+**Also worth noting for future reference:** the `tempUART_READER` reference
+copy (a working prior version of this same UART->MQTT gateway concept, kept
+locally for comparison) never mentions VCOM1/Board Configurator anywhere in
+its own README/code -- meaning whoever set that up originally hit and
+fixed this same DK setting once, outside the repo, and it was never
+written down. Worth flagging in case this trips up a fresh DK/setup again
+later -- now it's documented here and in `gateway_9151/README.md`.
+
+**Cleanup done:** removed the diagnostic-only code added during this
+investigation (`uart_loopback_test.c/.h`, `uart_poll_test.c/.h`, and the
+temporary ISR-fire-count/raw-byte instrumentation inside
+`uart_receiver.c`) now that the real root cause is confirmed and fixed --
+none of it was the actual solution, it was all bring-up diagnostics.
+`gateway_9151` is back to a clean production build (exit 0, ~90KB flash,
+~47KB RAM) and has been reflashed with the cleaned-up firmware, confirmed
+booting correctly (LTE + MQTT connect) via a fresh serial capture.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
+## 2026-08-03 — MQTT/TLS confirmed working on real hardware; UART link to central still not receiving anything
+
+Flashed the TLS build from the previous entry to a real DK: **LTE connects,
+TLS handshake to HiveMQ Cloud completes, MQTT connects** -- `[TLS] CA cert
+already provisioned`, `[NET] Connected`, `[MQTT] Connected`, `[UART]
+Receiver ready`, all as expected. This confirms the whole
+LTE/TLS/modem-credential design from the previous entry actually works, not
+just compiles.
+
+**But the UART receiver never sees anything from `central`, even though
+central is confirmed sending.** Checked in order: central's own console
+does show live `>>> Node NN` lines (so it's actively receiving BLE data and
+calling `gateway_uart_tx_send()`), the physical wiring is unchanged from
+when it was last set up, and the DK has no routing switch gating the
+Arduino header UART (user checked the physical board directly). Re-verified
+the devicetree side too: pin assignment (P0.29 TX / P0.28 RX), baud (115200
+both ends), and confirmed no hardware flow control is enabled on `uart1`
+(checked the actual generated `zephyr.dts`, not just the source dtsi) --
+software config all looks correct, so this doesn't look like a Kconfig/
+devicetree bug the way the last two issues were.
+
+**Added a UART loopback self-test** (`gateway_9151/src/uart/
+uart_loopback_test.c`, gated behind `CONFIG_APP_UART_LOOPBACK_TEST`) to
+isolate this further: it periodically transmits a fabricated but valid
+frame out of the gateway's own UART TX, using the same framing/CRC code
+already used for real traffic. Jumper the DK's own TxD2 (P0.29) to its own
+RxD2 (P0.28) -- no XIAO involved at all -- and if the gateway's UART
+hardware/config is fine, it should receive its own frames back. This
+isolates "gateway's UART itself doesn't work" from "the link/wiring to
+central specifically doesn't work," which are two different bugs with the
+same symptom. See `BUILD_AND_FLASH.md` for the exact build command.
+
+**Not yet run** -- this is the next thing to actually test on hardware,
+not a confirmed diagnosis yet.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
+---
+
+## 2026-08-03 — first real hardware test: central->gateway UART confirmed, MQTT TLS now implemented
+
+First actual flash+run of `gateway_9151` on a real DK, wired to a running
+`central`. Two real bugs found and fixed in sequence:
+
+**1. Central-to-gateway UART link works.** Initially saw nothing arrive at
+the gateway; turned out `central`'s own console hadn't been checked, and it
+turned out no peripheral was synced yet (nothing to forward). Once a
+peripheral was synced and central's console showed live `>>> Node NN`
+lines, the gateway's UART receiver worked as expected -- not a bug, just an
+empty pipeline upstream.
+
+**2. MQTT couldn't stay connected: `[MQTT] Disconnected: -128`, 5 retries,
+`mqtt_publisher_init failed: -116`.** `-128` = `ENOTCONN` (checked against
+this toolchain's actual `errno.h`) -- a TCP-level failure before CONNACK,
+not a broker-level rejection (would've shown as a small non-zero value via
+`MQTT_EVT_CONNACK`, not `MQTT_EVT_DISCONNECT`). Root cause: the gateway was
+still using the Kconfig default broker (`test.mosquitto.org`, plain, no
+override applied yet) -- discussed reachability options with the user (their
+"local Mosquitto" answer doesn't work as-is since the 9151 reaches the
+internet over cellular, not the LAN the broker would sit on -- needs
+port-forwarding/tunnel/auth thought through first, treated as a separate
+future task) and decided to implement real TLS support now and point at the
+existing HiveMQ Cloud instance from the old UART_reader project instead.
+
+**TLS implementation, all confirmed against real in-tree references, not
+guessed:**
+- Fetched HiveMQ Cloud's actual live cert chain (`openssl s_client`) --
+  confirmed it's Let's Encrypt (`CN=*.s1.eu.hivemq.cloud`, issued by a Let's
+  Encrypt intermediate), so the trust anchor needed is ISRG Root X1.
+  Downloaded that root directly from `letsencrypt.org` (not reproduced from
+  memory) and checked its SHA-256 fingerprint against Let's Encrypt's
+  published value before embedding it in `gateway_9151/src/mqtt/ca_cert.h`.
+- `gateway_9151/src/mqtt/tls_provision.c`: this project uses
+  `CONFIG_NET_SOCKETS_OFFLOAD=y` (modem-offloaded sockets), so the right
+  credential API is `modem_key_mgmt_write()` (AT%CMNG, modem's own storage),
+  *not* Zephyr's `tls_credential_add()` -- confirmed against
+  `nrf/samples/net/mqtt/src/.../credentials_provision.c`. Hooked via
+  `NRF_MODEM_LIB_ON_INIT` -- not just for convenience, but because
+  `modem_key_mgmt_write()`'s own doc comment says it returns `-EPERM` when
+  the LTE link is active, so the cert must be written before `main()` ever
+  calls `wait_for_network()`.
+- `mqtt_publisher.c`: `client_init()`/`prepare_fds()` now branch on
+  `CONFIG_APP_MQTT_USE_TLS` to use `MQTT_TRANSPORT_SECURE` +
+  `mqtt_sec_config` instead of plain TCP.
+- Needed two more Kconfig `select`s on `APP_MQTT_USE_TLS`, both found via
+  real build/link failures rather than anticipated: `MQTT_LIB_TLS` (without
+  it, `MQTT_TRANSPORT_SECURE`/`.transport.tls` don't even exist -- compiled
+  out) and `MODEM_KEY_MGMT` (`depends on NRF_MODEM_LIB` but nothing
+  auto-selects it, so `modem_key_mgmt_write`/`_exists` were undefined
+  references without it). Deliberately did NOT select `CONFIG_MBEDTLS` --
+  that's for Zephyr's own software TLS, wrong here since sockets are
+  offloaded to the modem's own TLS stack.
+- Real credentials (hostname/port/username/password) go in
+  `gateway_9151/secrets.conf` (gitignored) -- copy from the committed
+  `secrets.conf.example` template, build with `-DEXTRA_CONF_FILE=secrets.conf`
+  (see `BUILD_AND_FLASH.md`; note PowerShell mangles that flag if passed
+  inline after `--`, needs a variable indirection).
+
+**Result: clean build with real HiveMQ Cloud credentials compiled in --
+exit 0, FLASH 131020 B (19.04%), RAM 60600 B (39.28%).** Not yet re-flashed
+to hardware to confirm the TLS handshake actually completes against the
+live broker -- that's the next thing to verify, not assumed working yet.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
+---
+
+## 2026-08-03 — gateway_9151 now builds clean end-to-end; UART pins confirmed
+
+Follow-up to the scaffolding entry just below: got the actual wiring pins
+(9151 DK RxD2 = P0.28, TxD2 = P0.29 -- the DK's Arduino-header UART, already
+aliased `arduino_serial` in its own devicetree) and pushed `gateway_9151`
+through a real `west build` for the first time, rather than leaving it as
+untested scaffolding. Two real fixes were needed, both now applied:
+
+1. **`uart1`/`arduino_serial` is disabled by default on the `/ns`
+   (non-secure) board variant** this app has to build as -- Nordic's own
+   comment in `nrf9151dk_nrf9151_ns.dts` says why: "Disable UART1, because it
+   is used by default in TF-M." Fixed with `&uart1 { status = "okay"; };` in
+   `gateway_9151/boards/nrf9151dk_nrf9151_ns.overlay` -- confirmed this is
+   the standard, intended way to reclaim it (not a hack) by finding the
+   in-tree `nrf/samples/peripheral/lpuart` sample doing the exact same
+   override for the same conflict on a sibling nRF91 board.
+2. **`CONFIG_POSIX_API=y` was missing from `gateway_9151/prj.conf`** --
+   without it, `<zephyr/net/socket.h>` only exposes `zsock_`-prefixed names,
+   not the plain POSIX ones (`struct addrinfo`, `POLLIN`, `struct pollfd`,
+   `getaddrinfo`, `poll`) the MQTT publisher code needs. Also needed
+   `#include <zephyr/posix/poll.h>` and `<zephyr/posix/netdb.h>` explicitly
+   in `mqtt_publisher.c`.
+
+**Result:** clean build, exit 0 -- FLASH 126848 B (18.43%), RAM 56424 B
+(36.58%), board `nrf9151dk/nrf9151/ns`. Build-only, not flashed, per the
+standing "don't flash without being asked" rule. New
+`BUILD_AND_FLASH.md` at the repo root has copy-pasteable build/flash commands
+for all three apps (`central`, `peripheral`, `gateway_9151`) -- worth using
+that instead of re-deriving the toolchain env setup by hand each time.
+
+Physical wiring, now confirmed both ends: **XIAO D8 (uart1 TX, P1.13) -> 9151
+DK RxD2 (P0.28)**, **XIAO D9 (uart1 RX, P1.14) -> 9151 DK TxD2 (P0.29)**, plus
+a shared GND. Not yet actually connected on the bench.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
+---
+
+## 2026-08-03 — new feature scaffolded: nRF9151 gateway (BLE data -> MQTT over LTE)
+
+Started a new piece of the system: `gateway_9151/`, a new NCS/Zephyr app for
+an nRF9151 DK that will sit behind `central` and republish sensor readings to
+an MQTT broker over LTE-M/NB-IoT, so data reaches a server off the local
+network. This is scaffolding only -- **not yet built, not yet wired to real
+hardware**, see `gateway_9151/README.md` for the itemized "not yet
+implemented" list (board overlay/pin choice for the 9151 side, TLS cert
+provisioning, first real `west build` attempt).
+
+**Link: `central` <-UART1-> `gateway_9151`.** Added a second physical UART
+(`uart1`) to `central` for this, kept deliberately separate from `uart0`
+(the existing console, USB-CDC-ACM-backed) so this doesn't compete with the
+printk volume that was already a hot-path concern in the udc-hang
+investigation above. `central`'s uart1 uses XIAO pins D8/D9 (P1.13/P1.14) --
+confirmed free by checking the board's pinctrl (`uart0`'s pins are D6/D7,
+I2C sensors already own D4/D5). New file:
+`central/boards/xiao_ble_nrf52840.overlay`. `central/src/main.c`'s
+`response_cb` now forwards every decoded `sensor_payload` out over this UART
+(`gateway_uart_tx_send()`, new `central/src/gateway_uart_tx.c/.h`) right
+after the existing `memcpy` -- cheap fire-and-forget `uart_fifo_fill()`,
+non-blocking, no-ops harmlessly if no gateway board is wired up. **Central
+build-verified clean (exit 0, `.uf2` generated, no new warnings) via `west
+build`, board `xiao_ble/nrf52840` -- build only, not flashed**, consistent
+with the standing "don't upload the peripheral" instruction from earlier
+this session (extended here to mean "don't flash anything without being
+asked," central included).
+
+**Wire framing** (`common/uart_frame.h/.c`, shared by both `central` and
+`gateway_9151` so they can't drift apart on format): 1 start byte (0xA5) +
+the existing 8-byte `sensor_payload` + a 2-byte CRC-16/CCITT-FALSE, 11 bytes
+total per frame. No length byte -- payload is fixed-size, and the
+`BUILD_ASSERT` on `sensor_payload`'s size in `pawr_protocol.h` already
+guards against a silent size mismatch. CRC needed here specifically because
+(unlike BLE PDUs) a raw UART byte stream has no link-layer integrity check
+of its own.
+
+**Broker is deliberately not fixed to one choice.** Kconfig
+(`gateway_9151/Kconfig`) exposes hostname/port/TLS-on-off/username/password/
+client-ID as build-time options, so the same firmware can point at a local
+Mosquitto (port 1883, no TLS) or a cloud broker like HiveMQ Cloud (port
+8883, TLS) without a source change -- per this session's answer of "both."
+MQTT client itself is Zephyr's generic `zephyr/net/mqtt.h`
+(`CONFIG_MQTT_LIB`), not nRF Cloud's MQTT library, specifically so it isn't
+locked to one broker. TLS path is stubbed with a build-time `#error` for now
+(see `mqtt_publisher.c`) rather than silently compiling something that can't
+actually complete a TLS handshake -- needs real cert provisioning work
+first, flagged in the README rather than guessed at.
+
+All new Kconfig/API usage in `gateway_9151/` was checked against real
+in-tree NCS v3.3.0 samples before writing (`zephyr/samples/net/mqtt_publisher`
+for the MQTT client API + TLS overlay shape, `nrf/samples/cellular/
+nrf_cloud_mqtt_device_message` for the modem/LTE Kconfig symbols minus the
+nRF-Cloud-specific parts, `zephyr/samples/net/common/net_sample_common.c`
+for the Connection-Manager "wait for LTE" pattern) -- not guessed from
+memory, given how easy it'd otherwise be to invent a plausible-looking but
+wrong Kconfig symbol or API call for a part of NCS neither of us has used
+yet on this project.
+
+— Alejandro (session assisted by Claude), 2026-08-03
+
+---
+
 ## 2026-07-31 — periodic sync bug: PAST event never reaches peripheral's controller
 
 Findings from correlating `logs/central_20260731_105736.log` with fresh peripheral

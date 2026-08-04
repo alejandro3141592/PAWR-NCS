@@ -32,6 +32,7 @@
 #include <bluetooth/hci_vs_sdc.h>
 
 #include "pawr_protocol.h"
+#include "gateway_uart_tx.h"
 
 /* Retired experiment (2026-08-03, see NOTES.md): stopping periodic
  * advertising during the onboarding connect step did eliminate the 0x08
@@ -194,6 +195,8 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	struct sensor_payload payload;
 
 	memcpy(&payload, buf->data, sizeof(payload));
+
+	gateway_uart_tx_send(&payload);
 
 	if (info->subevent < NUM_SUBEVENTS) {
 		slot_taken[info->subevent] = true;
@@ -428,6 +431,11 @@ int main(void)
 		printk("Failed to configure TX LED (err %d)\n", err);
 		return 0;
 	}
+
+	/* Non-fatal if this fails (e.g. no gateway board wired up yet) --
+	 * gateway_uart_tx_send() just no-ops in that case. See gateway_uart_tx.h.
+	 */
+	gateway_uart_tx_init();
 
 	/* Initialize the Bluetooth Subsystem */
 	err = bt_enable(NULL);

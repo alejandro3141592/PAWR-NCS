@@ -1,0 +1,33 @@
+/*
+ * Link to the PAwR central board (Seeed XIAO nRF52840): confirmed wiring is
+ * XIAO uart1 (D8=P1.13 TX, D9=P1.14 RX, see
+ * ../../central/boards/xiao_ble_nrf52840.overlay) <-> nRF9151 DK's
+ * "arduino_serial" UART (P0.29 = TxD2, P0.28 = RxD2 on the Arduino header).
+ *
+ * uart1/arduino_serial is enabled with pins+baud already set at the
+ * common-dtsi level (nrf9151dk_nrf9151_common.dtsi), BUT the "/ns"
+ * (non-secure) board variant this app builds for explicitly disables it
+ * again ("Disable UART1, because it is used by default in TF-M", see
+ * nrf9151dk_nrf9151_ns.dts) -- confirmed by a real build failure
+ * (DEVICE_DT_GET on a disabled node has no ordinal) before this override was
+ * added. Re-enabling it here for the non-secure app is the standard,
+ * supported pattern -- same one used by the in-tree
+ * nrf/samples/peripheral/lpuart/boards/nrf9160dk_nrf9160_ns.overlay sample,
+ * which does exactly this for the same uart1-vs-TF-M-default conflict on a
+ * sibling nRF91 board. No TF-M/partition-manager changes needed beyond this
+ * devicetree override -- it's a default-ownership setting, not a hardware
+ * secure-lock.
+ *
+ * Wiring: 9151 DK TxD2 (P0.29) -> XIAO D9 (RX), 9151 DK RxD2 (P0.28) ->
+ * XIAO D8 (TX), plus a shared GND between the two boards.
+ */
+
+&uart1 {
+	status = "okay";
+};
+
+/ {
+	aliases {
+		pawr-uart = &arduino_serial;
+	};
+};

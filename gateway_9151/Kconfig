@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+
+mainmenu "PAwR nRF9151 gateway"
+
+menu "PAwR gateway broker settings"
+
+config APP_MQTT_BROKER_HOSTNAME
+    string "MQTT broker hostname or IP"
+    default "test.mosquitto.org"
+    help
+      Left as a build-time default for convenience, but the intent is this
+      stays swappable without touching source: same firmware image should
+      work against a local Mosquitto instance or a TLS cloud broker (e.g.
+      HiveMQ Cloud) by changing this + APP_MQTT_BROKER_PORT +
+      APP_MQTT_USE_TLS at build time (or later, NVS-backed runtime config --
+      not yet implemented, see gateway_9151/README.md).
+
+config APP_MQTT_BROKER_PORT
+    int "MQTT broker port"
+    default 1883
+    help
+      1883 = plain MQTT (typical local Mosquitto default).
+      8883 = MQTT over TLS (typical cloud broker / HiveMQ Cloud default).
+
+config APP_MQTT_USE_TLS
+    bool "Use TLS for the MQTT connection"
+    default n
+    select MQTT_LIB_TLS
+    select MODEM_KEY_MGMT
+    help
+      Must be enabled for most cloud brokers (HiveMQ Cloud requires TLS on
+      port 8883). Local Mosquitto is usually run without TLS during
+      development. Selects MQTT_LIB_TLS, which is what actually gates the
+      mqtt_client.transport.tls union member / MQTT_TRANSPORT_SECURE enum
+      value this app's mqtt_publisher.c uses -- confirmed by a real build
+      failure (undeclared MQTT_TRANSPORT_SECURE, no .tls member) before this
+      select was added. Also selects MODEM_KEY_MGMT (depends on
+      NRF_MODEM_LIB but doesn't get auto-enabled by anything else) for
+      tls_provision.c's modem_key_mgmt_write()/_exists() calls -- confirmed
+      by a real link failure (undefined reference to both) before this
+      select was added. Deliberately does NOT select CONFIG_MBEDTLS: this
+      project builds with CONFIG_NET_SOCKETS_OFFLOAD=y, so TLS is handled by
+      the nRF9151 modem's own offloaded TLS stack (via sec_tag-based
+      credentials, see tls_provision.c), not Zephyr's software mbedTLS --
+      pulling in mbedTLS here would be for the wrong TLS implementation
+      entirely.
+
+config APP_MQTT_USERNAME
+    string "MQTT username"
+    default ""
+
+config APP_MQTT_PASSWORD
+    string "MQTT password"
+    default ""
+
+config APP_MQTT_CLIENT_ID
+    string "MQTT client ID"
+    default "pawr-gateway-9151"
+
+endmenu
+
+menu "PAwR gateway UART framing"
+
+config APP_UART_BAUDRATE
+    int "UART baud rate for the link to the PAwR central board"
+    default 115200
+
+endmenu
+
+source "Kconfig.zephyr"

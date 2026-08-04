@@ -1,0 +1,24 @@
+[20:28:36.143] [LOOPBAC
+[20:28:36.314] [LOOPBACK] Sending test frame, seq=1
+[20:28:38.314] [LOOPBACK] Sending test frame, seq=2
+[20:28:38.316] [NET] LTE connected (roaming)
+[20:28:40.314] [LOOPBACK] Sending test frame, seq=3
+[20:28:42.230] [MQTT] Connected
+[20:28:42.234] [LOOPBACK] Sending test frame, seq=4
+[20:28:44.314] [LOOPBACK] Sending test frame, seq=5
+[20:28:46.313] [LOOPBACK] Sending test frame, seq=6
+[20:28:48.314] [LOOPBACK] Sending test frame, seq=7
+[20:28:50.315] [LOOPBACK] Sending test frame, seq=8
+[20:28:52.314] [LOOPBACK] Sending test frame, seq=9
+[20:28:54.314] [LOOPBACK] Sending test frame, seq=10
+[20:28:56.315] [LOOPBACK] Sending test frame, seq=11
+[20:28:58.315] [LOOPBACK] Sending test frame, seq=12
+[20:29:00.315] [LOOPBACK] Sending test frame, seq=13
+[20:29:02.315] [LOOPBACK] Sending test frame, seq=14
+[20:29:04.316] [LOOPBACK] Sending test frame, seq=15
+[20:29:06.315] [LOOPBACK] Sending test frame, seq=16
+[20:29:08.315] [LOOPBACK] Sending test frame, seq=17
+[20:29:10.315] [LOOPBACK] Sending test frame, seq=18
+[20:29:12.314] [LOOPBACK] Sending test frame, seq=19
+[20:29:14.315] [LOOPBACK] Sending test frame, seq=20
+[20:29:16.314] [LOOPBACK] Sending test frame, seq=21
