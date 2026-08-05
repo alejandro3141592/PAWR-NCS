@@ -1,0 +1,35 @@
+[12:41:36.823] [00:00:00.000,671] [0m<inf> udc_nrf: Preinit[0m
+[12:41:36.824] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:41:36.825] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:41:36.825] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[12:41:36.826] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:41:36.826] Node ID: 32
+[12:41:36.827] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:41:36.828] [00:00:00.090,087] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:41:36.828] [00:00:00.175,537] [0m<inf> udc_nrf: Reset[0m
+[12:41:36.829] [00:00:00.175,659] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:41:36.829] [00:00:00.261,627] [0m<inf> udc_nrf: Reset[0m
+[12:41:36.830] [STORAGE] Flash log ready (8 sectors)
+[12:41:36.830] [00:00:00.690,979] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:41:36.831]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:41:36.832]                                             74 6c ac 75                                      |tl.u             [0m
+[12:41:36.832] [00:00:00.693,817] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:41:36.833] [00:00:00.693,847] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 32 seq 1 temp=38.21C humidity=44.9% flags=0x00
+[12:41:46.810] Timed out while synchronizing
+[12:41:46.811] Waiting for periodic sync...
+[12:41:46.812] [SENSORS] node 32 seq 2 temp=38.32C humidity=44.1% flags=0x00
+[12:41:51.350] Connected, err 0x00 
+[12:41:51.351] New timing: subevent 0, response slot 0
+[12:41:51.351] Not synced yet
+[12:41:56.853] [SENSORS] node 32 seq 3 temp=38.34C humidity=45.4% flags=0x00
+[12:42:01.033] Synced to 1D:74:6D:64:E4:2F (random) with 55 subevents
+[12:42:01.034] Changed sync to subevent 0
+[12:42:01.034] >>> Poll received: subevent 0, responding in slot 0
+[12:42:01.034] Periodic sync established.
+[12:42:02.082] Disconnected, reason 0x13 
+[12:42:06.868] [SENSORS] node 32 seq 4 temp=35.95C humidity=43.8% flags=0x00
+[12:42:11.031] >>> Poll received: subevent 0, responding in slot 0
+[12:42:16.881] [SENSORS] node 32 seq 5 temp=35.96C humidity=44.0% flags=0x00
+[12:42:21.031] >>> Poll received: subevent 0, responding in slot 0
+[12:42:26.896] [SENSORS] node 32 seq 6 temp=35.96C humidity=44.2% flags=0x00
+[12:42:31.031] >>> Poll received: subevent 0, responding in slot 0
