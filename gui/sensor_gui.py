@@ -828,13 +828,16 @@ class BodyMapTab(QWidget):
 
             combo = QComboBox()
             combo.setFixedWidth(110)
+            # Capped so the popup stays a manageable scrollable list instead
+            # of growing to fit all 70 node entries at once.
+            combo.setMaxVisibleItems(10)
             combo.setStyleSheet(
                 "QComboBox{background:#252836;color:#eee;border:1px solid #3b4259;"
                 "padding:2px 4px;border-radius:4px;}"
                 "QComboBox QAbstractItemView{background:#161822;color:#eee;selection-background-color:#0e639c;}"
             )
             combo.addItem("Unassigned", None)
-            for nid in range(1, 39):
+            for nid in range(1, 71):
                 combo.addItem(f"Node {nid:02d}", nid)
 
             combo.currentIndexChanged.connect(lambda idx, bpid=bp.id: self._on_combo_changed(bpid, idx))
@@ -866,6 +869,13 @@ class BodyMapTab(QWidget):
         self.stack.addWidget(focus_page)
         root_lay.addWidget(self.stack, stretch=1)
 
+        # Default to Person 1's single-view focus, not the 2x2 grid --
+        # combo_mode otherwise defaults to its first item (grid view) since
+        # nothing selects an index after the items are added.
+        default_idx = self.combo_mode.findData(1)
+        if default_idx >= 0:
+            self.combo_mode.setCurrentIndex(default_idx)
+        self.stack.setCurrentIndex(1)
         self._set_focus_person(1)
 
     def update_readings(self, nodes: Dict[int, Reading]):
