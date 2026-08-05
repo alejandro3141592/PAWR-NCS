@@ -44,12 +44,25 @@
     Build only; don't wait for/flash the bootloader drive or monitor.
 
 .PARAMETER SkipPristine
-    Skip `--pristine` and reuse the existing build directory (build_node<N>
-    for peripheral, or build/ for central) if one's already there, so only
-    the files actually affected by your change get recompiled instead of
-    everything -- seconds instead of minutes. Safe for flashing many boards
-    each with a different -NodeId (that only touches CONFIG_APP_NODE_ID, a
-    plain Kconfig int used in main.c, nothing structural) or other simple
+    Skip `--pristine` for a much faster incremental build -- seconds instead
+    of minutes, since only the files actually affected by your change get
+    recompiled instead of everything.
+
+    For -App peripheral, this also switches the build directory to a single
+    shared peripheral/build_incremental (instead of the normal per-node
+    build_node<N>), reused across every -NodeId -- that's what actually
+    makes flashing many distinct boards fast: compiled Zephyr/nrfxlib
+    object files carry over from the previous board, only main.c (which
+    CONFIG_APP_NODE_ID feeds into) gets recompiled and relinked each time.
+    A fresh build_node<N> per ID would defeat the point, since there'd be
+    nothing to reuse in a directory nothing has ever been built into. This
+    means -SkipPristine builds and normal pristine builds for the same
+    -NodeId live in different directories -- switching back to a pristine
+    build after using -SkipPristine (or vice versa) still does a full
+    rebuild that one time, then stays fast within whichever mode you stick
+    with.
+
+    Safe for changes that only touch CONFIG_APP_NODE_ID or other simple
     Kconfig/source-only edits.
 
     Do NOT use after touching devicetree files (boards/*.overlay),
@@ -120,7 +133,15 @@ if ($App -eq 'peripheral' -and $NodeId -eq 0) {
 $ErrorActionPreference = 'Continue'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $appDir = Join-Path $repoRoot $App
-if ($App -eq 'peripheral' -and $NodeId -gt 0) {
+if ($App -eq 'peripheral' -and $SkipPristine) {
+    # One shared directory reused across every -NodeId, not build_node<N>
+    # per ID -- the whole point of -SkipPristine is to carry compiled
+    # Zephyr/nrfxlib object files over between boards. A fresh per-node
+    # directory would defeat that (nothing to reuse in a directory that's
+    # never been built into before), so this intentionally diverges from
+    # the pristine path's per-node isolation.
+    $buildDir = Join-Path $appDir 'build_incremental'
+} elseif ($App -eq 'peripheral' -and $NodeId -gt 0) {
     $buildDir = Join-Path $appDir "build_node$NodeId"
 } else {
     $buildDir = Join-Path $appDir 'build'
