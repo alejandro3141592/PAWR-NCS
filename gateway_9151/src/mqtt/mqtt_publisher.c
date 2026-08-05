@@ -27,13 +27,11 @@
 #endif
 
 #define MQTT_RX_TX_BUFFER_SIZE 256
-#define MQTT_PAYLOAD_BUFFER_SIZE 128
 #define MQTT_CONNECT_TIMEOUT_MS 5000
 #define MQTT_CONNECT_TRIES 5
 
 static uint8_t rx_buffer[MQTT_RX_TX_BUFFER_SIZE];
 static uint8_t tx_buffer[MQTT_RX_TX_BUFFER_SIZE];
-static char payload_buf[MQTT_PAYLOAD_BUFFER_SIZE];
 
 static struct mqtt_client client_ctx;
 static struct sockaddr_storage broker_addr;
@@ -200,53 +198,38 @@ int mqtt_publisher_init(void)
 	return connected ? 0 : -ETIMEDOUT;
 }
 
-static int publish_field(const char *topic, const char *json)
-{
-	struct mqtt_publish_param param = { 0 };
+#define SENSOR_PUBLISH_TOPIC "sensors/data"
 
-	param.message.topic.topic.utf8 = (uint8_t *)topic;
-	param.message.topic.topic.size = strlen(topic);
-	param.message.topic.qos = MQTT_QOS_0_AT_MOST_ONCE;
-	param.message.payload.data = (uint8_t *)json;
-	param.message.payload.len = strlen(json);
-	param.message_id = sys_rand16_get();
-	param.dup_flag = 0U;
-	param.retain_flag = 0U;
-
-	return mqtt_publish(&client_ctx, &param);
-}
-
+/* Publishes the raw sensor_payload struct as-is (8 bytes, little-endian on
+ * this target -- node_id, flags, seq, temp_cdeg, humidity_pct10, see
+ * common/pawr_protocol.h) instead of JSON. Replaces the prior scheme of two
+ * separate JSON-encoded publishes (sensors/temperature, sensors/humidity,
+ * ~140 bytes of MQTT payload combined) with one ~8-byte binary publish --
+ * roughly a 17x cut in application-layer bytes, and halves the fixed
+ * per-message overhead (topic string, TLS record, TCP/IP framing) by
+ * sending one message instead of two. Not human-readable via a generic
+ * MQTT client/dashboard -- see gui/sensor_gui.py for the matching decode
+ * (Python struct.unpack("<BBHhH", ...)). See NOTES.md 2026-08-04 for the
+ * cellular data-usage motivation.
+ */
 int mqtt_publisher_send(const struct sensor_payload *payload)
 {
 	if (!connected) {
 		return -ENOTCONN;
 	}
 
-	int err;
+	struct mqtt_publish_param param = { 0 };
 
-	if (!(payload->flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID)) {
-		snprintk(payload_buf, sizeof(payload_buf),
-			 "{\"nodeId\":%u,\"flags\":%u,\"seq\":%u,\"value\":%d.%02u}",
-			 payload->node_id, payload->flags, payload->seq,
-			 payload->temp_cdeg / 100, abs(payload->temp_cdeg % 100));
-		err = publish_field("sensors/temperature", payload_buf);
-		if (err) {
-			return err;
-		}
-	}
+	param.message.topic.topic.utf8 = (uint8_t *)SENSOR_PUBLISH_TOPIC;
+	param.message.topic.topic.size = strlen(SENSOR_PUBLISH_TOPIC);
+	param.message.topic.qos = MQTT_QOS_0_AT_MOST_ONCE;
+	param.message.payload.data = (uint8_t *)payload;
+	param.message.payload.len = sizeof(*payload);
+	param.message_id = sys_rand16_get();
+	param.dup_flag = 0U;
+	param.retain_flag = 0U;
 
-	if (!(payload->flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID)) {
-		snprintk(payload_buf, sizeof(payload_buf),
-			 "{\"nodeId\":%u,\"flags\":%u,\"seq\":%u,\"value\":%u.%u}",
-			 payload->node_id, payload->flags, payload->seq,
-			 payload->humidity_pct10 / 10, payload->humidity_pct10 % 10);
-		err = publish_field("sensors/humidity", payload_buf);
-		if (err) {
-			return err;
-		}
-	}
-
-	return 0;
+	return mqtt_publish(&client_ctx, &param);
 }
 
 void mqtt_publisher_process(void)

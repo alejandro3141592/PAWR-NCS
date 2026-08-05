@@ -1,0 +1,63 @@
+# Pins the flash_primary layout to fixed addresses, so "settings_storage"
+# (devicetree-visible as storage_partition, see common/sensor_log.c) never
+# moves on a future build -- needed for tools/Read-StorageFlash.ps1 (the
+# UART-free flash-log retrieval script, required since gateway_9151's
+# console UART0 was confirmed hardware-dead, see NOTES.md 2026-08-05) to
+# keep working without re-checking build/pm.config after every build.
+#
+# Built per nrf/scripts/partition_manager/partition_manager.rst's own
+# recommended method: take the full dynamically-generated
+# gateway_9151/build/partitions.yml and use it directly as the static
+# config, keeping every flash_primary leaf partition (including its
+# EMPTY_* filler regions) so nothing is left for Partition Manager to
+# re-derive. Confirmed the hard way, two failures deep, that pinning only
+# settings_storage (or settings_storage+tfm) isn't enough: Partition
+# Manager's static-config algorithm requires EXACTLY ONE contiguous
+# unfilled gap in flash_primary (for "app" to fill), and settings_storage
+# sits in the middle of several small TF-M storage partitions, so any
+# partial pinning leaves multiple gaps. Pinning the complete existing
+# layout leaves exactly the one gap that matters (0x40000-0xe0000, "app").
+#
+# NOT included here (and intentionally so):
+#   - app, tfm_nonsecure, tfm_secure, nonsecure_storage, tfm_storage: all
+#     "span"/derived partitions Partition Manager recomputes automatically;
+#     the doc explicitly says an "app" entry in a static config is ignored.
+#   - sram_*, nrf_modem_lib_*, otp: separate regions (sram_primary, otp),
+#     not flash_primary -- the single-gap rule is per-region, and these
+#     regions were never the problem. Leaving them dynamic keeps
+#     modem/RAM layout free to adapt to future code changes without
+#     needing this file touched again.
+#
+# Addresses/sizes below match gateway_9151/build/partitions.yml exactly as
+# of 2026-08-05 -- adding this file should NOT move anything on the next
+# build, only prevent future Kconfig/code changes from moving them.
+EMPTY_0:
+  address: 0xfc000
+  size: 0x4000
+EMPTY_1:
+  address: 0xf2000
+  size: 0x6000
+EMPTY_2:
+  address: 0xea000
+  size: 0x6000
+EMPTY_3:
+  address: 0xe2000
+  size: 0x6000
+tfm:
+  address: 0x0
+  size: 0x40000
+tfm_its:
+  address: 0xe8000
+  size: 0x2000
+  inside: [tfm_storage]
+tfm_otp_nv_counters:
+  address: 0xf0000
+  size: 0x2000
+  inside: [tfm_storage]
+tfm_ps:
+  address: 0xf8000
+  size: 0x4000
+  inside: [tfm_storage]
+settings_storage:
+  address: 0xe0000
+  size: 0x2000

@@ -16,8 +16,8 @@ Usage:
 import csv
 import json
 import math
-import re
 import ssl
+import struct
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -47,17 +47,19 @@ CONFIG_PATH = Path(__file__).resolve().parent / "config.json"
 CONFIG_EXAMPLE_PATH = Path(__file__).resolve().parent / "config.example.json"
 BODY_MAPPING_PATH = Path(__file__).resolve().parent / "body_mapping.json"
 
-TOPICS = ["sensors/temperature", "sensors/humidity"]
-_TOPIC_FIELD = {
-    "sensors/temperature": "temperature",
-    "sensors/humidity": "humidity",
-}
+TOPICS = ["sensors/data"]
+
+# Wire format for sensors/data: raw bytes of the firmware's struct
+# sensor_payload (see ../common/pawr_protocol.h), little-endian --
+# node_id(u8), flags(u8), seq(u16), temp_cdeg(i16), humidity_pct10(u16).
+# Replaces the prior per-field JSON publishes (sensors/temperature,
+# sensors/humidity) with one compact binary message per node per interval,
+# see NOTES.md 2026-08-04 for the cellular-data-usage motivation.
+_SENSOR_PAYLOAD_STRUCT = struct.Struct("<BBHhH")
 
 TEMP_MIN = 20.0
 TEMP_MAX = 42.0
 NUM_PERSONS = 4
-
-_NAN_RE = re.compile(r':\s*-?(?:nan|inf)\b', re.IGNORECASE)
 
 RANGES = [("1 h", 1), ("6 h", 6), ("24 h", 24), ("7 d", 168)]
 
@@ -228,32 +230,22 @@ class MQTTWorker(QThread):
                 self.status.emit(f"Connection error ({reason_code})")
 
         def on_message(c, u, msg):
-            try:
-                payload = _NAN_RE.sub(': null', msg.payload.decode())
-                d = json.loads(payload)
-            except Exception:
-                return
-            if d.get("value") is None:
-                return
-            field = _TOPIC_FIELD.get(msg.topic)
-            if field is None:
+            if msg.topic != "sensors/data":
                 return
             try:
-                node_id = int(d.get("nodeId"))
-                val = float(d.get("value"))
-            except (TypeError, ValueError):
+                node_id, flags, seq, temp_cdeg, humidity_pct10 = \
+                    _SENSOR_PAYLOAD_STRUCT.unpack(msg.payload)
+            except struct.error:
                 return
-            seq = d.get("seq")
-            flags = d.get("flags")
-            try:
-                seq = int(seq) if seq is not None else None
-            except (TypeError, ValueError):
-                seq = None
-            try:
-                flags = int(flags) if flags is not None else None
-            except (TypeError, ValueError):
-                flags = None
-            self.received.emit(node_id, field, val, seq, flags)
+
+            # Mirrors the firmware's own skip-if-invalid behavior (see
+            # gateway_9151/src/mqtt/mqtt_publisher.c / SENSOR_PAYLOAD_FLAG_*
+            # in pawr_protocol.h) -- one message carries both fields, so
+            # each is only forwarded if its own flag bit isn't set.
+            if not (flags & FLAG_TEMP_INVALID):
+                self.received.emit(node_id, "temperature", temp_cdeg / 100.0, seq, flags)
+            if not (flags & FLAG_HUMIDITY_INVALID):
+                self.received.emit(node_id, "humidity", humidity_pct10 / 10.0, seq, flags)
 
         client.on_connect = on_connect
         client.on_message = on_message

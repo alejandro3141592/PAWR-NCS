@@ -15,13 +15,12 @@
  */
 int mqtt_publisher_init(void);
 
-/* Encodes payload as JSON and publishes it, one message per field (mirrors
- * the prior UART_reader project's per-field topic convention: separate
- * sensors/temperature, sensors/humidity, etc. topics rather than one
- * combined blob) -- see mqtt_publisher.c for the exact topic strings.
- * Non-blocking from the caller's perspective beyond the underlying socket
- * send; does not itself run the MQTT keepalive/poll loop (see
- * mqtt_publisher_process()).
+/* Publishes payload as raw binary (the sensor_payload struct's own bytes,
+ * 8 bytes) to a single "sensors/data" topic -- not JSON, see
+ * mqtt_publisher.c for the wire format and the cellular-data-usage
+ * rationale (NOTES.md 2026-08-04). Non-blocking from the caller's
+ * perspective beyond the underlying socket send; does not itself run the
+ * MQTT keepalive/poll loop (see mqtt_publisher_process()).
  */
 int mqtt_publisher_send(const struct sensor_payload *payload);
 

@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2026
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Second UART for the console mystery diagnostic (see NOTES.md 2026-08-04):
+ * uart0 (console/VCOM0, P0.26/P0.27) is confirmed alive at the CPU/firmware
+ * level (LED heartbeat, J-Link register reads) but produces zero output on
+ * the DK's own USB port through every tool tried, including Nordic's own
+ * nRF Connect Serial Terminal. uart0/uart1 are both wired through the DK's
+ * Interface MCU (IMCU) to fixed VCOM channels -- there's no way to observe
+ * them except via that same USB-CDC path, which is exactly the thing in
+ * question.
+ *
+ * uart2 is a separate SiP UARTE instance, disabled by default on this board
+ * (see zephyr/dts/arm/nordic/nrf91_peripherals.dtsi) and not wired to the
+ * IMCU/USB at all -- routing it to free GPIOs (P0.23 TX, P0.24 RX, neither
+ * used by anything else on this board, confirmed against
+ * nrf9151dk_nrf9151_common.dtsi/-pinctrl.dtsi and the Arduino header's
+ * gpio-map) tests the SiP's UART hardware directly via an external
+ * USB-to-serial adapter, fully independent of the IMCU/VCOM path. If THIS
+ * UART shows output but uart0 still doesn't, that confirms the fault is
+ * specifically in the IMCU/VCOM0 path, not the SiP or this project's
+ * firmware/toolchain.
+ *
+ * Wiring: P0.23 (TX, this board outputs here) -> adapter's RX,
+ *         P0.24 (RX, this board listens here) -> adapter's TX (only needed
+ *         if testing loopback/input, not required for a one-way heartbeat
+ *         print), plus a shared GND between the DK and the adapter.
+ */
+
+&pinctrl {
+	uart2_default: uart2_default {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>,
+				<NRF_PSEL(UART_RX, 0, 24)>;
+		};
+	};
+
+	uart2_sleep: uart2_sleep {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 23)>,
+				<NRF_PSEL(UART_RX, 0, 24)>;
+			low-power-enable;
+		};
+	};
+};
+
+&uart2 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&uart2_default>;
+	pinctrl-1 = <&uart2_sleep>;
+	pinctrl-names = "default", "sleep";
+};
+
+/ {
+	aliases {
+		diag-uart = &uart2;
+	};
+};

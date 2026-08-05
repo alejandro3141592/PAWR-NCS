@@ -8,6 +8,353 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-05 — pinned settings_storage's flash address permanently: gateway_9151/pm_static.yml
+
+Follow-up to `tools/Read-StorageFlash.ps1`/`decode_fcb_dump.py` (previous
+entry): its `-Address`/`-Size` defaults assumed `settings_storage` stays
+at `0xe0000`/`0x2000`, but Partition Manager places that partition
+dynamically by default -- nothing actually guarantees it won't move on a
+future build that changes flash usage elsewhere. Added
+`gateway_9151/pm_static.yml` to pin it permanently, so the script's
+defaults keep working without needing `build/pm.config` re-checked after
+every build.
+
+**Took three attempts to get the static config right, each teaching
+something about how Partition Manager's static-config resolution
+actually works (see `nrf/scripts/partition_manager/partition_manager.rst`,
+"Adding a static partition"):**
+
+1. Pinning `settings_storage` alone (`address: 0xe0000, size: 0x2000`)
+   failed: `Incorrect amount of gaps found in static configuration...
+   Gaps found (2): 0x0-0xe0000 0xe2000-0x100000`. Partition Manager's
+   static-config algorithm requires **exactly one** contiguous unfilled
+   gap in `flash_primary` for dynamic partitions (`app` and friends) to
+   fill -- pinning one partition in the *middle* of the region
+   necessarily creates a gap on each side of it.
+2. Also pinning `tfm` (`0x0`/`0x40000`, the fixed secure image at the
+   very start of flash) merged the first gap away, but still failed:
+   `Gaps found (2): 0x40000-0xe0000 0xe2000-0x100000`. `settings_storage`
+   sits between `app` and the `tfm_ps`/`tfm_its`/`tfm_otp_nv_counters`
+   group (all children of `tfm_storage`), so a gap remained on the far
+   side too.
+3. Followed the doc's own recommended shortcut instead of continuing to
+   guess piecewise: copied every `flash_primary` leaf partition from the
+   build's own dynamically-generated `gateway_9151/build/partitions.yml`
+   (`EMPTY_0`-`EMPTY_3`, `tfm`, `tfm_its`, `tfm_otp_nv_counters`,
+   `tfm_ps`, `settings_storage`) into the static file, deliberately
+   excluding the derived "span" partitions (`app`, `tfm_secure`,
+   `tfm_nonsecure`, `nonsecure_storage`, `tfm_storage` -- Partition
+   Manager recomputes these automatically, and the doc says an `app`
+   entry in a static config is ignored outright) and the non-flash
+   regions (`sram_*`, `nrf_modem_lib_*`, `otp` -- the single-gap rule is
+   per-region, and those regions never had the problem). This left
+   exactly the one gap that matters (`0x40000`-`0xe0000`, "app") and
+   built clean.
+
+Confirmed after the fix: `gateway_9151/build/pm.config` still shows
+`PM_SETTINGS_STORAGE_ADDRESS=0xe0000` / `PM_SETTINGS_STORAGE_SIZE=0x2000`
+-- unchanged, so `Read-StorageFlash.ps1`'s defaults keep working with no
+script changes needed. Build-only verified (not reflashed) as of this
+entry -- the pinning takes effect at build time regardless of what's
+currently flashed, but the board should be reflashed with this build
+before relying on it, same as any other firmware change.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — UART-free flash log retrieval: tools/Read-StorageFlash.ps1
+
+With console UART0 confirmed hardware-dead on this specific gateway_9151
+DK (see the entries below -- logic analyzer directly on the TX pin shows
+zero transitions, isolated to the IMCU/VCOM0 path, not firmware),
+`CONFIG_APP_DUMP_LOG_ON_BOOT`'s printk-based CSV dump has no way to reach
+the PC on this board. J-Link/SWD (used for flashing) is confirmed fully
+healthy and is a completely separate physical path from UART0 -- it's how
+`west flash` works and how the CPU register reads earlier in this
+investigation were done. New tools:
+
+- **`tools/Read-StorageFlash.ps1`** -- reads the `storage_partition` flash
+  region's raw bytes over SWD via `nrfutil device read --to-file` (no UART
+  involved at all), then calls...
+- **`tools/decode_fcb_dump.py`** -- ...to parse Zephyr's FCB (Flash
+  Circular Buffer) on-flash format directly from the Intel HEX dump and
+  write a CSV, replicating `common/sensor_log.c`'s `sensor_log_dump_all()`
+  logic entirely off-device. Format reverse-engineered from
+  `zephyr/subsys/fs/fcb/fcb.c`/`fcb_elem_info.c` (entry =
+  `[1-byte len][data][1-byte CRC-8/CCITT]`, sector header = 8 bytes
+  starting with the `0x50415752`/"PAWR" magic used in `sensor_log_init()`)
+  and validated against a synthetic hand-built FCB sector before trusting
+  it against real hardware -- decoded both test entries correctly
+  (including the flags-based temp/humidity-invalid derivation matching
+  the firmware's own logic) with 0 CRC mismatches.
+
+Confirmed working end-to-end against the real board (`nrfutil device
+read` -> Python decode -> CSV), currently reporting 0 records since the
+partition is empty after the recent reflashes -- the pipeline itself is
+verified, just needs the board to actually accumulate UART frames from
+`central` before there's real data to retrieve. Usage:
+```powershell
+./tools/Read-StorageFlash.ps1 -SerialNumber 1051228744
+```
+`-Address`/`-Size` default to gateway_9151's current
+`PM_SETTINGS_STORAGE_ADDRESS`/`_SIZE` (`0xe0000`/`0x2000`, see
+`gateway_9151/build/pm.config` after building) -- **these are NOT
+guaranteed stable across builds** (Partition Manager places partitions
+wherever there's room), so re-check `pm.config` if this ever stops
+finding valid records after a build that changes flash layout (e.g. the
+NUM_SUBEVENTS/buffer-count changes from 2026-08-04, or any future
+Kconfig change affecting partition sizing).
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — correction + strongest evidence yet: P0.26/P0.27 ARE physically probeable, and UART0's TX pin is electrically dead
+
+Correction to a claim in the entry directly below: P0.26/P0.27 (UART0 TX/
+RX) are NOT exposed on the Arduino shield connector (confirmed via
+Zephyr's own `gpio-map` in `nrf9151dk_nrf9151_common.dtsi`, which only
+covers gpio0 pins 0-19/30/31) -- but the nRF9151 DK also breaks out raw
+SoC pins on a **separate P0.xx/P1.xx GPIO header** along the board edge,
+independent of the Arduino connector. User probed P0.27 (TX) directly on
+*that* header with a logic analyzer.
+
+**Result: completely flat, zero transitions.** Not a decode/framing
+problem, not a baud-rate mismatch -- the pin is not toggling at the
+electrical level at all, full stop.
+
+This is a stronger, more direct result than the uart2-on-P0.23 test
+below: that test showed a *different* UART peripheral works, which is
+strong circumstantial evidence; this one directly measures UART0's own
+TX pin while the firmware is actively trying to drive it (the same
+firmware whose `main()` calls `printk()` in a loop every second) and
+finds nothing. Combined with the CPU-health confirmation (J-Link register
+reads, LED heartbeat) and the uart2 test, this rules out essentially
+every remaining possibility on the firmware/software side:
+- Not a crashed/hung CPU (confirmed alive and idling normally).
+- Not wrong Kconfig/devicetree console routing (confirmed correct:
+  `zephyr,console = &uart0`, `status = "okay"`, correct pinctrl/baud).
+- Not a UART peripheral hardware defect in general (uart2 on the same
+  chip works).
+- Not a capture-tooling issue (`Watch-SerialLog.ps1`, raw
+  `SerialPort.Read()`, and Nordic's own nRF Connect Serial Terminal all
+  agreed -- and now a logic analyzer, with zero software/driver
+  dependency, agrees too).
+
+**What's left**, narrowed about as far as this can go without opening
+the DK or involving Nordic support: either (a) UARTE0's TX pin isn't
+actually being enabled/driven at the SoC level despite the devicetree/
+Kconfig looking correct -- possible causes include an IMCU-side pin
+default (e.g. GPIO pad configured as input/high-impedance by IMCU
+firmware at boot, before the SiP's own pinctrl takes effect) or a pin-
+sharing/ownership conflict specific to this pin that isn't visible from
+the application's devicetree, or (b) a genuine hardware fault on this
+specific physical pin/trace. (a) is more likely given this pin is also
+the one the IMCU/VCOM0 path depends on -- i.e. still consistent with an
+IMCU-side explanation, just now pinned down to "the SiP pin itself never
+gets driven," not merely "the IMCU doesn't forward it to USB."
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — console mystery SOLVED: confirmed IMCU/VCOM0-specific, SiP UART hardware and firmware are fine
+
+Final, conclusive test. Added a second UART to `console_test/` --
+`uart2`, a separate SiP UARTE instance disabled by default on this board,
+routed to free GPIOs P0.23 (TX) / P0.24 (RX) via a new
+`console_test/boards/nrf9151dk_nrf9151_ns.overlay` (see that file for the
+full pin-availability check against the board's Arduino header/pinctrl).
+Critically, `uart2` is **not** wired to the DK's Interface MCU (IMCU) or
+USB at all -- it's a genuinely separate physical path from `uart0`
+(console/VCOM0, the one with zero output) and `uart1`
+(`arduino_serial`/VCOM1). `main.c` writes to it directly via
+`uart_poll_out()`, bypassing `printk()`/the console subsystem entirely,
+printing `"[DIAG_UART] tick N"` once a second alongside the existing LED
+heartbeat and `uart0`/`printk` output.
+
+Built and flashed clean. User connected a **logic analyzer** directly to
+P0.23 (not a UART-to-USB adapter/driver/OS serial stack -- a logic
+analyzer reads the raw electrical signal with zero software dependency
+of any kind) and **confirmed the DIAG_UART ticks are present and
+correct**.
+
+**This closes the investigation.** Combined with everything established
+in the two entries below (CPU confirmed healthy via direct J-Link
+register reads, sitting in Zephyr's normal idle loop; LED1 blinking
+exactly on schedule; zero output on `uart0` across every capture method
+tried, including Nordic's own nRF Connect Serial Terminal; a full
+physical power cycle changing nothing) plus this result: the SiP itself,
+this project's firmware, the build toolchain, and the UART peripheral
+hardware in general are all **completely healthy and exonerated**. A
+second, independent UART instance on the same chip, in the same firmware
+image, works perfectly. The fault is isolated as specifically and
+narrowly as this investigation can determine: **the DK's Interface MCU
+(IMCU) and/or its VCOM0 routing to the USB-CDC bridge specifically.**
+This is downstream of anything `west build`/`west flash`/any code in this
+repo touches -- it's either an IMCU firmware issue on this specific
+physical board, or a hardware fault in the IMCU-to-SiP UART0 trace/
+connection.
+
+**Recommended next step if this needs resolving:** this is now squarely
+in Nordic support/DevZone territory, or warrants trying a second physical
+nRF9151 DK unit to see if VCOM0 works there (which would confirm this
+exact board is faulty, not a class-wide DK issue). `console_test/`
+(including the uart2 diagnostic) is left in the repo, ready to flash
+again if a second board becomes available for comparison, or if Nordic
+support wants a reproducer.
+
+**Practical impact on this project:** `gateway_9151`'s
+`CONFIG_APP_DUMP_LOG_ON_BOOT` + reflash retrieval path (unaffected by any
+of this, since it never depended on live console output) remains the
+working way to read back the on-board flash log. Live console output via
+VCOM0 on this specific physical DK cannot be relied on until the IMCU
+issue is resolved by Nordic or a board swap.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-04 — console mystery: nRF Connect for Desktop's own Serial Terminal also shows nothing
+
+Final piece of evidence, closing off the last remaining "maybe it's this
+session's tooling" theory. Rebuilt `console_test/` with an explicitly
+broadened config (`CONFIG_SERIAL=y`, `CONFIG_CONSOLE=y`,
+`CONFIG_UART_CONSOLE=y`, `CONFIG_LOG_MODE_IMMEDIATE=y`,
+`CONFIG_LOG_DEFAULT_LEVEL=3` -- previously only `CONFIG_LOG=y` +
+`CONFIG_PRINTK=y` were set, relying on defaults for the rest), pristine
+build, reflashed -- still built and flashed clean.
+
+Then, with **nRF Connect for Desktop's own Serial Terminal connected
+directly to COM143** (the same official Nordic tool used to check
+VCOM0's enabled state earlier, talking through Nordic's own driver
+stack, not this project's `Watch-SerialLog.ps1`/`System.IO.Ports`):
+**still nothing.** Confirmed directly by the user watching that
+terminal live while the freshly-flashed board was running.
+
+This rules out every remaining "maybe it's the capture tooling" angle:
+not `Watch-SerialLog.ps1`'s `ReadLine()`, not raw byte-level
+`SerialPort.Read()`, and now not even Nordic's own official terminal
+app. Every plausible software/tooling explanation has been exhausted.
+Combined with the LED-heartbeat proof below (firmware genuinely alive
+and executing on schedule) and the J-Link register-read proof (CPU
+healthy, normal idle loop), this is as close to fully conclusive as this
+investigation can get without either a second physical DK to compare
+against or Nordic support involvement: **the fault is in this specific
+board's console/VCOM0 hardware or IMCU firmware itself**, not in
+anything `west build`/`west flash`/any software here touches.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
+## 2026-08-04 — console mystery: CONCLUSIVELY isolated to the board's console/VCOM0 path, not app code
+
+Built a brand-new, deliberately minimal app, `console_test/` (sibling to
+`central`/`peripheral`/`gateway_9151`, same `nrf9151dk/nrf9151/ns` target)
+to settle the question left open in the two entries below. It has
+**no modem, no LTE, no MQTT, no UART receiver, no flash log** -- just
+`main()` printing via both `printk` and `LOG_INF` once a second, and
+toggling LED1 as a heartbeat that doesn't depend on serial at all. Built
+clean, flashed successfully (`nrfutil`/`west flash` confirmed), same as
+every gateway_9151 build before it.
+
+**Result: LED1 blinks correctly, once per second, exactly as coded --
+but the console (COM143/VCOM0, confirmed via `nrfutil device list`)
+still shows *zero bytes*, even at the raw OS byte level.**
+
+This is conclusive, not just another data point: combined with the
+earlier direct J-Link register reads (CPU confirmed healthy, sitting in
+Zephyr's normal idle loop between ticks, see the entry below), a visibly
+blinking LED on a 1-second loop proves the firmware is genuinely alive,
+correctly executing `main()`'s loop body, on schedule, every time. The
+bug is **not in gateway_9151, not in any application code this project
+has ever written, and not caused by the on-board flash log, MQTT client,
+modem library, or anything else added this session.** It's isolated
+entirely to this specific board's console UART0 -> IMCU -> USB-CDC path,
+external to anything `west build`/`west flash`/firmware can fix.
+
+Since UART0's pins are internal-only (not exposed on any header, see the
+entry below), there's no further diagnosis possible from this side without
+either Nordic support, a second physical DK to compare against, or lower-
+level IMCU tooling (nRF Connect Programmer's own device log, not yet
+tried as of this entry). `console_test/` is left in the repo as a ready-
+to-flash diagnostic for next time -- if the same "app is alive, LED
+blinks, console silent" pattern shows up again on a different board/setup,
+that's the same bug; if a different DK unit shows console output with
+this exact app, that would point at this specific unit being faulty.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
+## 2026-08-04 — gateway_9151 console mystery, continued: physical loopback isn't possible, IMCU/SiP path suspected
+
+Follow-up to the console-output investigation in the entry below (CPU
+confirmed healthy via J-Link register reads, zero bytes on either VCOM
+port). Two more things ruled out this round:
+
+1. **Full physical power cycle** (unplug USB entirely, wait, replug) --
+   no change. This rules out anything about J-Link/debug-probe session
+   state or the DK not fully resetting; the earlier tests only ever used
+   J-Link-issued soft resets (`RESET_PIN`/`RESET_SYSTEM`), never a true
+   power-off.
+2. **Raw byte-level capture** (`System.IO.Ports.SerialPort.Read()` into a
+   byte buffer, not `ReadLine()`) on COM143 (confirmed VCOM0 via `nrfutil
+   device list`), both standalone and with a reset issued mid-capture --
+   still **zero bytes at the raw OS level**, not just zero *lines*. Rules
+   out a newline/framing mismatch as the explanation.
+
+**Checked whether a physical loopback test (TX->RX jumper + multimeter),
+the technique that actually found the earlier VCOM1/`uart_fifo_fill` bug,
+is possible here -- it isn't.** Console UART0's pins (TX=P0.27, RX=P0.26,
+see `zephyr/boards/nordic/nrf9151dk/nrf9151dk_nrf9151_common-pinctrl.dtsi`)
+are internal SiP-to-IMCU pins, not exposed on the Arduino header or any
+other accessible pin (unlike UART1/`arduino_serial`, which the earlier bug
+used and which *is* exposed on the header). This is a real difference from
+the earlier bug, not just "same problem, try the same fix": the earlier
+case was a signal-integrity/framing problem on an externally-wired link
+between two boards; this one narrows down to something in the path
+entirely internal to the DK itself (SiP UARTE0 -> IMCU -> USB-CDC), which
+can't be probed with a multimeter or fixed by anything in this repo's
+firmware.
+
+**Still unresolved.** Current best guess, unconfirmed: something in the
+DK's IMCU firmware/Board Configurator state governing VCOM0's *routing*
+(distinct from the simple enabled/disabled flag already checked) is off --
+matching the project's own lesson from the VCOM1 case that "shows as
+enabled" and "actually routes correctly" are not the same claim. Next
+things worth trying if picked back up: nRF Connect for Desktop's
+Programmer app has its own device log panel that talks to the IMCU more
+directly than a generic COM-port terminal; comparing against a second
+physical nRF9151 DK if one becomes available (would distinguish "this
+specific unit" from "this whole board family/setup"); or, if available,
+Nordic's own DevZone support channel, since Board Configurator internals
+aren't something this project's tooling has visibility into.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
+## 2026-08-04 — clarification: 50 nodes is a fallback ceiling, not the normal operating scale
+
+The 50-node scale-up below (`NUM_SUBEVENTS` 20 -> 55, buffer counts 6/6 ->
+15/15) is **headroom for a fallback/edge case, not the expected normal
+deployment size**. Normal operation is expected to stay under 20 nodes
+(the scale that was actually soak-tested and confirmed stable, see the
+2026-08-01 entries below) -- 50 is there so the system doesn't hard-fail if
+it's ever pushed past that, not a scale it's meant to run at routinely.
+Worth keeping in mind when deciding whether the unverified 15/15 buffer
+guess needs a full incremental soak-test pass: if actual deployments stay
+under 20 nodes, the 6/6 values that were already validated at that scale
+may end up being what's actually exercised in practice, with 15/15 only
+matters if/when node count genuinely approaches 50.
+
+— Alejandro (session assisted by Claude), 2026-08-04
+
+---
+
 ## 2026-08-04 — scaled to 50 nodes; dropped gateway_9151's button-dump feature after a real console mystery
 
 **Scaled from 17/20 to 50/55 nodes/subevents.** `NUM_SUBEVENTS` in
