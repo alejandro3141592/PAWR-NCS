@@ -42,7 +42,7 @@
     Build only; don't wait for/flash the bootloader drive or monitor.
 
 .PARAMETER NodeId
-    Peripheral only: overrides CONFIG_APP_NODE_ID (1-50) for this build via
+    Peripheral only: overrides CONFIG_APP_NODE_ID (1-100) for this build via
     -DCONFIG_APP_NODE_ID=N, so a physical board's reported node_id doesn't
     have to match whatever is checked into peripheral/Kconfig's default.
     Also switches the build directory to peripheral/build_node<N> so builds
@@ -69,7 +69,7 @@ param(
     [string]$Board = 'xiao_ble/nrf52840',
     [string]$CommitMessage,
     [int]$MonitorSeconds = 60,
-    [ValidateRange(1, 50)]
+    [ValidateRange(1, 100)]
     [int]$NodeId = 0,
     [switch]$SkipGit,
     [switch]$SkipFlash
@@ -80,11 +80,11 @@ if ($App -eq 'peripheral' -and $NodeId -eq 0) {
     if (Test-Path $nodeIdFile) {
         $fileContent = (Get-Content $nodeIdFile -Raw -ErrorAction SilentlyContinue).Trim()
         $parsedNodeId = 0
-        if ([int]::TryParse($fileContent, [ref]$parsedNodeId) -and $parsedNodeId -ge 1 -and $parsedNodeId -le 50) {
+        if ([int]::TryParse($fileContent, [ref]$parsedNodeId) -and $parsedNodeId -ge 1 -and $parsedNodeId -le 100) {
             $NodeId = $parsedNodeId
             Write-Output "Using CONFIG_APP_NODE_ID=$NodeId from peripheral\node_id.txt"
         } elseif ($fileContent) {
-            Write-Output "WARNING: peripheral\node_id.txt contains '$fileContent', not a valid node ID (1-50) -- ignoring, using Kconfig default."
+            Write-Output "WARNING: peripheral\node_id.txt contains '$fileContent', not a valid node ID (1-100) -- ignoring, using Kconfig default."
         }
     }
 }
