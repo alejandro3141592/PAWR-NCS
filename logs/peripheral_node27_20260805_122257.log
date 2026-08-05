@@ -1,0 +1,24 @@
+[12:22:59.577] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[12:22:59.579] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:22:59.580] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:22:59.581] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[12:22:59.582] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:22:59.582] Node ID: 27
+[12:22:59.582] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:22:59.583] [00:00:00.090,087] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:22:59.584] [00:00:00.175,537] [0m<inf> udc_nrf: Reset[0m
+[12:22:59.584] [00:00:00.175,659] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:22:59.584] [00:00:00.261,657] [0m<inf> udc_nrf: Reset[0m
+[12:22:59.585] [STORAGE] Flash log ready (8 sectors)
+[12:22:59.585] [00:00:00.690,948] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:22:59.586]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:22:59.587]                                             74 6c ac 75                                      |tl.u             [0m
+[12:22:59.587] [00:00:00.693,817] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:22:59.588] [00:00:00.693,847] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 27 seq 1 temp=29.39C humidity=41.5% flags=0x00
+[12:23:09.561] Timed out while synchronizing
+[12:23:09.562] Waiting for periodic sync...
+[12:23:09.563] [SENSORS] node 27 seq 2 temp=29.48C humidity=41.5% flags=0x00
+[12:23:19.617] [SENSORS] node 27 seq 3 temp=29.17C humidity=41.6% flags=0x00
+[12:23:26.868] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:23:26.868] *** could not reopen COM16 : Exception calling "Open" with "0" argument(s): "The port 'COM16' does not exist." -- stopping capture ***
