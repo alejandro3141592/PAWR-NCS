@@ -1,0 +1,2 @@
+[11:41:27.162] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The port is closed." -- reopening port ***
+[11:41:27.162] *** could not reopen COM23 : Exception calling "Open" with "0" argument(s): "The port 'COM23' does not exist." -- stopping capture ***
