@@ -1,0 +1,20 @@
+[11:43:36.932] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[11:43:36.935] [1;31m--- 3 messages dropped ---
+[11:43:36.935] [0mStarting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[11:43:36.935] Node ID: 55
+[11:43:36.935] [STORAGE] Flash log ready (8 sectors)
+[11:43:36.936] [00:00:00.004,669] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[11:43:36.936]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[11:43:36.938]                                             74 6c ac 75                                      |tl.u             [0m
+[11:43:36.939] [00:00:00.007,324] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[11:43:36.939] [00:00:00.007,354] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[11:43:36.940] [00:00:00.007,385] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[11:43:36.940] [00:00:00.008,209] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[11:43:36.940] [00:00:00.008,361] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[11:43:36.941] [00:00:00.008,453] [0m<inf> bt_hci_core: Identity: F9:FC:23:FC:61:11 (random)[0m
+[11:43:36.941] [00:00:00.008,483] [0m<inf> bt_hci[SENSORS] node 55 seq 2 temp=28.60C humidity=43.1% flags=0x00
+[11:43:39.611] >>> Poll received: subevent 0, responding in slot 0
+[11:43:46.946] [SENSORS] node 55 seq 3 temp=28.10C humidity=43.9% flags=0x00
+[11:43:49.611] >>> Poll received: subevent 0, responding in slot 0
+[11:43:56.961] [SENSORS] node 55 seq 4 temp=27.80C humidity=44.4% flags=0x00
+[11:43:59.610] >>> Poll received: subevent 0, responding in slot 0
