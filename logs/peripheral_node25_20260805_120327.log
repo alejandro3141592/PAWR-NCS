@@ -1,0 +1,19 @@
+[12:03:28.155] [STORAGE] Flash log ready (8 sectors)
+[12:03:28.157] [1;31m--- 6 messages dropped ---
+[12:03:28.158] [0m[00:00:00.005,920] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:03:28.159]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:03:28.159]                                             74 6c ac 75                                      |tl.u             [0m
+[12:03:28.160] [00:00:00.008,117] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:03:28.162] [00:00:00.008,636] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:03:28.162] [00:00:00.008,666] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[12:03:28.163] [00:00:00.008,697] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[12:03:28.164] [00:00:00.009,582] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[12:03:28.164] [00:00:00.009,674] [0m<inf> bt_hci_core: Identity: CA:D9:20:A2:05:60 (random)[0m
+[12:03:28.165] [00:00:00.009,735] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0x10a3, manufacturer 0x0059[0m
+[12:03:28.165] [00:00:00.009,765] [0m<inf> bt_hci_core: LMP: version 6.2 (0x10) subver 0x[SENSORS] node 25 seq 1 temp=30.07C humidity=43.0% flags=0x00
+[12:03:28.166] Disconnected, reason 0x13 
+[12:03:29.609] >>> Poll received: subevent 1, responding in slot 0
+[12:03:38.170] [SENSORS] node 25 seq 2 temp=30.41C humidity=43.6% flags=0x00
+[12:03:39.609] >>> Poll received: subevent 1, responding in slot 0
+[12:03:48.185] [SENSORS] node 25 seq 3 temp=30.56C humidity=44.3% flags=0x00
+[12:03:49.609] >>> Poll received: subevent 1, responding in slot 0
