@@ -8,6 +8,21 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-05 — expanded APP_NODE_ID range to 1-100 (was 1-50)
+
+`peripheral/node_id.txt` was set to `55`, which exceeded the Kconfig range
+(`1 50`) -- a fresh build would've silently ignored it and fallen back to
+the Kconfig default (`1`) with just a warning, not actually flashed as `55`.
+Bumped the range to `1 100` for headroom, in three places that all have to
+stay in sync (learned this the hard way when it went 17->50 previously):
+`peripheral/Kconfig` (`range 1 100`), and `tools/Sync-And-Build.ps1`'s
+`-NodeId` param `[ValidateRange(1, 100)]` plus the `node_id.txt` file-parsing
+check. Confirmed node 55 builds/flashes/syncs correctly now
+(`logs/peripheral_node55_20260805_114336.log`). If you add a fourth node-ID
+range check anywhere else, remember these three.
+
+---
+
 ## 2026-08-05 — pinned settings_storage's flash address permanently: gateway_9151/pm_static.yml
 
 Follow-up to `tools/Read-StorageFlash.ps1`/`decode_fcb_dump.py` (previous
