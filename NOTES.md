@@ -8,6 +8,49 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-05 — added -SkipPristine to Sync-And-Build.ps1 for fast per-board flashing
+
+Every build was pristine (full clean rebuild) by design, ~2-3 min each -- fine
+for one board, painful for flashing 50-100 distinct ones each with a
+different `-NodeId`. Added `-SkipPristine`.
+
+**Important design point, not obvious at first:** each `-NodeId` normally gets
+its own `build_node<N>` directory (so pristine rebuilds for different boards
+don't clobber each other's cache) -- but that means a fresh `-NodeId` always
+hits a directory nothing's ever been built into, so skipping `--pristine`
+alone wouldn't help at all for the actual "many distinct boards" use case
+(only for re-flashing the *same* ID repeatedly, e.g. while debugging). Fixed
+by having `-SkipPristine` use one shared `peripheral/build_incremental`
+directory reused across *every* `-NodeId` instead, so compiled Zephyr/nrfxlib
+object files carry over between boards and only `main.c` (which
+`CONFIG_APP_NODE_ID` feeds into) recompiles + relinks each time.
+
+**Measured:** first build into the fresh shared dir: 39s. A second,
+genuinely different node ID into the same dir right after: 37s (266 build
+steps vs. ~299 for a full pristine rebuild) -- confirmed `autoconf.h` actually
+had the new ID (56), not stale. Both far faster than a pristine build once
+warmed up.
+
+**Real bug hit and fixed along the way:** `build_incremental/` wasn't in
+`.gitignore` (only `build_node*/` was) -- the next run's own git-housekeeping
+step tried to `git add -A` + commit the *entire* build tree (thousands of
+object files), and the commit failed outright with "the filename or
+extension is too long" (the auto-generated commit message lists every
+changed file). Fixed by adding `*/build_incremental/` to `.gitignore` and
+unstaging what had already been added. If you ever see that error, check
+`git status --porcelain | wc -l` for something similarly out of proportion
+before assuming it's a real problem.
+
+Use it like: `./tools/Sync-And-Build.ps1 -App peripheral -NodeId 7
+-SkipPristine`. Don't use it after touching devicetree/CMakeLists/
+Kconfig.sysbuild -- incremental builds have previously silently missed
+changes to those on this toolchain (see the build/flash gotchas section);
+omit the flag and let it run pristine when in doubt.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
 ## 2026-08-05 — expanded APP_NODE_ID range to 1-100 (was 1-50)
 
 `peripheral/node_id.txt` was set to `55`, which exceeded the Kconfig range
