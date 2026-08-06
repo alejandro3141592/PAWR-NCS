@@ -2,6 +2,20 @@
 
 mainmenu "PAwR central hub"
 
+config APP_CENTRAL_ID
+	int "This central's ID (0 = default/unscoped)"
+	default 0
+	range 0 999
+	help
+	  Only peripherals advertising a matching CONFIG_APP_CENTRAL_ID suffix
+	  (see PAWR_ADV_NAME/pawr_format_adv_name() in common/pawr_protocol.h)
+	  will be onboarded by this central -- lets multiple independent
+	  central+peripheral-fleet rigs run in BLE range of each other without
+	  cross-onboarding each other's peripherals. 0 means "unscoped": scans
+	  for the bare PAWR_ADV_NAME with no suffix, matching peripherals that
+	  also have CONFIG_APP_CENTRAL_ID=0 (the default, preserves old
+	  single-central behavior with no config changes needed).
+
 config APP_DUMP_LOG_ON_BOOT
 	bool "Dump the on-board flash sensor log as CSV over serial at boot"
 	default n

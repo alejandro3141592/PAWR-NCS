@@ -8,6 +8,218 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-05 — correction to the 90-min soak entry: "10 node IDs" was 12 physical boards with 2 ID collisions, packet delivery ratio computed
+
+Follow-up after computing the actual packet delivery ratio (PDR) for the
+90-min/17-peripheral soak below. Re-examined why central's console only
+ever showed 10 distinct node IDs instead of up to 17: **node IDs 32 and
+55 each turned out to be two separate physical boards transmitting
+concurrently**, not one board or a reassignment artifact -- confirmed by
+grouping central's log by `(node_id, subevent)` instead of just
+`node_id`: node 32 appeared on both subevent 0 and subevent 10
+simultaneously for the entire 90-minute session, each with its own
+independently-incrementing `seq` counter (subevent 0: seq 9->550;
+subevent 10: seq 84->622, overlapping in time throughout, not
+sequential) -- same pattern for node 55 (subevents 2 and 8). This means
+**12 physical boards were actually active and reporting**, not 10 --
+still short of 17, meaning 5 boards were either not transmitting, not
+onboarded, or colliding with an already-stale/reclaimed ID silently, not
+yet root-caused. This also fully explains without needing a software
+bug: two boards were flashed with the same `CONFIG_APP_NODE_ID` at some
+point (today's flashing only touched nodes 63, 61, 34 -- the 32/55
+collision predates this session).
+
+**Corrected packet delivery ratio**, computed correctly per physical
+board (grouping by `(node_id, subevent)`, using each board's own
+sequence-number span as the "expected" denominator, since PAwR/BLE gives
+no other ground truth for how many responses *should* have arrived):
+
+```
+node subev  received      seq_range  expected     pdr
+   8     7       528     20-559           540   97.8%
+  21    11       504     84-621           538   93.7%
+  31     3       526     38-580           543   96.9%
+  32     0       504      9-550           542   93.0%
+  32    10       509     84-622           539   94.4%
+  34     1       539     37-578           542   99.4%
+  35     6       503     48-590           543   92.6%
+  55     2       510    272-813           542   94.1%
+  55     8       504    142-681           540   93.3%
+  61     5       524     35-576           542   96.7%
+  63     4       508    113-655           543   93.6%
+  64     9       518    195-733           539   96.1%
+
+Physical boards seen: 12
+Overall PDR: 95.13% (6177 received / 6493 expected)
+```
+
+Range 92.6%-99.4% per board, no single board catastrophically worse than
+the others (node 35's 92.6% here is just its normal response-delivery
+rate -- separate from its 100%-sensor-failure finding below, which is
+about payload *content* being invalid, not about responses failing to
+arrive at all).
+
+**Also checked: no node-count limit anywhere in `gui/sensor_gui.py`.**
+Table row count (`setRowCount(len(nodes))`) scales to however many
+distinct node IDs have been seen, no cap. The only hardcoded ranges found
+(`NUM_PERSONS = 4`, a body-silhouette grouping concept unrelated to
+per-node data; `range(1, 39)` in the body-part-to-node assignment
+dropdown) don't limit how many nodes' data the table/DB/MQTT path can
+handle -- 38 as an assignment-dropdown ceiling is well above 17 anyway.
+The "only 10 shown" observation was fully explained by the node_id
+collision above, not a software limit.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — first real 17-peripheral 90-minute end-to-end soak: pipeline confirmed working, two real findings
+
+First long-duration test with 17 physical peripherals running
+simultaneously. Captured central's console live for the full 90 minutes
+(`logs/central_17node_90min_20260805.log`, confirmed "5400s elapsed of
+5400 requested" -- not truncated) and pulled gateway_9151's flash log via
+SWD (`tools/Read-StorageFlash.ps1`, no UART needed, see the entries below
+for why) immediately after the session ended.
+
+**Central's console, full 90 min:** 6183 `>>> Node ...` lines across 10
+distinct node IDs (08, 21, 31, 32, 34, 35, 55, 61, 63, 64) -- fewer than
+17 because not every physical board had been reflashed with a fresh/known
+node ID today, and several likely share overlapping identity with boards
+from earlier sessions (see below).
+
+**Gateway's flash log** (8KB FCB, 2 sectors) held 510 clean records (0
+CRC mismatches) covering only the tail of the session -- confirmed
+in advance this would happen: at 17-node volume the log wraps well
+before 90 minutes (sized for ~4 hours at a much lower node count, see
+peripheral's original FCB sizing comment). Showed 12 distinct node IDs
+(1, 2, 3, 18, 21, 25, 27, 30, 32, 55, 63, 64), several of which (1, 2, 3,
+18, 25, 27, 30) **never appear anywhere in central's full 90-minute
+log**, while central's node 35 never appears in gateway's dump at all.
+
+**Not a bug -- confirmed with the user:** not all 17 physical boards were
+reflashed today, so several are still running node IDs assigned in
+earlier sessions. The two logs cover different (only partially
+overlapping) time windows anyway (gateway's is tail-only, central's is
+the full 90 min), so seeing different node-ID sets in each is expected
+once boards can have stale/reused IDs. Sequence numbers in gateway's tail
+window start low (0-18) for several nodes, consistent with boards that
+power-cycled or freshly joined partway through the session (peripheral's
+`s_seq` resets to 0 on reboot).
+
+**Real finding #1: node 35 failed every single reading, the whole
+session.** 503/503 occurrences show `skin_temp=0.00C humidity=0.0%`
+with both `TEMP_FAIL`/`HUMIDITY_FAIL` flags set, from the very first
+reading (`seq=48` at 12:43:29) to the last (`seq=590` at 14:13:22) --
+`seq` incrementing normally throughout, so PAwR sync/BLE is fine, this is
+specifically that peripheral's I2C sensors (or their wiring) never
+working the entire session. Worth a physical check of that board
+(loose I2C connection, dead SHT4x/MAX30205, wrong address, etc.).
+
+**Real finding #2: central's own on-board flash log was useless for
+this entire session.** `[STORAGE] fcb_append failed (err -28)` (-ENOSPC)
+on 6174 of 6183 receptions (99.9%) -- central's 32KB `storage_partition`
+was already full from earlier testing today and was never erased/rotated
+before this run started (first failure logged within the first second).
+**Confirmed this did NOT affect the critical path**: the `>>> Node ...`
+UART-forward-to-gateway print happens before `sensor_log_append()` in
+`response_cb`, and continued succeeding on every single reception
+throughout -- central's flash log is purely a local fallback (per its own
+design intent), and its being full only means *that specific fallback*
+wasn't available this session, not that any real data was lost from the
+gateway/cloud path. FCB is supposed to auto-rotate (overwrite oldest)
+when full rather than fail outright -- worth investigating separately
+why that didn't happen here (possibly relevant: central has no
+`pm_static.yml` pinning its `storage_partition`, unlike gateway_9151 after
+the fix in the entries below -- not yet confirmed if that's related).
+
+**Bottom line: the full pipeline (17x peripheral -> BLE -> central -> UART
+-> gateway_9151) held up correctly for the entire 90-minute run** --
+central kept forwarding every reception to gateway despite its own local
+storage being unusable, and gateway's flash log (once readable again
+after the security-fault fix) confirms clean, uncorrupted reception on
+its end throughout the tail window checked.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — "gateway isn't uploading to cloud": found and fixed two real bugs (security fault + decoder alignment)
+
+User reported gateway_9151 wasn't reaching HiveMQ Cloud. Console UART0 is
+still hardware-dead (see entries below), so this needed the SWD-based
+tools built for that problem to diagnose blind.
+
+**Bug 1 (the actual cause of nothing reaching the cloud): `pm_static.yml`
+was silently crashing the board on every boot.** `nrfutil device
+cpu-register-read --register PC` showed the CPU stuck in
+`arch_system_halt` (Zephyr's fatal-error handler), reached via
+`z_arm_fatal_error` -> `tfm_ns_fault_handler_callback` -> `arm_fault`,
+with `flash_nrf_read` on the call stack -- a genuine TF-M **security
+fault** triggered by a non-secure flash read (`sensor_log_init()`'s
+`flash_area_get_sectors()`/`fcb_init()`, called near the top of `main()`,
+well before UART/MQTT/LTE ever get touched). Root cause: the version of
+`pm_static.yml` from the previous entry pinned `settings_storage`/
+`tfm_ps`/`tfm_its`/`tfm_otp_nv_counters` as flat leaf partitions but
+**omitted their parent SPAN partitions** (`nonsecure_storage`,
+`tfm_storage`) that mark the non-secure/secure security boundary in the
+original dynamic layout. Without those spans, TF-M had no security
+attribution for that flash region at all -- any non-secure access tripped
+the SPU. Confirmed reproducible/deterministic: reset the board and
+re-read PC -- identical PC/LR/every register, every time, not a
+transient/environment-dependent fault. **Fixed** by declaring
+`nonsecure_storage` (`span: [settings_storage]`) and `tfm_storage`
+(`span: [tfm_ps, tfm_its, tfm_otp_nv_counters]`) explicitly in
+`pm_static.yml`, matching the original dynamic layout's boundaries
+exactly. Confirmed fixed: rebuilt, reflashed, re-checked PC -- now
+sitting in `arch_cpu_idle`'s `wfi` (the same healthy-idle signature
+confirmed back in the `console_test`/logic-analyzer investigation), not
+`arch_system_halt`.
+
+This is a real lesson about NCS's static partition config, worth
+remembering: **the doc's "an `app` entry in a static config is ignored"
+note does NOT generalize to every derived/span partition.** `app` is
+special-cased; `nonsecure_storage`/`tfm_storage` (and likely other
+security-relevant spans on TF-M targets) are not -- omitting them doesn't
+error at build time, it silently breaks security attribution and only
+surfaces as a runtime fault the first time the affected region is
+touched. Worth double-checking with a real boot+register-read (not just
+"it built clean") after touching `pm_static.yml` on any TF-M target.
+
+**Bug 2 (found while verifying bug 1's fix): `tools/decode_fcb_dump.py`
+had a real alignment bug of its own, unrelated to bug 1.** After the
+security-fault fix, `Read-StorageFlash.ps1` found 1 record but flagged it
+`crc_ok=False` with garbage values (`node_id=255`, `humidity_pct=5248.0`).
+Traced by manually walking the raw bytes at every offset until one
+produced both a plausible payload AND a matching CRC. Root cause: FCB's
+`fcb_append.c` pads the length-field slot and the CRC slot **separately**
+to the flash device's write-block alignment (`fcb_len_in_flash()`,
+`f_align` = 4 on both this project's boards, nRF9151 and nRF52840, per
+their `write-block-size = <4>` devicetree nodes) -- so a real on-flash
+entry for our 8-byte payload is `[1 real len byte + 3 padding][8 payload
+bytes][1 real CRC byte + 3 padding]` = 16 bytes, not the naive
+1+8+1 = 10 bytes the decoder assumed. Fixed by aligning each slot's size
+up to `f_align` (now a `--align` CLI parameter, default 4) when advancing
+through entries, while still computing the CRC over only the real
+(unpadded) length byte + payload bytes, matching `fcb_elem_crc8()`
+exactly. Confirmed fixed against the real device: went from 1
+garbage/CRC-failed record to **40 clean records, 0 CRC mismatches**,
+all with plausible temp/humidity values from node 55.
+
+**End-to-end confirmed working again**: peripheral -> BLE -> central ->
+UART -> gateway_9151 -> flash log, verified via 40 real decoded records.
+MQTT/cloud delivery itself was never actually implicated -- the gateway
+never got far enough into `main()` to attempt it, so "not uploading to
+the cloud" was a symptom of an early boot crash, not an MQTT/LTE/broker
+problem. Not yet separately re-confirmed that MQTT publishing itself
+works post-fix (the flash log only proves UART reception) -- worth
+checking the HiveMQ Cloud dashboard or `gui/sensor_gui.py` directly once
+convenient, now that the board is confirmed alive and processing frames.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
 ## 2026-08-05 — expanded APP_NODE_ID range to 1-100 (was 1-50)
 
 `peripheral/node_id.txt` was set to `55`, which exceeded the Kconfig range
@@ -2325,5 +2537,102 @@ reverting the test flag -- normal boot, flash log init, and sync all
 unaffected. Committed and pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-03
+
+## 2026-08-05 — multi-central/multi-gateway coexistence: CONFIG_APP_CENTRAL_ID scoping, this rig assigned ID 1
+
+User's setup will eventually run two or more independent central+gateway rigs
+close enough together to be in BLE range of each other. Without any scoping,
+any central would GATT-onboard any peripheral it can hear, so a peripheral
+meant for rig B could get grabbed by rig A's central. Needed a way to fence
+each rig's peripherals to only its own central.
+
+**Design chosen (over a BLE-address-allowlist alternative)**: a new
+`CONFIG_APP_CENTRAL_ID` Kconfig int (range 0-999, default 0), mirrored on
+both `central/Kconfig` and `peripheral/Kconfig`. `common/pawr_protocol.h`
+gained `pawr_format_adv_name()`: a peripheral with `CENTRAL_ID=0` advertises
+under the bare `PAWR_ADV_NAME` ("PAwR sync sample") exactly as before; a
+non-zero ID appends a numeric suffix (`"PAwR sync sample 1"`). Central builds
+its own expected name the same way and only onboards peripherals whose
+advertised name matches exactly (`peripheral/src/main.c`'s `adv_name`/`ad[]`
+is now built at runtime instead of a `CONFIG_BT_DEVICE_NAME` compile-time
+constant; `central/src/main.c`'s `device_found()` filter compares against
+`target_adv_name` instead of the old literal). Default 0/0 on both sides is
+fully backward compatible -- no config changes needed unless you're actually
+running multiple rigs.
+
+**This rig assigned `CONFIG_APP_CENTRAL_ID=1`.** Rebuilt and staged firmware
+for the central and all 10 distinct node IDs currently in the field (8, 21,
+31, 32, 34, 35, 55, 61, 63, 64 -- covers all 12 physical boards, since node
+IDs 32 and 55 each cover 2 physical boards sharing that ID, see the
+2026-08-05 PDR correction entry above). All 11 builds (central + 10 node
+builds) compiled clean on the first corrected attempt. Build dirs:
+`central/build`, `peripheral/build_node<N>` for each N above. None of this
+firmware has been physically flashed yet -- staged only, per the user's
+choice to build everything first and flash later at their own pace rather
+than a live one-at-a-time session. Every board (central and all 12
+peripherals) needs reflashing to pick up `CENTRAL_ID=1` -- until reflashed
+they're still on the old firmware, which behaves as `CENTRAL_ID=0`
+(unscoped) and will keep talking to any central, scoped or not, since a
+`CENTRAL_ID=0` peripheral only matches a `CENTRAL_ID=0` central's filter --
+i.e. old peripherals simply won't be onboarded by the new `CENTRAL_ID=1`
+central until they're reflashed too. Flash via the standard UF2
+double-tap-reset + drive-copy process; manual commands follow the same
+`Copy-Item ...\zephyr.uf2 -Destination "D:\firmware.uf2"` pattern documented
+in `BUILD_AND_FLASH.md`, one board at a time, confirming board identity
+before each copy since these boards are visually identical.
+
+**Note for future rigs**: pick a distinct `CONFIG_APP_CENTRAL_ID` per
+physical rig (e.g. rig 2 = `CENTRAL_ID=2`) and build every one of that rig's
+peripherals with the matching ID plus the central with the same ID. A
+peripheral flashed with the wrong ID won't error visibly -- it'll just never
+get onboarded by any central in range, since no central's scan filter will
+match its advertised name. If a peripheral seems to vanish after a
+central-ID change, check its `CONFIG_APP_CENTRAL_ID` first.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+## 2026-08-05 — batch-built firmware for node IDs 1-65 (CENTRAL_ID=1), new tools/Build-NodeFleet.ps1
+
+User has node IDs 1-65 in play (beyond the 12 boards physically running
+today), and asked for either a full build of every ID or a reusable script
+to drive that -- chose the script, since re-scoping or re-ranging will come
+up again (new rigs, more boards).
+
+Added **`tools/Build-NodeFleet.ps1`**: takes `-NodeIds <int[]>` and
+`-CentralId <int>`, batch pristine-builds `peripheral/build_node<N>` for
+each ID with `-DCONFIG_APP_NODE_ID=<N> -DCONFIG_APP_CENTRAL_ID=<CentralId>`.
+Build-only, doesn't flash (matches the "build now, flash later at your own
+pace over UF2" workflow already in use this session). Central is not built
+by this script (different Kconfig option set, only one central per
+invocation needed) -- build it separately with the usual `west build`
+one-liner (see `BUILD_AND_FLASH.md`), same `-DCONFIG_APP_CENTRAL_ID=N` flag.
+
+Ran `./Build-NodeFleet.ps1 -NodeIds (1..65) -CentralId 1` -- **all 65 builds
+succeeded**, verified directly (`build_node<N>/peripheral/zephyr/zephyr.uf2`
+present and non-empty for every N in 1-65), even though the script's own
+run reported "65 build(s) failed" and exited 1. That failure report was a
+bug in the script itself, not the builds: `$results = [ordered]@{}` +
+`$results[$n] = $ok` with an *integer* key `$n` hits PowerShell's
+ordered-dictionary positional-index overload instead of a real key-value
+assignment, throwing `ArgumentOutOfRangeException` on every iteration --
+caught by the script's own `$ErrorActionPreference = 'Continue'`, so each
+build kept running to completion and succeeded, but every `$results[$n]`
+write silently failed, leaving every entry at its default `$false`. Fixed
+by switching to a plain `@{}` (unordered) hashtable, which does real
+key-based lookup for int keys -- confirmed with a standalone repro. Script
+now fixed in the repo; a re-run would report the summary correctly, but was
+not re-run since the original 65 builds are already known-good and
+re-running would just burn another ~50 minutes for the same output.
+
+Total time for 65 pristine builds: roughly 50 minutes.
+
+Same caveat as the earlier CENTRAL_ID entry applies: nothing is flashed yet,
+these are staged `.uf2` files only. To flash a given node N:
+```powershell
+Copy-Item peripheral\build_node<N>\peripheral\zephyr\zephyr.uf2 -Destination "D:\firmware.uf2"
+```
+after double-tap-reset puts that board into UF2 bootloader mode.
+
+— Alejandro (session assisted by Claude), 2026-08-05
 
 <!-- New entries go above this line -->

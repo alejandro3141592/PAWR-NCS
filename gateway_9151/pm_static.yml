@@ -10,18 +10,36 @@
 # gateway_9151/build/partitions.yml and use it directly as the static
 # config, keeping every flash_primary leaf partition (including its
 # EMPTY_* filler regions) so nothing is left for Partition Manager to
-# re-derive. Confirmed the hard way, two failures deep, that pinning only
-# settings_storage (or settings_storage+tfm) isn't enough: Partition
-# Manager's static-config algorithm requires EXACTLY ONE contiguous
-# unfilled gap in flash_primary (for "app" to fill), and settings_storage
-# sits in the middle of several small TF-M storage partitions, so any
-# partial pinning leaves multiple gaps. Pinning the complete existing
-# layout leaves exactly the one gap that matters (0x40000-0xe0000, "app").
+# re-derive. Confirmed the hard way, three failures deep this time
+# (see NOTES.md 2026-08-05 for the full trail):
+#   1. Pinning settings_storage alone: "Incorrect amount of gaps found"
+#      (two gaps, one on each side of it).
+#   2. Also pinning tfm: still two gaps (settings_storage sits between
+#      app and the tfm_ps/tfm_its/tfm_otp_nv_counters group).
+#   3. Pinning every flash_primary LEAF partition (this file's first
+#      version): built and flashed clean, but the board then hard-faulted
+#      on every single boot (confirmed via nrfutil device
+#      cpu-register-read: PC stuck in arch_system_halt, called via
+#      z_arm_fatal_error/tfm_ns_fault_handler_callback/arm_fault, with
+#      flash_nrf_read on the stack -- a genuine TF-M security fault while
+#      reading flash, not a hang). Root cause: omitting "nonsecure_storage"
+#      and "tfm_storage" (the SPAN partitions settings_storage/tfm_ps/
+#      tfm_its/tfm_otp_nv_counters normally live "inside") from the static
+#      config meant TF-M had no non-secure/secure boundary marking for
+#      that flash region at all, so a non-secure flash read into it
+#      tripped the SPU. These two span partitions are NOT optional the way
+#      "app" is (the doc's "app is ignored" note does not generalize to
+#      every derived partition) -- they must be declared explicitly with
+#      their own span, or the security attribution breaks silently (no
+#      build-time error -- only a runtime fault).
 #
 # NOT included here (and intentionally so):
-#   - app, tfm_nonsecure, tfm_secure, nonsecure_storage, tfm_storage: all
-#     "span"/derived partitions Partition Manager recomputes automatically;
-#     the doc explicitly says an "app" entry in a static config is ignored.
+#   - app, tfm_nonsecure, tfm_secure: still safe to omit -- Partition
+#     Manager recomputes these automatically and the doc explicitly says
+#     an "app" entry in a static config is ignored. Unlike
+#     nonsecure_storage/tfm_storage above, omitting these did NOT cause a
+#     fault (confirmed: attempt 3 built and booted, just crashed on flash
+#     access specifically inside the mis-attributed region).
 #   - sram_*, nrf_modem_lib_*, otp: separate regions (sram_primary, otp),
 #     not flash_primary -- the single-gap rule is per-region, and these
 #     regions were never the problem. Leaving them dynamic keeps
@@ -29,8 +47,9 @@
 #     needing this file touched again.
 #
 # Addresses/sizes below match gateway_9151/build/partitions.yml exactly as
-# of 2026-08-05 -- adding this file should NOT move anything on the next
-# build, only prevent future Kconfig/code changes from moving them.
+# of 2026-08-05 (from BEFORE pm_static.yml existed, i.e. the last known-
+# good dynamic layout) -- adding this file should NOT move anything on the
+# next build, only prevent future Kconfig/code changes from moving them.
 EMPTY_0:
   address: 0xfc000
   size: 0x4000
@@ -46,6 +65,10 @@ EMPTY_3:
 tfm:
   address: 0x0
   size: 0x40000
+tfm_storage:
+  address: 0xe8000
+  size: 0x14000
+  span: [tfm_ps, tfm_its, tfm_otp_nv_counters]
 tfm_its:
   address: 0xe8000
   size: 0x2000
@@ -58,6 +81,11 @@ tfm_ps:
   address: 0xf8000
   size: 0x4000
   inside: [tfm_storage]
+nonsecure_storage:
+  address: 0xe0000
+  size: 0x2000
+  span: [settings_storage]
 settings_storage:
   address: 0xe0000
   size: 0x2000
+  inside: [nonsecure_storage]

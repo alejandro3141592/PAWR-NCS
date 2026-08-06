@@ -11,6 +11,21 @@ config APP_NODE_ID
 	  dynamically over GATT) -- this is only a label so central's printed
 	  output and logs are self-describing per physical node.
 
+config APP_CENTRAL_ID
+	int "ID of the central this peripheral should pair with (0 = any/default)"
+	default 0
+	range 0 999
+	help
+	  Appended as a suffix to the advertised device name (see
+	  PAWR_ADV_NAME/pawr_format_adv_name() in common/pawr_protocol.h), so
+	  this peripheral is only found by a central with a matching
+	  CONFIG_APP_CENTRAL_ID -- lets multiple independent central+
+	  peripheral-fleet rigs run in BLE range of each other without
+	  cross-onboarding. 0 means "unscoped": advertises under the bare
+	  PAWR_ADV_NAME with no suffix, matching a central that also has
+	  CONFIG_APP_CENTRAL_ID=0 (the default, preserves old single-central
+	  behavior with no config changes needed).
+
 config APP_SIMULATE_SENSORS
 	bool "Use simulated sensor values instead of real I2C reads"
 	default n

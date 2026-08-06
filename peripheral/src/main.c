@@ -29,6 +29,7 @@
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/sys/byteorder.h>
 #include <zephyr/sys/util.h>
+#include <string.h>
 
 #include "pawr_protocol.h"
 
@@ -574,8 +575,13 @@ BT_CONN_CB_DEFINE(conn_cb) = {
 	.disconnected = disconnected,
 };
 
-static const struct bt_data ad[] = {
-	BT_DATA(BT_DATA_NAME_COMPLETE, CONFIG_BT_DEVICE_NAME, sizeof(CONFIG_BT_DEVICE_NAME) - 1),
+/* Advertised name is built at runtime (not CONFIG_BT_DEVICE_NAME directly)
+ * so it can include CONFIG_APP_CENTRAL_ID as a suffix -- see
+ * pawr_format_adv_name() in common/pawr_protocol.h for why/format.
+ */
+static char adv_name[PAWR_ADV_NAME_MAX_LEN];
+static struct bt_data ad[] = {
+	BT_DATA(BT_DATA_NAME_COMPLETE, adv_name, 0), /* .data_len set in main() */
 };
 
 int main(void)
@@ -584,7 +590,10 @@ int main(void)
 	int err;
 
 	APP_LOG("Starting Periodic Advertising with Responses Synchronization Demo (peripheral)\n");
-	APP_LOG("Node ID: %u\n", CONFIG_APP_NODE_ID);
+	APP_LOG("Node ID: %u, Central ID: %u\n", CONFIG_APP_NODE_ID, CONFIG_APP_CENTRAL_ID);
+
+	pawr_format_adv_name(adv_name, sizeof(adv_name), CONFIG_APP_CENTRAL_ID);
+	ad[0].data_len = strlen(adv_name);
 
 	status_led_init();
 	sensors_init();

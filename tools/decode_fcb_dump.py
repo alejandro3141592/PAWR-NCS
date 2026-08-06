@@ -9,17 +9,38 @@ gateway_9151's flash log -- see that script's header comment and
 NOTES.md 2026-08-05 for why this exists (console UART0 confirmed
 hardware-dead, unrelated to firmware).
 
-FCB on-flash format (zephyr/subsys/fs/fcb/fcb.c, fcb_elem_info.c):
+FCB on-flash format (zephyr/subsys/fs/fcb/fcb.c, fcb_elem_info.c,
+fcb_append.c):
   Sector header (8 bytes): fd_magic(u32) fd_ver(u8) _pad(u8) fd_id(u16)
-  Then a sequence of entries, each:
+  Then a sequence of entries, each logically
     [len byte(s)][len bytes of data][1-byte CRC-8/CCITT over len-field+data]
   len < 0x80 is one byte, stored as (len ^ ~erase_value); our payloads are
-  always 8 bytes so this is always the 1-byte form. End of entries in a
-  sector is marked by 4+ consecutive erase_value (0xFF) bytes where a
-  length byte is expected.
+  always 8 bytes so this is always the 1-byte form.
+
+  CRITICAL: on flash, the length-field slot and the CRC slot are each
+  padded UP to the flash device's write-block alignment (f_align,
+  fcb_get_align() -> flash_area_align()) via fcb_len_in_flash() --
+  fcb_append.c computes `cnt = fcb_len_in_flash(fcb, cnt)` (length-field
+  slot size) and `len = fcb_len_in_flash(fcb, len) + fcb_len_in_flash(fcb,
+  FCB_CRC_SZ)` (data+crc slot size) SEPARATELY, not as one contiguous
+  block. On this project's actual hardware (nRF9151/nRF52840, write-block-
+  size=4 per their soc-nv-flash devicetree nodes), that means a real
+  on-flash entry for our 8-byte payload is:
+    [1 real len byte + 3 padding bytes][8 payload bytes][1 real CRC byte + 3 padding bytes]
+  i.e. 4 + 8 + 4 = 16 bytes total, NOT the naive 1 + 8 + 1 = 10 bytes.
+  Confirmed the hard way against a real device dump (see NOTES.md
+  2026-08-05): a first version of this script ignored the padding
+  entirely, found a real record but read it 3 bytes short (into the
+  length-field's own padding), producing garbage values and a CRC
+  mismatch on data that was actually intact. Manually walked the real
+  bytes at multiple offsets until node_id/flags/seq/temp/humidity all
+  looked plausible AND the CRC matched -- that landed exactly on the
+  aligned-by-4 layout above.
 
 CRC-8/CCITT: poly 0x07, init 0xFF, MSB-first, not reflected (matches
-zephyr/subsys/crc/crc8_sw.c's crc8_ccitt()).
+zephyr/subsys/crc/crc8_sw.c's crc8_ccitt()). Computed over the RAW
+(unpadded) length byte + payload bytes -- the padding bytes themselves
+are never part of the CRC input.
 
 Usage: decode_fcb_dump.py <input.hex> <base_address_hex> <output.csv>
 """
@@ -32,6 +53,18 @@ ERASE_VALUE = 0xFF
 SECTOR_HEADER_SIZE = 8
 FLAG_TEMP_INVALID = 0x01
 FLAG_HUMIDITY_INVALID = 0x02
+
+# Flash write-block-size (f_align in FCB terms) -- both boards this project
+# reads FCB logs from (nRF9151, nRF52840) use 4, per their soc-nv-flash
+# devicetree nodes' write-block-size. Override with --align if ever reading
+# from a board where that differs.
+DEFAULT_ALIGN = 4
+
+
+def align_up(n: int, align: int) -> int:
+    if align <= 1:
+        return n
+    return (n + (align - 1)) & ~(align - 1)
 
 
 def crc8_ccitt(data: bytes, crc: int = 0xFF) -> int:
@@ -109,7 +142,7 @@ def find_sectors(data: bytes) -> list[bytes]:
     return sectors
 
 
-def decode_sector(sector: bytes) -> list[dict]:
+def decode_sector(sector: bytes, align: int = DEFAULT_ALIGN) -> list[dict]:
     if len(sector) <= SECTOR_HEADER_SIZE:
         return []
 
@@ -126,14 +159,19 @@ def decode_sector(sector: bytes) -> list[dict]:
             break
 
         entry_len = len_byte_raw ^ (~ERASE_VALUE & 0xFF)
-        if entry_len == 0 or entry_len > 64 or pos + 1 + entry_len + 1 > len(sector):
+        len_field_slot = align_up(1, align)  # the length byte's own slot, padded
+        data_slot = align_up(entry_len, align)
+        crc_slot = align_up(1, align)
+
+        if (entry_len == 0 or entry_len > 64
+                or pos + len_field_slot + data_slot + crc_slot > len(sector)):
             # Implausible length (corrupt/partial entry) -- stop, rather
             # than risk misparsing the rest of the sector as garbage.
             break
 
         len_field = sector[pos:pos + 1]
-        payload_bytes = sector[pos + 1:pos + 1 + entry_len]
-        stored_crc = sector[pos + 1 + entry_len]
+        payload_bytes = sector[pos + len_field_slot:pos + len_field_slot + entry_len]
+        stored_crc = sector[pos + len_field_slot + data_slot]
 
         computed_crc = crc8_ccitt(len_field + payload_bytes)
         crc_ok = (computed_crc == stored_crc)
@@ -152,25 +190,26 @@ def decode_sector(sector: bytes) -> list[dict]:
                 "crc_ok": crc_ok,
             })
 
-        pos += 1 + entry_len + 1
+        pos += len_field_slot + data_slot + crc_slot
 
     return entries
 
 
 def main():
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <input.hex> <base_address_hex> <output.csv>",
-              file=sys.stderr)
+    if len(sys.argv) not in (4, 5):
+        print(f"Usage: {sys.argv[0]} <input.hex> <base_address_hex> <output.csv> "
+              f"[align, default {DEFAULT_ALIGN}]", file=sys.stderr)
         return 1
 
     hex_path, _base_addr_arg, csv_path = sys.argv[1], sys.argv[2], sys.argv[3]
+    align = int(sys.argv[4], 0) if len(sys.argv) == 5 else DEFAULT_ALIGN
 
     _, data = parse_intel_hex(hex_path)
     sectors = find_sectors(data)
 
     all_entries = []
     for sector in sectors:
-        all_entries.extend(decode_sector(sector))
+        all_entries.extend(decode_sector(sector, align))
 
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)

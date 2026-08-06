@@ -52,6 +52,13 @@
 #define PACKET_SIZE 5
 #define NAME_LEN    30
 
+/* This central only onboards peripherals advertising this exact name --
+ * see pawr_format_adv_name() in common/pawr_protocol.h and
+ * CONFIG_APP_CENTRAL_ID in Kconfig for why/format. Built once at startup
+ * (see main()), not per scan callback.
+ */
+static char target_adv_name[PAWR_ADV_NAME_MAX_LEN];
+
 static const struct gpio_dt_spec tx_led = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 
 static K_SEM_DEFINE(sem_connected, 0, 1);
@@ -326,7 +333,7 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	(void)memset(name, 0, sizeof(name));
 	bt_data_parse(ad, data_cb, name);
 
-	if (strcmp(name, PAWR_ADV_NAME)) {
+	if (strcmp(name, target_adv_name)) {
 		return;
 	}
 
@@ -422,6 +429,10 @@ int main(void)
 	init_bufs();
 
 	printk("Starting Periodic Advertising Demo (central)\n");
+	printk("Central ID: %u\n", CONFIG_APP_CENTRAL_ID);
+
+	pawr_format_adv_name(target_adv_name, sizeof(target_adv_name), CONFIG_APP_CENTRAL_ID);
+	printk("Onboarding peripherals advertising as \"%s\"\n", target_adv_name);
 
 	if (!gpio_is_ready_dt(&tx_led)) {
 		printk("TX LED device not ready\n");

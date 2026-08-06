@@ -11,13 +11,50 @@
 #ifndef PAWR_PROTOCOL_H_
 #define PAWR_PROTOCOL_H_
 
+#include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
 
-/* Device name the peripheral advertises as and the central scans for.
- * Kconfig can't include this header, so peripheral/prj.conf's
- * CONFIG_BT_DEVICE_NAME must be kept equal to this literal by hand.
+/* Device name prefix the peripheral advertises under and the central scans
+ * for. Each peripheral appends its own CONFIG_APP_CENTRAL_ID (the central
+ * it's meant to pair with, see peripheral/Kconfig) as a decimal suffix at
+ * runtime -- e.g. "PAwR sync sample 3" for a peripheral targeting central
+ * ID 3 -- so multiple independent central+peripheral-fleet deployments can
+ * run in BLE range of each other without cross-onboarding: central only
+ * scans for/connects to names ending in its own ID (see central's
+ * device_found()), so a peripheral flashed for central 3 is invisible to
+ * central 7's onboarding loop and vice versa. See NOTES.md 2026-08-05 for
+ * why this was added (observed with 2+ central/gateway rigs running near
+ * each other).
+ *
+ * Central ID 0 is the default/"don't care" value: a central with
+ * CONFIG_APP_CENTRAL_ID=0 scans for the bare, unsuffixed PAWR_ADV_NAME
+ * (matching a peripheral that also has CONFIG_APP_CENTRAL_ID=0) --
+ * preserves old single-central-rig behavior with no config changes needed
+ * for the common case of "just one central, no need to scope anything."
  */
 #define PAWR_ADV_NAME "PAwR sync sample"
+
+/* Longest possible advertised name: PAWR_ADV_NAME + " " + up to 3 digits
+ * (CONFIG_APP_CENTRAL_ID range, see Kconfig) + nul. BT_DATA_NAME_COMPLETE
+ * has no hard length limit here (well under the 31-byte legacy adv payload
+ * once the rest of the AD structure is accounted for), but this bounds the
+ * stack buffer both apps format the name into.
+ */
+#define PAWR_ADV_NAME_MAX_LEN (sizeof(PAWR_ADV_NAME) + 1 + 3)
+
+/* Formats "<PAWR_ADV_NAME>" (central_id == 0) or "<PAWR_ADV_NAME>
+ * <central_id>" into buf (must be >= PAWR_ADV_NAME_MAX_LEN bytes). Shared
+ * by both central (what it scans for) and peripheral (what it advertises
+ * as) so the two can never drift apart on the exact suffix format.
+ */
+static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int central_id)
+{
+	if (central_id == 0) {
+		snprintk(buf, buf_size, "%s", PAWR_ADV_NAME);
+	} else {
+		snprintk(buf, buf_size, "%s %u", PAWR_ADV_NAME, central_id);
+	}
+}
 
 /* Minimal-repro test mode (2026-07-31, see NOTES.md): both sides' HCI logs
  * came back clean (central's PAST command completes status 0x00, but the
