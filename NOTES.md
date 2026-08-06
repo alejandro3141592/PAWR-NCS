@@ -8,6 +8,40 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-06 — Build-NodeFleet.ps1 sped up with shared incremental dir; batch-built nodes 1-65 for CENTRAL_ID=2
+
+Applied the same trick from Sync-And-Build.ps1's `-SkipPristine`
+(2026-08-05) to `Build-NodeFleet.ps1`: it now compiles into a single shared
+`peripheral/build_incremental` directory reused across every node ID in the
+run (only `-DCONFIG_APP_NODE_ID` changes between builds), instead of a
+fresh `--pristine` `build_node<N>` per node. After each node's build, the
+resulting `zephyr.uf2`/`.elf`/`.hex` get copied out to their own
+`build_node<N>/peripheral/zephyr/` -- the exact path every existing
+flashing instruction already expects -- before the next node's build
+overwrites the shared dir. **Interface is unchanged, only the internal
+build strategy is faster.**
+
+**Verified independently after the run** (not just trusting the script's
+own reported summary): all 65 `build_node<N>/peripheral/zephyr/zephyr.uf2`
+files exist on disk, zero missing, and a 5-node hash sample (1, 15, 30, 45,
+65) came back all-distinct MD5s -- confirming they're genuinely different
+per-node builds, not stale copies from a botched overwrite.
+
+Also built `central/build` with `-DCONFIG_APP_CENTRAL_ID=2` (single normal
+build, not part of the fleet script -- see its own `.SYNOPSIS` for the
+one-liner).
+
+**Timing note:** wrapping the fleet script in `Measure-Command { }` for a
+timing test silently discarded all of the script's own console output
+(a PowerShell gotcha -- `Measure-Command` swallows the wrapped block's
+stdout, only returns the elapsed `TimeSpan`) -- looked like builds had
+gone missing when they hadn't; the file-based `logs/build_fleet_central*.log`
+and the actual `build_node<N>` directories told the real story. Don't wrap
+this script in `Measure-Command` if you want to see its live progress; time
+it externally instead if needed (e.g. `$sw = [Diagnostics.Stopwatch]::StartNew(); ...; $sw.Elapsed`).
+
+— Alejandro (session assisted by Claude), 2026-08-06
+
 ## 2026-08-05 — batch-built firmware for node IDs 1-65 (CENTRAL_ID=1), new tools/Build-NodeFleet.ps1
 
 User has node IDs 1-65 in play (beyond the 12 boards physically running
