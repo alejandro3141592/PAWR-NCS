@@ -2,8 +2,9 @@
 .SYNOPSIS
     One-shot sync/build/flash/monitor pipeline for the central (or peripheral)
     app: fetch + check for the other person's changes, commit + push your own,
-    pristine rebuild, flash over UF2 bootloader, capture a serial log, then
-    push the log (and NOTES.md) back so the other person sees it too.
+    rebuild (pristine by default), flash over UF2 bootloader, capture a
+    serial log, then push the log (and NOTES.md) back so the other person
+    sees it too.
 
 .DESCRIPTION
     Steps, in order:
@@ -11,7 +12,8 @@
          (does NOT auto-merge/rebase -- you decide how to reconcile that).
       2. If the working tree has changes, stage + commit them with an
          auto-generated message (or -CommitMessage if given), then push.
-      3. Pristine `west build` for the selected app/board.
+      3. `west build` for the selected app/board -- pristine (full clean
+         rebuild) by default, or incremental with -SkipPristine.
       4. Play a sound so you know the (slow) build finished.
       5. Wait for the board's UF2 bootloader drive to appear, copy the
          firmware over to flash it.
@@ -41,6 +43,35 @@
 .PARAMETER SkipFlash
     Build only; don't wait for/flash the bootloader drive or monitor.
 
+.PARAMETER SkipPristine
+    Skip `--pristine` for a much faster incremental build -- seconds instead
+    of minutes, since only the files actually affected by your change get
+    recompiled instead of everything.
+
+    For -App peripheral, this also switches the build directory to a single
+    shared peripheral/build_incremental (instead of the normal per-node
+    build_node<N>), reused across every -NodeId -- that's what actually
+    makes flashing many distinct boards fast: compiled Zephyr/nrfxlib
+    object files carry over from the previous board, only main.c (which
+    CONFIG_APP_NODE_ID feeds into) gets recompiled and relinked each time.
+    A fresh build_node<N> per ID would defeat the point, since there'd be
+    nothing to reuse in a directory nothing has ever been built into. This
+    means -SkipPristine builds and normal pristine builds for the same
+    -NodeId live in different directories -- switching back to a pristine
+    build after using -SkipPristine (or vice versa) still does a full
+    rebuild that one time, then stays fast within whichever mode you stick
+    with.
+
+    Safe for changes that only touch CONFIG_APP_NODE_ID or other simple
+    Kconfig/source-only edits.
+
+    Do NOT use after touching devicetree files (boards/*.overlay),
+    CMakeLists.txt, or Kconfig.sysbuild -- incremental builds have
+    previously and repeatedly failed to pick up changes to those on this
+    toolchain (see Summary.md/NOTES.md gotchas), silently flashing stale
+    firmware. When in doubt, omit this flag and let it run pristine (the
+    default).
+
 .PARAMETER NodeId
     Peripheral only: overrides CONFIG_APP_NODE_ID (1-100) for this build via
     -DCONFIG_APP_NODE_ID=N, so a physical board's reported node_id doesn't
@@ -60,6 +91,8 @@
     ./Sync-And-Build.ps1 -App peripheral -NodeId 2 -SkipGit
     # or just edit peripheral/node_id.txt once, then:
     ./Sync-And-Build.ps1 -App peripheral
+    # flashing many boards, each just a different node ID -- fast path:
+    ./Sync-And-Build.ps1 -App peripheral -NodeId 7 -SkipPristine
 #>
 param(
     [Parameter(Mandatory = $true)]
@@ -72,7 +105,8 @@ param(
     [ValidateRange(1, 100)]
     [int]$NodeId = 0,
     [switch]$SkipGit,
-    [switch]$SkipFlash
+    [switch]$SkipFlash,
+    [switch]$SkipPristine
 )
 
 if ($App -eq 'peripheral' -and $NodeId -eq 0) {
@@ -99,7 +133,15 @@ if ($App -eq 'peripheral' -and $NodeId -eq 0) {
 $ErrorActionPreference = 'Continue'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $appDir = Join-Path $repoRoot $App
-if ($App -eq 'peripheral' -and $NodeId -gt 0) {
+if ($App -eq 'peripheral' -and $SkipPristine) {
+    # One shared directory reused across every -NodeId, not build_node<N>
+    # per ID -- the whole point of -SkipPristine is to carry compiled
+    # Zephyr/nrfxlib object files over between boards. A fresh per-node
+    # directory would defeat that (nothing to reuse in a directory that's
+    # never been built into before), so this intentionally diverges from
+    # the pristine path's per-node isolation.
+    $buildDir = Join-Path $appDir 'build_incremental'
+} elseif ($App -eq 'peripheral' -and $NodeId -gt 0) {
     $buildDir = Join-Path $appDir "build_node$NodeId"
 } else {
     $buildDir = Join-Path $appDir 'build'
@@ -166,7 +208,7 @@ if (-not $SkipGit) {
 }
 
 # ----------------------------------------------------------------------
-# 3. Pristine west build
+# 3. west build (pristine unless -SkipPristine)
 # ----------------------------------------------------------------------
 Write-Step "Setting up NCS toolchain environment..."
 $tc = 'C:\ncs\toolchains\936afb6332'
@@ -178,21 +220,17 @@ $env:ZEPHYR_SDK_INSTALL_DIR = "$tc\opt\zephyr-sdk"
 $env:ZEPHYR_BASE = 'C:\ncs\v3.3.0\zephyr'
 $python = "$tc\opt\bin\python.exe"
 
-Write-Step "Running pristine west build for $App (board: $Board)..."
+$pristineLabel = if ($SkipPristine) { "incremental" } else { "pristine" }
+Write-Step "Running $pristineLabel west build for $App (board: $Board)..."
 $buildLogPrefix = if ($App -eq 'peripheral' -and $NodeId -gt 0) { "${App}_node${NodeId}" } else { $App }
 $buildLog = Join-Path $repoRoot "logs\${buildLogPrefix}_build_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $buildLog) | Out-Null
 
-$buildArgs = @(
-    '-m', 'west', 'build',
-    '--build-dir', $buildDir,
-    $appDir,
-    '--pristine',
-    '--board', $Board,
-    '--',
-    '-DDEBUG_THREAD_INFO=Off',
-    "-D${App}_DEBUG_THREAD_INFO=Off"
-)
+$buildArgs = @('-m', 'west', 'build', '--build-dir', $buildDir, $appDir)
+if (-not $SkipPristine) {
+    $buildArgs += '--pristine'
+}
+$buildArgs += @('--board', $Board, '--', '-DDEBUG_THREAD_INFO=Off', "-D${App}_DEBUG_THREAD_INFO=Off")
 if ($App -eq 'peripheral' -and $NodeId -gt 0) {
     $buildArgs += "-DCONFIG_APP_NODE_ID=$NodeId"
 }

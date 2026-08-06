@@ -1,0 +1,25 @@
+[12:34:31.927] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[12:34:31.928] [00:00:00.002,044] [1;31m<err> SHT4X: Failed to reset the device.[0m
+[12:34:31.928] [00:00:00.002,258] [1;31m<err> LM75: failed to write configuration (ret -5)[0m
+[12:34:31.929] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:34:31.929] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:34:31.930] [00:00:00.002,502] [0m<inf> udc_nrf: Initialized[0m
+[12:34:31.930] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:34:31.931] Node ID: 35
+[12:34:31.933] [WARN] Skin temperature sensor not ready
+[12:34:31.933] [WARN] Humidity sensor not ready
+[12:34:31.934] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:34:31.935] [00:00:00.088,684] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:34:31.936] [00:00:00.174,133] [0m<inf> udc_nrf: Reset[0m
+[12:34:31.936] [00:00:00.174,255] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:34:31.937] [00:00:00.260,162] [0m<inf> udc_nrf: Reset[0m
+[12:34:31.937] [STORAGE] Flash log ready (8 sectors)
+[12:34:31.938] [00:00:00.689,575] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:34:31.938]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:34:31.939]                           [SENSORS] node 35 seq 1 temp=0.00C humidity=0.0% flags=0x03
+[12:34:41.924] Timed out while synchronizing
+[12:34:41.925] Waiting for periodic sync...
+[12:34:41.925] [SENSORS] node 35 seq 2 temp=0.00C humidity=0.0% flags=0x03
+[12:34:46.897] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:34:46.897] *** could not reopen COM20 : Exception calling "Open" with "0" argument(s): "The port 'COM20' does not exist." -- stopping capture ***

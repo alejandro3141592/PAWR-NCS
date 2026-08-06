@@ -1,0 +1,27 @@
+[15:22:13.041] [00:00:00.000,671] [0m<inf> udc_nrf: Preinit[0m
+[15:22:13.042] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[15:22:13.043] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[15:22:13.043] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[15:22:13.044] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[15:22:13.044] Node ID: 65
+[15:22:13.044] [STORAGE] Flash log area has foreign data, erasing and retrying
+[15:22:13.044] [00:00:00.090,087] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[15:22:13.046] [00:00:00.175,537] [0m<inf> udc_nrf: Reset[0m
+[15:22:13.046] [00:00:00.175,659] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[15:22:13.047] [00:00:00.261,566] [0m<inf> udc_nrf: Reset[0m
+[15:22:13.047] [STORAGE] Flash log ready (8 sectors)
+[15:22:13.048] [00:00:00.691,040] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[15:22:13.048]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[15:22:13.049]                                             74 6c ac 75                                      |tl.u             [0m
+[15:22:13.049] [00:00:00.693,878] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[15:22:13.050] [00:00:00.693,908] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 65 seq 1 temp=30.06C humidity=42.6% flags=0x00
+[15:22:13.050] Disconnected, reason 0x13 
+[15:22:23.029] Timed out while synchronizing
+[15:22:23.030] Waiting for periodic sync...
+[15:22:23.031] [SENSORS] node 65 seq 2 temp=29.90C humidity=43.4% flags=0x00
+[15:22:23.032] Connected, err 0x00 
+[15:22:23.032] New timing: subevent 0, response slot 0
+[15:22:23.033] Not synced yet
+[15:22:29.664] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[15:22:29.664] *** could not reopen COM39 : Exception calling "Open" with "0" argument(s): "The port 'COM39' does not exist." -- stopping capture ***

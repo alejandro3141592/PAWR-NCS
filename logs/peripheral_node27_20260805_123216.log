@@ -1,0 +1,28 @@
+[12:32:16.508] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[12:32:16.509] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:32:16.510] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:32:16.510] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[12:32:16.511] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:32:16.511] Node ID: 27
+[12:32:16.512] [STORAGE] Flash log ready (8 sectors)
+[12:32:16.512] [00:00:00.004,913] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:32:16.514]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:32:16.515]                                             74 6c ac 75                                      |tl.u             [0m
+[12:32:16.515] [00:00:00.007,568] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:32:16.516] [00:00:00.007,598] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[12:32:16.516] [00:00:00.007,629] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[12:32:16.517] [00:00:00.008,239] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:32:16.517] [00:00:00.008,605] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[12:32:16.518] [00:00:0Synced to 01:59:3D:C0:90:64 (random) with 20 subevents
+[12:32:16.518] Changed sync to subevent 0
+[12:32:16.518] >>> Poll received: subevent 0, responding in slot 0
+[12:32:16.518] Periodic sync established.
+[12:32:16.519] [SENSORS] node 27 seq 1 temp=29.77C humidity=44.3% flags=0x00
+[12:32:18.807] Disconnected, reason 0x13 
+[12:32:26.506] >>> Poll received: subevent 0, responding in slot 0
+[12:32:26.507] [SENSORS] node 27 seq 2 temp=30.19C humidity=44.0% flags=0x00
+[12:32:36.505] >>> Poll received: subevent 0, responding in slot 0
+[12:32:36.506] [SENSORS] node 27 seq 3 temp=29.86C humidity=43.7% flags=0x00
+[12:32:37.875] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:32:37.875] *** could not reopen COM16 : Exception calling "Open" with "0" argument(s): "The port 'COM16' does not exist." -- stopping capture ***

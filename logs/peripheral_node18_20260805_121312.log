@@ -1,0 +1,21 @@
+[12:13:14.465] [00:00:00.000,671] [0m<inf> udc_nrf: Preinit[0m
+[12:13:14.466] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:13:14.467] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:13:14.467] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[12:13:14.468] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:13:14.468] Node ID: 18
+[12:13:14.470] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:13:14.471] [00:00:00.090,087] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:13:14.473] [00:00:00.175,537] [0m<inf> udc_nrf: Reset[0m
+[12:13:14.474] [00:00:00.175,659] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:13:14.475] [00:00:00.261,566] [0m<inf> udc_nrf: Reset[0m
+[12:13:14.475] [STORAGE] Flash log ready (8 sectors)
+[12:13:14.476] [00:00:00.691,589] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:13:14.478]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:13:14.478]                                             74 6c ac 75                                      |tl.u             [0m
+[12:13:14.479] [00:00:00.694,427] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:13:14.481] [00:00:00.694,458] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 18 seq 1 temp=29.19C humidity=42.4% flags=0x00
+[12:13:14.481] Disconnected, reason 0x13 
+[12:13:17.897] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:13:17.897] *** could not reopen COM63 : Exception calling "Open" with "0" argument(s): "The port 'COM63' does not exist." -- stopping capture ***

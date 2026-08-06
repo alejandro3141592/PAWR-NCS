@@ -1,4 +1,4 @@
-# Collaboration Notes
+﻿# Collaboration Notes
 
 Shared scratchpad for messages, questions, and suggestions between whoever is
 working on `central/` and whoever is working on `peripheral/`. Newest entries
@@ -7,6 +7,107 @@ at the top. Sign your entries so it's clear who's asking/answering.
 This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
+
+## 2026-08-05 — batch-built firmware for node IDs 1-65 (CENTRAL_ID=1), new tools/Build-NodeFleet.ps1
+
+User has node IDs 1-65 in play (beyond the 12 boards physically running
+today), and asked for either a full build of every ID or a reusable script
+to drive that -- chose the script, since re-scoping or re-ranging will come
+up again (new rigs, more boards).
+
+Added **`tools/Build-NodeFleet.ps1`**: takes `-NodeIds <int[]>` and
+`-CentralId <int>`, batch pristine-builds `peripheral/build_node<N>` for
+each ID with `-DCONFIG_APP_NODE_ID=<N> -DCONFIG_APP_CENTRAL_ID=<CentralId>`.
+Build-only, doesn't flash (matches the "build now, flash later at your own
+pace over UF2" workflow already in use this session). Central is not built
+by this script (different Kconfig option set, only one central per
+invocation needed) -- build it separately with the usual `west build`
+one-liner (see `BUILD_AND_FLASH.md`), same `-DCONFIG_APP_CENTRAL_ID=N` flag.
+
+Ran `./Build-NodeFleet.ps1 -NodeIds (1..65) -CentralId 1` -- **all 65 builds
+succeeded**, verified directly (`build_node<N>/peripheral/zephyr/zephyr.uf2`
+present and non-empty for every N in 1-65), even though the script's own
+run reported "65 build(s) failed" and exited 1. That failure report was a
+bug in the script itself, not the builds: `$results = [ordered]@{}` +
+`$results[$n] = $ok` with an *integer* key `$n` hits PowerShell's
+ordered-dictionary positional-index overload instead of a real key-value
+assignment, throwing `ArgumentOutOfRangeException` on every iteration --
+caught by the script's own `$ErrorActionPreference = 'Continue'`, so each
+build kept running to completion and succeeded, but every `$results[$n]`
+write silently failed, leaving every entry at its default `$false`. Fixed
+by switching to a plain `@{}` (unordered) hashtable, which does real
+key-based lookup for int keys -- confirmed with a standalone repro. Script
+now fixed in the repo; a re-run would report the summary correctly, but was
+not re-run since the original 65 builds are already known-good and
+re-running would just burn another ~50 minutes for the same output.
+
+Total time for 65 pristine builds: roughly 50 minutes.
+
+Same caveat as the earlier CENTRAL_ID entry applies: nothing is flashed yet,
+these are staged `.uf2` files only. To flash a given node N:
+```powershell
+Copy-Item peripheral\build_node<N>\peripheral\zephyr\zephyr.uf2 -Destination "D:\firmware.uf2"
+```
+after double-tap-reset puts that board into UF2 bootloader mode.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — multi-central/multi-gateway coexistence: CONFIG_APP_CENTRAL_ID scoping, this rig assigned ID 1
+
+User's setup will eventually run two or more independent central+gateway rigs
+close enough together to be in BLE range of each other. Without any scoping,
+any central would GATT-onboard any peripheral it can hear, so a peripheral
+meant for rig B could get grabbed by rig A's central. Needed a way to fence
+each rig's peripherals to only its own central.
+
+**Design chosen (over a BLE-address-allowlist alternative)**: a new
+`CONFIG_APP_CENTRAL_ID` Kconfig int (range 0-999, default 0), mirrored on
+both `central/Kconfig` and `peripheral/Kconfig`. `common/pawr_protocol.h`
+gained `pawr_format_adv_name()`: a peripheral with `CENTRAL_ID=0` advertises
+under the bare `PAWR_ADV_NAME` ("PAwR sync sample") exactly as before; a
+non-zero ID appends a numeric suffix (`"PAwR sync sample 1"`). Central builds
+its own expected name the same way and only onboards peripherals whose
+advertised name matches exactly (`peripheral/src/main.c`'s `adv_name`/`ad[]`
+is now built at runtime instead of a `CONFIG_BT_DEVICE_NAME` compile-time
+constant; `central/src/main.c`'s `device_found()` filter compares against
+`target_adv_name` instead of the old literal). Default 0/0 on both sides is
+fully backward compatible -- no config changes needed unless you're actually
+running multiple rigs.
+
+**This rig assigned `CONFIG_APP_CENTRAL_ID=1`.** Rebuilt and staged firmware
+for the central and all 10 distinct node IDs currently in the field (8, 21,
+31, 32, 34, 35, 55, 61, 63, 64 -- covers all 12 physical boards, since node
+IDs 32 and 55 each cover 2 physical boards sharing that ID, see the
+2026-08-05 PDR correction entry above). All 11 builds (central + 10 node
+builds) compiled clean on the first corrected attempt. Build dirs:
+`central/build`, `peripheral/build_node<N>` for each N above. None of this
+firmware has been physically flashed yet -- staged only, per the user's
+choice to build everything first and flash later at their own pace rather
+than a live one-at-a-time session. Every board (central and all 12
+peripherals) needs reflashing to pick up `CENTRAL_ID=1` -- until reflashed
+they're still on the old firmware, which behaves as `CENTRAL_ID=0`
+(unscoped) and will keep talking to any central, scoped or not, since a
+`CENTRAL_ID=0` peripheral only matches a `CENTRAL_ID=0` central's filter --
+i.e. old peripherals simply won't be onboarded by the new `CENTRAL_ID=1`
+central until they're reflashed too. Flash via the standard UF2
+double-tap-reset + drive-copy process; manual commands follow the same
+`Copy-Item ...\zephyr.uf2 -Destination "D:\firmware.uf2"` pattern documented
+in `BUILD_AND_FLASH.md`, one board at a time, confirming board identity
+before each copy since these boards are visually identical.
+
+**Note for future rigs**: pick a distinct `CONFIG_APP_CENTRAL_ID` per
+physical rig (e.g. rig 2 = `CENTRAL_ID=2`) and build every one of that rig's
+peripherals with the matching ID plus the central with the same ID. A
+peripheral flashed with the wrong ID won't error visibly -- it'll just never
+get onboarded by any central in range, since no central's scan filter will
+match its advertised name. If a peripheral seems to vanish after a
+central-ID change, check its `CONFIG_APP_CENTRAL_ID` first.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
 
 ## 2026-08-05 — correction to the 90-min soak entry: "10 node IDs" was 12 physical boards with 2 ID collisions, packet delivery ratio computed
 
@@ -215,6 +316,49 @@ problem. Not yet separately re-confirmed that MQTT publishing itself
 works post-fix (the flash log only proves UART reception) -- worth
 checking the HiveMQ Cloud dashboard or `gui/sensor_gui.py` directly once
 convenient, now that the board is confirmed alive and processing frames.
+
+— Alejandro (session assisted by Claude), 2026-08-05
+
+---
+
+## 2026-08-05 — added -SkipPristine to Sync-And-Build.ps1 for fast per-board flashing
+
+Every build was pristine (full clean rebuild) by design, ~2-3 min each -- fine
+for one board, painful for flashing 50-100 distinct ones each with a
+different `-NodeId`. Added `-SkipPristine`.
+
+**Important design point, not obvious at first:** each `-NodeId` normally gets
+its own `build_node<N>` directory (so pristine rebuilds for different boards
+don't clobber each other's cache) -- but that means a fresh `-NodeId` always
+hits a directory nothing's ever been built into, so skipping `--pristine`
+alone wouldn't help at all for the actual "many distinct boards" use case
+(only for re-flashing the *same* ID repeatedly, e.g. while debugging). Fixed
+by having `-SkipPristine` use one shared `peripheral/build_incremental`
+directory reused across *every* `-NodeId` instead, so compiled Zephyr/nrfxlib
+object files carry over between boards and only `main.c` (which
+`CONFIG_APP_NODE_ID` feeds into) recompiles + relinks each time.
+
+**Measured:** first build into the fresh shared dir: 39s. A second,
+genuinely different node ID into the same dir right after: 37s (266 build
+steps vs. ~299 for a full pristine rebuild) -- confirmed `autoconf.h` actually
+had the new ID (56), not stale. Both far faster than a pristine build once
+warmed up.
+
+**Real bug hit and fixed along the way:** `build_incremental/` wasn't in
+`.gitignore` (only `build_node*/` was) -- the next run's own git-housekeeping
+step tried to `git add -A` + commit the *entire* build tree (thousands of
+object files), and the commit failed outright with "the filename or
+extension is too long" (the auto-generated commit message lists every
+changed file). Fixed by adding `*/build_incremental/` to `.gitignore` and
+unstaging what had already been added. If you ever see that error, check
+`git status --porcelain | wc -l` for something similarly out of proportion
+before assuming it's a real problem.
+
+Use it like: `./tools/Sync-And-Build.ps1 -App peripheral -NodeId 7
+-SkipPristine`. Don't use it after touching devicetree/CMakeLists/
+Kconfig.sysbuild -- incremental builds have previously silently missed
+changes to those on this toolchain (see the build/flash gotchas section);
+omit the flag and let it run pristine when in doubt.
 
 — Alejandro (session assisted by Claude), 2026-08-05
 
@@ -2538,101 +2682,3 @@ unaffected. Committed and pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
-## 2026-08-05 — multi-central/multi-gateway coexistence: CONFIG_APP_CENTRAL_ID scoping, this rig assigned ID 1
-
-User's setup will eventually run two or more independent central+gateway rigs
-close enough together to be in BLE range of each other. Without any scoping,
-any central would GATT-onboard any peripheral it can hear, so a peripheral
-meant for rig B could get grabbed by rig A's central. Needed a way to fence
-each rig's peripherals to only its own central.
-
-**Design chosen (over a BLE-address-allowlist alternative)**: a new
-`CONFIG_APP_CENTRAL_ID` Kconfig int (range 0-999, default 0), mirrored on
-both `central/Kconfig` and `peripheral/Kconfig`. `common/pawr_protocol.h`
-gained `pawr_format_adv_name()`: a peripheral with `CENTRAL_ID=0` advertises
-under the bare `PAWR_ADV_NAME` ("PAwR sync sample") exactly as before; a
-non-zero ID appends a numeric suffix (`"PAwR sync sample 1"`). Central builds
-its own expected name the same way and only onboards peripherals whose
-advertised name matches exactly (`peripheral/src/main.c`'s `adv_name`/`ad[]`
-is now built at runtime instead of a `CONFIG_BT_DEVICE_NAME` compile-time
-constant; `central/src/main.c`'s `device_found()` filter compares against
-`target_adv_name` instead of the old literal). Default 0/0 on both sides is
-fully backward compatible -- no config changes needed unless you're actually
-running multiple rigs.
-
-**This rig assigned `CONFIG_APP_CENTRAL_ID=1`.** Rebuilt and staged firmware
-for the central and all 10 distinct node IDs currently in the field (8, 21,
-31, 32, 34, 35, 55, 61, 63, 64 -- covers all 12 physical boards, since node
-IDs 32 and 55 each cover 2 physical boards sharing that ID, see the
-2026-08-05 PDR correction entry above). All 11 builds (central + 10 node
-builds) compiled clean on the first corrected attempt. Build dirs:
-`central/build`, `peripheral/build_node<N>` for each N above. None of this
-firmware has been physically flashed yet -- staged only, per the user's
-choice to build everything first and flash later at their own pace rather
-than a live one-at-a-time session. Every board (central and all 12
-peripherals) needs reflashing to pick up `CENTRAL_ID=1` -- until reflashed
-they're still on the old firmware, which behaves as `CENTRAL_ID=0`
-(unscoped) and will keep talking to any central, scoped or not, since a
-`CENTRAL_ID=0` peripheral only matches a `CENTRAL_ID=0` central's filter --
-i.e. old peripherals simply won't be onboarded by the new `CENTRAL_ID=1`
-central until they're reflashed too. Flash via the standard UF2
-double-tap-reset + drive-copy process; manual commands follow the same
-`Copy-Item ...\zephyr.uf2 -Destination "D:\firmware.uf2"` pattern documented
-in `BUILD_AND_FLASH.md`, one board at a time, confirming board identity
-before each copy since these boards are visually identical.
-
-**Note for future rigs**: pick a distinct `CONFIG_APP_CENTRAL_ID` per
-physical rig (e.g. rig 2 = `CENTRAL_ID=2`) and build every one of that rig's
-peripherals with the matching ID plus the central with the same ID. A
-peripheral flashed with the wrong ID won't error visibly -- it'll just never
-get onboarded by any central in range, since no central's scan filter will
-match its advertised name. If a peripheral seems to vanish after a
-central-ID change, check its `CONFIG_APP_CENTRAL_ID` first.
-
-— Alejandro (session assisted by Claude), 2026-08-05
-
-## 2026-08-05 — batch-built firmware for node IDs 1-65 (CENTRAL_ID=1), new tools/Build-NodeFleet.ps1
-
-User has node IDs 1-65 in play (beyond the 12 boards physically running
-today), and asked for either a full build of every ID or a reusable script
-to drive that -- chose the script, since re-scoping or re-ranging will come
-up again (new rigs, more boards).
-
-Added **`tools/Build-NodeFleet.ps1`**: takes `-NodeIds <int[]>` and
-`-CentralId <int>`, batch pristine-builds `peripheral/build_node<N>` for
-each ID with `-DCONFIG_APP_NODE_ID=<N> -DCONFIG_APP_CENTRAL_ID=<CentralId>`.
-Build-only, doesn't flash (matches the "build now, flash later at your own
-pace over UF2" workflow already in use this session). Central is not built
-by this script (different Kconfig option set, only one central per
-invocation needed) -- build it separately with the usual `west build`
-one-liner (see `BUILD_AND_FLASH.md`), same `-DCONFIG_APP_CENTRAL_ID=N` flag.
-
-Ran `./Build-NodeFleet.ps1 -NodeIds (1..65) -CentralId 1` -- **all 65 builds
-succeeded**, verified directly (`build_node<N>/peripheral/zephyr/zephyr.uf2`
-present and non-empty for every N in 1-65), even though the script's own
-run reported "65 build(s) failed" and exited 1. That failure report was a
-bug in the script itself, not the builds: `$results = [ordered]@{}` +
-`$results[$n] = $ok` with an *integer* key `$n` hits PowerShell's
-ordered-dictionary positional-index overload instead of a real key-value
-assignment, throwing `ArgumentOutOfRangeException` on every iteration --
-caught by the script's own `$ErrorActionPreference = 'Continue'`, so each
-build kept running to completion and succeeded, but every `$results[$n]`
-write silently failed, leaving every entry at its default `$false`. Fixed
-by switching to a plain `@{}` (unordered) hashtable, which does real
-key-based lookup for int keys -- confirmed with a standalone repro. Script
-now fixed in the repo; a re-run would report the summary correctly, but was
-not re-run since the original 65 builds are already known-good and
-re-running would just burn another ~50 minutes for the same output.
-
-Total time for 65 pristine builds: roughly 50 minutes.
-
-Same caveat as the earlier CENTRAL_ID entry applies: nothing is flashed yet,
-these are staged `.uf2` files only. To flash a given node N:
-```powershell
-Copy-Item peripheral\build_node<N>\peripheral\zephyr\zephyr.uf2 -Destination "D:\firmware.uf2"
-```
-after double-tap-reset puts that board into UF2 bootloader mode.
-
-— Alejandro (session assisted by Claude), 2026-08-05
-
-<!-- New entries go above this line -->

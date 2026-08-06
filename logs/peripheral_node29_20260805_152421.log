@@ -1,0 +1,29 @@
+[15:24:22.684] [00:00:00.000,610] [0m<inf> udc_nrf: Preinit[0m
+[15:24:22.685] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[15:24:22.685] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[15:24:22.686] [00:00:00.003,906] [0m<inf> udc_nrf: Initialized[0m
+[15:24:22.686] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[15:24:22.687] Node ID: 29
+[15:24:22.687] [STORAGE] Flash log area has foreign data, erasing and retrying
+[15:24:22.688] [00:00:00.090,026] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[15:24:22.689] [00:00:00.175,476] [0m<inf> udc_nrf: Reset[0m
+[15:24:22.690] [00:00:00.175,598] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[15:24:22.691] [00:00:00.261,505] [0m<inf> udc_nrf: Reset[0m
+[15:24:22.691] [STORAGE] Flash log ready (8 sectors)
+[15:24:22.692] [00:00:00.690,887] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[15:24:22.692]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[15:24:22.693]                                             74 6c ac 75                                      |tl.u             [0m
+[15:24:22.693] [00:00:00.693,756] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[15:24:22.694] [00:00:00.693,786] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 29 seq 1 temp=29.33C humidity=43.8% flags=0x00
+[15:24:22.694] Disconnected, reason 0x13 
+[15:24:30.699] >>> Poll received: subevent 0, responding in slot 0
+[15:24:32.699] [SENSORS] node 29 seq 2 temp=29.39C humidity=43.9% flags=0x00
+[15:24:40.700] >>> Poll received: subevent 0, responding in slot 0
+[15:24:42.714] [SENSORS] node 29 seq 3 temp=29.39C humidity=44.0% flags=0x00
+[15:24:50.699] >>> Poll received: subevent 0, responding in slot 0
+[15:24:52.728] [SENSORS] node 29 seq 4 temp=29.41C humidity=43.9% flags=0x00
+[15:25:00.698] >>> Poll received: subevent 0, responding in slot 0
+[15:25:02.743] [SENSORS] node 29 seq 5 temp=29.41C humidity=44.2% flags=0x00
+[15:25:10.698] >>> Poll received: subevent 0, responding in slot 0
+[15:25:12.758] [SENSORS] node 29 seq 6 temp=29.42C humidity=44.2% flags=0x00
+[15:25:20.698] >>> Poll received: subevent 0, responding in slot 0

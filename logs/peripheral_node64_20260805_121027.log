@@ -1,0 +1,28 @@
+[12:10:29.263] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[12:10:29.264] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:10:29.265] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:10:29.265] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[12:10:29.265] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:10:29.266] Node ID: 64
+[12:10:29.266] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:10:29.266] [00:00:00.090,057] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:10:29.268] [00:00:00.175,506] [0m<inf> udc_nrf: Reset[0m
+[12:10:29.268] [00:00:00.175,628] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:10:29.269] [00:00:00.261,535] [0m<inf> udc_nrf: Reset[0m
+[12:10:29.269] [STORAGE] Flash log ready (8 sectors)
+[12:10:29.270] [00:00:00.690,979] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:10:29.270]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:10:29.271]                                             74 6c ac 75                                      |tl.u             [0m
+[12:10:29.271] [00:00:00.693,817] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:10:29.272] [00:00:00.693,847] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 64 seq 1 temp=27.54C humidity=42.0% flags=0x00
+[12:10:29.272] Synced to 2C:54:2B:21:78:0A (random) with 55 subevents
+[12:10:29.272] Changed sync to subevent 2
+[12:10:29.273] >>> Poll received: subevent 0, responding in slot 0
+[12:10:29.273] [00:00:11.021,636] [1;33m<wrn> bt_hci_core: opcode 0x2083 status 0x0c [0m
+[12:10:29.274] Failed to send response (err -13)
+[12:10:29.274] Periodic sync established.
+[12:10:29.274] >>> Poll received: subevent 2, responding in slot 0
+[12:10:29.275] Disconnected, reason 0x13 
+[12:10:37.750] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[12:10:37.750] *** could not reopen COM58 : Exception calling "Open" with "0" argument(s): "The port 'COM58' does not exist." -- stopping capture ***

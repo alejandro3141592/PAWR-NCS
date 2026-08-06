@@ -1,0 +1,34 @@
+[15:17:00.716] [00:00:00.000,671] [0m<inf> udc_nrf: Preinit[0m
+[15:17:00.717] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[15:17:00.718] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[15:17:00.719] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[15:17:00.719] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[15:17:00.720] Node ID: 23
+[15:17:00.720] [STORAGE] Flash log area has foreign data, erasing and retrying
+[15:17:00.721] [00:00:00.090,087] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[15:17:00.723] [00:00:00.175,537] [0m<inf> udc_nrf: Reset[0m
+[15:17:00.723] [00:00:00.175,659] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[15:17:00.724] [00:00:00.261,566] [0m<inf> udc_nrf: Reset[0m
+[15:17:00.724] [STORAGE] Flash log ready (8 sectors)
+[15:17:00.725] [00:00:00.690,979] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[15:17:00.726]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[15:17:00.727]                                             74 6c ac 75                                      |tl.u             [0m
+[15:17:00.728] [00:00:00.693,634] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[15:17:00.729] [00:00:00.693,878] [0m<inf> bt_hci_core: HW VariSynced to 1D:74:6D:64:E4:2F (random) with 55 subevents
+[15:17:00.729] Changed sync to subevent 0
+[15:17:00.730] >>> Poll received: subevent 0, responding in slot 0
+[15:17:00.730] Periodic sync established.
+[15:17:00.731] [SENSORS] node 23 seq 1 temp=29.50C humidity=44.4% flags=0x00
+[15:17:00.731] Disconnected, reason 0x13 
+[15:17:10.717] >>> Poll received: subevent 0, responding in slot 0
+[15:17:10.718] [SENSORS] node 23 seq 2 temp=29.32C humidity=44.7% flags=0x00
+[15:17:20.716] >>> Poll received: subevent 0, responding in slot 0
+[15:17:20.717] [SENSORS] node 23 seq 3 temp=29.29C humidity=45.3% flags=0x00
+[15:17:30.716] >>> Poll received: subevent 0, responding in slot 0
+[15:17:30.717] [SENSORS] node 23 seq 4 temp=29.34C humidity=45.8% flags=0x00
+[15:17:40.715] >>> Poll received: subevent 0, responding in slot 0
+[15:17:40.716] [SENSORS] node 23 seq 5 temp=29.13C humidity=46.8% flags=0x00
+[15:17:51.120] [SENSORS] node 23 seq 6 temp=29.05C humidity=46.2% flags=0x00
+[15:17:51.398] *** read error: MethodInvocationException: Exception calling "ReadLine" with "0" argument(s): "The I/O operation has been aborted because of either a thread exit or an application request.
+" -- reopening port ***
+[15:17:51.398] *** could not reopen COM36 : Exception calling "Open" with "0" argument(s): "The port 'COM36' does not exist." -- stopping capture ***

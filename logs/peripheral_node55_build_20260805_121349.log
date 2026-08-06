@@ -1,0 +1,109 @@
+﻿-- west build: generating a build system
+python.exe : Loading Zephyr module(s) (Zephyr base (cached)): sysbuild_default
+At C:\Users\mtzal\Documents\PAWR-NCS\tools\Sync-And-Build.ps1:217 char:1
++ & $python @buildArgs 2>&1 | Tee-Object -FilePath $buildLog | ForEach- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Loading Zephyr ...ysbuild_default:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+-- Cache files will be written to: C:/ncs/v3.3.0/zephyr/.cache
+-- Found west (found suitable version "1.5.0", minimum required is "0.14.0")
+-- Board: xiao_ble, qualifiers: nrf52840
+
+warning: Deprecated symbol PARTITION_MANAGER is enabled.
+
+Parsing C:/ncs/v3.3.0/zephyr/share/sysbuild/Kconfig
+Loaded configuration 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/zephyr/.config'
+No change to configuration in 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/zephyr/.config'
+No change to Kconfig header in 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/_sysbuild/autoconf.h'
+-- 
+   ********************************
+   * Running CMake for peripheral *
+   ********************************
+
+Loading Zephyr default modules (Zephyr base (cached)).
+-- Application: C:/Users/mtzal/Documents/PAWR-NCS/peripheral
+-- CMake version: 4.2.1
+-- Cache files will be written to: C:/ncs/v3.3.0/zephyr/.cache
+-- Zephyr version: 4.3.99 (C:/ncs/v3.3.0/zephyr)
+-- Found west (found suitable version "1.5.0", minimum required is "0.14.0")
+-- Board: xiao_ble, qualifiers: nrf52840
+-- Found host-tools: zephyr 0.17.0 (C:/ncs/toolchains/936afb6332/opt/zephyr-sdk)
+-- Found toolchain: zephyr 0.17.0 (C:/ncs/toolchains/936afb6332/opt/zephyr-sdk)
+-- Found BOARD.dts: C:/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble/xiao_ble.dts
+-- Found devicetree overlay: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/boards/xiao_ble.overlay
+-- Generated zephyr.dts: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/zephyr.dts
+-- Generated pickled edt: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/edt.pickle
+-- Generated devicetree_generated.h: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/include/generated/zephyr/devicetree_generated.h
+
+warning: Deprecated symbol PARTITION_MANAGER_ENABLED is enabled.
+
+Parsing C:/Users/mtzal/Documents/PAWR-NCS/peripheral/Kconfig
+Loaded configuration 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/.config'
+Merged configuration 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/.config.sysbuild'
+No change to configuration in 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/.config'
+No change to Kconfig header in 'C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/include/generated/zephyr/autoconf.h'
+-- Found gen_kobject_list: C:/ncs/v3.3.0/zephyr/scripts/build/gen_kobject_list.py
+-- Configuring done (14.3s)
+-- Generating done (2.5s)
+-- Build files have been written to: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral
+-- Found partition manager static configuration : C:/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble/pm_static.yml
+CMake Warning at C:/ncs/v3.3.0/nrf/sysbuild/CMakeLists.txt:1150 (message):
+
+
+      -----------------------------------------------------------------------------------
+      --- WARNING: SB_CONFIG_PARTITION_MANAGER is enabled, partition manager has been ---
+      --- deprecated and boards should be updated to use DTS-based partitioning, see  ---
+      --- the migration guide for more details on this.                               ---
+      -----------------------------------------------------------------------------------
+      
+Call Stack (most recent call first):
+  cmake/modules/sysbuild_extensions.cmake:808 (nrf_POST_CMAKE)
+  cmake/modules/sysbuild_extensions.cmake:808 (cmake_language)
+  cmake/modules/sysbuild_images.cmake:46 (sysbuild_module_call)
+  cmake/modules/sysbuild_default.cmake:21 (include)
+  C:/ncs/v3.3.0/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:75 (include)
+  C:/ncs/v3.3.0/zephyr/share/zephyr-package/cmake/ZephyrConfig.cmake:97 (include_boilerplate)
+  C:/ncs/v3.3.0/zephyr/share/sysbuild-package/cmake/SysbuildConfig.cmake:8 (include)
+  template/CMakeLists.txt:10 (find_package)
+
+
+-- Configuring done (25.0s)
+-- Generating done (0.3s)
+-- Build files have been written to: C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55
+-- west build: building application
+[0/5] Performing build step for 'peripheral'
+[1/240] Generating misc/generated/syscalls.json, misc/generated/struct_tags.json
+[2/23] Building C object zephyr/CMakeFiles/zephyr.dir/C_/ncs/v3.3.0/nrf/subsys/partition_manager/flash_map_partition_manager.c.obj
+[3/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/storage/flash_map/flash_map_layout.c.obj
+[4/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/storage/flash_map/flash_map.c.obj
+[5/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb_getnext.c.obj
+[6/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb_elem_info.c.obj
+[7/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb_append.c.obj
+[8/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb_rotate.c.obj
+[9/23] Building C object zephyr/arch/arch/arm/core/mpu/CMakeFiles/arch__arm__core__mpu.dir/arm_mpu_regions.c.obj
+[10/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb_walk.c.obj
+[11/23] Building C object zephyr/lib/libc/common/CMakeFiles/lib__libc__common.dir/source/stdlib/malloc.c.obj
+[12/23] Generating linker_zephyr_pre0.cmd
+[13/23] Building C object zephyr/CMakeFiles/zephyr.dir/subsys/fs/fcb/fcb.c.obj
+[14/23] Building C object CMakeFiles/app.dir/src/main.c.obj
+[15/23] Linking C static library zephyr\lib\libc\common\liblib__libc__common.a
+[16/23] Linking C static library zephyr\arch\arch\arm\core\mpu\libarch__arm__core__mpu.a
+[17/23] Linking C static library app\libapp.a
+[18/23] Linking C static library zephyr\libzephyr.a
+[19/23] Linking C executable zephyr\zephyr_pre0.elf; Logical command for additional byproducts on target: zephyr_pre0
+[20/23] Generating linker.cmd
+[21/23] Generating isr_tables.c, isr_tables_vt.ld, isr_tables_swi.ld
+[22/23] Building C object zephyr/CMakeFiles/zephyr_final.dir/isr_tables.c.obj
+[23/23] Linking C executable zephyr\zephyr.elf
+Memory region         Used Size  Region Size  %age Used
+           FLASH:      247476 B       788 KB     30.67%
+             RAM:       45079 B       256 KB     17.20%
+        IDT_LIST:          0 GB        32 KB      0.00%
+Generating files from C:/Users/mtzal/Documents/PAWR-NCS/peripheral/build_node55/peripheral/zephyr/zephyr.elf for board: xiao_ble/nrf52840
+Converted to uf2, output size: 495104, start address: 0x27000
+Wrote 495104 bytes to zephyr.uf2
+[2/5] No install step for 'peripheral'
+[3/5] Completed 'peripheral'
+[4/5] C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\mtzal\Documents\PAWR-NCS\peripheral\build_node55\_sysbuild && C:\ncs\toolchains\936afb6332\opt\bin\cmake.exe -E true"
+[5/5] Generating ../merged.hex

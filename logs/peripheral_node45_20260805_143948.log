@@ -1,0 +1,25 @@
+[14:39:49.831] [00:00:00.007,659] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[14:39:49.832]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[14:39:49.833]                                             74 6c ac 75                                      |tl.u             [0m
+[14:39:49.833] [1;31m--- 7 messages dropped ---
+[14:39:49.834] [0m[00:00:00.008,209] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[14:39:49.835] [00:00:00.010,345] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[14:39:49.836] [00:00:00.010,375] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[14:39:49.837] [00:00:00.010,406] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[14:39:49.838] [00:00:00.011,322] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[14:39:49.838] [00:00:00.011,413] [0m<inf> bt_hci_core: Identity: F1:E4:AA:A7:B4:B7 (random)[0m
+[14:39:49.839] [00:00:00.011,444] [0m<inf> bt_hci_core: HCI: version 6.2 (0x10) revision 0x10a3, manufacturer 0x0059[0m
+[14:39:49.840] [00:00:00.011,474] [0m<inf> bt_hci_core: LMP: version 6.2 (0x10) subver 0x10a3[0m
+[14:39:49.841] Waiting for periodic sync...[SENSORS] node 45 seq 1 temp=31.30C humidity=46.1% flags=0x00
+[14:39:49.841] Disconnected, reason 0x13 
+[14:39:51.112] >>> Poll received: subevent 8, responding in slot 0
+[14:39:59.846] [SENSORS] node 45 seq 2 temp=30.97C humidity=46.0% flags=0x00
+[14:40:01.112] >>> Poll received: subevent 8, responding in slot 0
+[14:40:09.860] [SENSORS] node 45 seq 3 temp=30.80C humidity=46.2% flags=0x00
+[14:40:11.111] >>> Poll received: subevent 8, responding in slot 0
+[14:40:19.876] [SENSORS] node 45 seq 4 temp=30.95C humidity=46.2% flags=0x00
+[14:40:21.111] >>> Poll received: subevent 8, responding in slot 0
+[14:40:29.890] [SENSORS] node 45 seq 5 temp=31.03C humidity=46.5% flags=0x00
+[14:40:31.111] >>> Poll received: subevent 8, responding in slot 0
+[14:40:39.904] [SENSORS] node 45 seq 6 temp=30.87C humidity=46.3% flags=0x00
+[14:40:41.110] >>> Poll received: subevent 8, responding in slot 0

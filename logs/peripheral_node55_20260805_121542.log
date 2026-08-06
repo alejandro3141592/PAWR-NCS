@@ -1,0 +1,20 @@
+[12:15:43.433] [00:00:00.000,640] [0m<inf> udc_nrf: Preinit[0m
+[12:15:43.437] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[12:15:43.438] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[12:15:43.438] [00:00:00.003,936] [0m<inf> udc_nrf: Initialized[0m
+[12:15:43.439] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[12:15:43.439] Node ID: 55
+[12:15:43.439] [STORAGE] Flash log area has foreign data, erasing and retrying
+[12:15:43.440] [00:00:00.090,057] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[12:15:43.441] [00:00:00.175,506] [0m<inf> udc_nrf: Reset[0m
+[12:15:43.442] [00:00:00.175,628] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[12:15:43.442] [00:00:00.261,566] [0m<inf> udc_nrf: Reset[0m
+[12:15:43.442] [STORAGE] Flash log ready (8 sectors)
+[12:15:43.443] [00:00:00.690,917] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[12:15:43.443]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[12:15:43.444]                                             74 6c ac 75                                      |tl.u             [0m
+[12:15:43.444] [00:00:00.693,572] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[12:15:43.444] [00:00:00.693,603] [0m<inf> bt_hci_core: HW Vari[SENSORS] node 55 seq 1 temp=28.72C humidity=48.0% flags=0x00
+[12:15:53.420] Timed out while synchronizing
+[12:15:53.420] Waiting for periodic sync...
+[12:15:53.420] [SENSORS] node 55 seq 2 temp=28.66C humidity=47.8% flags=0x00
