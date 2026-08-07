@@ -8,6 +8,156 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-07 — real node roster loaded into node_slot_table.h; NUM_SUBEVENTS raised 20 -> 25 for table capacity; two node-ID collisions found, need relabeling
+
+Follow-up to the fixed-slot-table entry directly below. User provided the
+real roster: 51 (`central_id`-unassigned) node ID entries, but **two IDs
+appear twice -- 32 and 34** -- matching the same two-physical-boards-share-
+one-ID pattern found earlier this session (there it was 32/55). 49 unique
+IDs after dedup. **These two still need resolving**: the fixed table can
+only hold one entry per node_id, so right now the table has exactly one
+slot for "32" and one for "34" -- whichever of the two physical boards
+sharing each ID actually advertises will get onboarded onto that slot, but
+having two boards both trying to claim the same node_id/slot is not a
+supported, stable state. **User confirmed they'll relabel one board in each
+pair with a fresh, currently-unused ID and provide the corrected list** --
+until that happens, don't treat central 1's 25-node table or central 2's
+24-node table as fully representing the real fleet.
+
+Split the 49 IDs evenly by list order across the two rigs (no other
+grouping info available yet): central 1 got the first 25 (IDs 1-32),
+central 2 got the remaining 24 (IDs 33-66) -- arbitrary, easy to redo via
+`tools/gen_node_slot_table.py` once real per-rig groupings are known (e.g.
+if the split should instead follow some physical/location logic rather than
+raw ID order).
+
+**Hit a real capacity wall generating the table**: central 1's 25 nodes
+exceeded `NUM_SUBEVENTS=20` -- the fixed-table model reserves a permanent
+slot per listed node_id regardless of how many are connected at once
+(unlike the old dynamic model, where only currently-connected peripherals
+consumed a slot), so "only ~17 connected at a time" doesn't help if the
+*roster* for one rig is 25 distinct boards. Resolved by raising
+`NUM_SUBEVENTS` 20 -> 25 (common/pawr_protocol.h) -- a small, deliberate
+step, not the kind of big jump (20->55) that caused problems earlier this
+session. Subevent train timing is still comfortable (25 * 40ms = 1000ms,
+10x headroom in the 10s interval). **Not yet re-validated**: the 6/6 buffer
+count is only soak-tested at exactly 20 subevents -- treat 25 as the best
+available starting point, not proven-safe, until a fresh soak confirms it
+(or shows a different buffer count is needed) at the new count.
+
+`central/node_slot_table.h` regenerated via `tools/gen_node_slot_table.py
+tools/node_roster.csv --num-subevents 25 -o central/node_slot_table.h` --
+central 1: 25 nodes, subevents 0-24 (full). Central 2: 24 nodes, subevents
+0-23. Both centrals (ID 1 and ID 2) and a peripheral (node 47, central 2)
+build clean with the real table. **Nothing flashed to real hardware yet.**
+
+**Still outstanding before this is deployment-ready:**
+1. Resolve the 32/34 collisions (relabel one board in each pair, update
+   `tools/node_roster.csv`, regenerate the table).
+2. Confirm whether the arbitrary list-order rig split actually matches
+   which physical boards belong to which rig -- if not, provide the real
+   grouping and regenerate.
+3. Soak-test 25-subevent/6-6 (both reconnect completeness AND PDR, per the
+   methodology this session's buffer-tuning entries established) before
+   trusting it the way 20-subevent/6-6 is trusted.
+4. Flash every central and every listed peripheral with matching
+   node/central IDs -- none of this firmware is on real hardware yet.
+
+— Alejandro (session assisted by Claude), 2026-08-07
+
+---
+
+## 2026-08-07 — replaced dynamic slot allocation with a fixed node_id -> subevent table; buffer-count tuning at 20 subevents (6/6 confirmed best)
+
+**Buffer-count tuning, done properly this time (with real ~13-node traffic,
+tracking full node-set recovery, not just PDR):**
+- `8/8`: PDR among reporting nodes looked fine (90.45%), but **3 of 16
+  previously-connected nodes (47, 58, 63) never re-onboarded**, even 15+
+  minutes after the flash -- a milder version of 2026-08-01's 12/12 total
+  failure. Per-node PDR alone hid this; only checking the full node-ID set
+  before vs. after caught it.
+- `4/4`: opposite trade-off -- all 13 previously-active nodes reconnected
+  and stayed stable for 18 minutes, but PDR dropped to 86.82%, with nodes 54
+  (41.2%) and 56 (77.4%) notably worse than usual.
+- **Reverted to `6/6`** -- still the only value with real positive evidence
+  on both axes (full reconnect + decent PDR) at 20 subevents. Takeaway for
+  next time: always check "did every previously-connected node ID come
+  back," not just the received/expected ratio among whichever nodes happen
+  to report -- a regression can hide entirely behind a fine-looking PDR
+  number if it manifests as nodes failing to onboard rather than dropping
+  packets once synced.
+
+**Bigger change: fixed (table-driven) subevent assignment, replacing dynamic
+first-free-slot allocation.** User's actual deployment: ~50 real node IDs
+out of a 1-100 range (not contiguous), split across 2 central rigs today,
+possibly 4 later. User proposed `node_id % NUM_SUBEVENTS` (e.g. mod 33 for
+2 centrals, mod 17 for 4) -- flagged a real problem with that: modulo
+guarantees collisions by pigeonhole whenever two different node IDs share a
+residue (e.g. mod 17: nodes 3 and 20 collide), and which IDs collide is
+whatever the arithmetic happens to produce, not something you control by
+choosing which ~50 of 100 IDs to use. Two peripherals landing on the same
+subevent would corrupt or silently drop each other's responses, with no
+build-time way to catch it.
+
+**Chosen instead: an explicit, collision-checked lookup table**
+(`central/node_slot_table.h`, `struct node_slot_entry { central_id, node_id,
+subevent }`), validated at boot (`node_slot_table_validate()` in
+`central/src/main.c` -- `k_panic()`s on any duplicate `(central_id,
+subevent)` pair, duplicate node listed twice for one central, or a subevent
+>= `NUM_SUBEVENTS`) and regeneratable from a plain CSV via the new
+`tools/gen_node_slot_table.py` (same checks, at generation time instead of
+boot time -- both are meant to agree, treat a mismatch as a bug).
+
+**A real subproblem this required solving:** central's onboarding flow
+previously only learned a peripheral's `node_id` from sensor payload data
+*after* it was already synced -- during onboarding (scan -> connect -> PAST
+-> GATT write) it only ever saw the peripheral's BLE address and advertised
+name, never its identity, since slot assignment used to be dynamic
+(first-free-slot) and didn't need to know who was asking. A fixed table
+needs the opposite: central must know *which* node_id it's about to connect
+to, before connecting, to look up the right slot. Solved by embedding
+node_id in the advertised name itself (peripheral: `pawr_format_adv_name()`
+in `common/pawr_protocol.h` now takes a `node_id` param too, e.g. `"PAwR
+sync sample 2 #47"`), parsed straight out of the scan result in
+`device_found()` via the new `pawr_parse_node_id()` -- no extra GATT round
+trip, no new failure mode, node_id is visible before any connection attempt.
+Central's name match changed from an exact `strcmp` to a prefix `strncmp`
+accordingly (peripheral names now vary per-node after the shared
+`"<PAWR_ADV_NAME> <central_id>"` prefix).
+
+**A node_id with no table entry for the connecting central is refused
+outright** (explicit user choice over silently falling back to dynamic
+allocation) -- central logs `"...has no node_slot_table entry for central
+%u -- refusing to onboard"` and never connects to it. Intended failure mode:
+a new/unlisted board stays dark until added to the table and central is
+reflashed, not a bug to route around. This keeps the table's collision-free
+guarantee airtight -- every node that does sync is provably on a unique
+slot, by construction, not by convention.
+
+All of the old dynamic-allocation machinery (`slot_taken[]`,
+`last_seen_ms[]`, `slot_owner[]`, `slot_is_stale()`, `allocate_slot()`) was
+removed rather than left dormant -- fixed assignment makes it entirely dead
+code (a node's slot never changes and is never handed to anyone else, so
+there's nothing left to go stale or need reclaiming).
+
+**Status: implemented and build-verified (central + a peripheral both
+compile clean), NOT YET tested on real hardware or populated with the real
+node roster.** `central/node_slot_table.h` currently has placeholder example
+data (5 fake nodes on central 1, 13 real-looking-but-arbitrary IDs on
+central 2) -- needs the actual ~50-node list (which node_id belongs to which
+of the 2-4 central rigs) before this is usable for anything beyond a build
+smoke-test. Also not yet flashed to any physical board. Next steps: get the
+real roster into a CSV, run `tools/gen_node_slot_table.py` to generate the
+real table, rebuild+reflash every central, and soak-test that fixed
+assignment actually onboards everyone as expected (no reason to expect a
+new failure mode here, but nothing in this project has ever been assumed
+working without a real-hardware check, and this shouldn't be the first
+exception).
+
+— Alejandro (session assisted by Claude), 2026-08-07
+
+---
+
 ## 2026-08-05 — batch-built firmware for node IDs 1-65 (CENTRAL_ID=1), new tools/Build-NodeFleet.ps1
 
 User has node IDs 1-65 in play (beyond the 12 boards physically running

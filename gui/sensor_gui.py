@@ -85,6 +85,7 @@ class Reading:
     temperature: Optional[float] = None
     humidity: Optional[float] = None
     last_seen: Optional[datetime] = None
+    logged_seq: Optional[int] = None
 
     def health(self) -> str:
         if not self.last_seen:
@@ -1142,7 +1143,11 @@ class MainWindow(QMainWindow):
             reading.flags = flags
         reading.last_seen = datetime.now()
 
-        if field in ("temperature", "humidity"):
+        # on_message() emits one signal per valid field (temp, humidity), so
+        # a single MQTT message can drive this twice -- log once per unique
+        # seq, not once per field, or every reading gets double-inserted.
+        if field in ("temperature", "humidity") and reading.seq != reading.logged_seq:
+            reading.logged_seq = reading.seq
             self._maybe_log(reading)
 
         self._refresh_table()

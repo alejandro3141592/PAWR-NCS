@@ -13,6 +13,8 @@
 
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
+#include <stdlib.h>
+#include <string.h>
 
 /* Device name prefix the peripheral advertises under and the central scans
  * for. Each peripheral appends its own CONFIG_APP_CENTRAL_ID (the central
@@ -20,40 +22,80 @@
  * runtime -- e.g. "PAwR sync sample 3" for a peripheral targeting central
  * ID 3 -- so multiple independent central+peripheral-fleet deployments can
  * run in BLE range of each other without cross-onboarding: central only
- * scans for/connects to names ending in its own ID (see central's
- * device_found()), so a peripheral flashed for central 3 is invisible to
- * central 7's onboarding loop and vice versa. See NOTES.md 2026-08-05 for
- * why this was added (observed with 2+ central/gateway rigs running near
- * each other).
+ * scans for/connects to names starting with its own expected prefix (see
+ * central's device_found()), so a peripheral flashed for central 3 is
+ * invisible to central 7's onboarding loop and vice versa. See NOTES.md
+ * 2026-08-05 for why this was added (observed with 2+ central/gateway rigs
+ * running near each other).
  *
  * Central ID 0 is the default/"don't care" value: a central with
  * CONFIG_APP_CENTRAL_ID=0 scans for the bare, unsuffixed PAWR_ADV_NAME
  * (matching a peripheral that also has CONFIG_APP_CENTRAL_ID=0) --
  * preserves old single-central-rig behavior with no config changes needed
  * for the common case of "just one central, no need to scope anything."
+ *
+ * 2026-08-07: also appends "#<node_id>", e.g. "PAwR sync sample 2 #47" --
+ * see pawr_format_adv_name()'s own comment for why (fixed/table-driven
+ * subevent assignment needs central to know node_id before connecting).
+ * Central's match check changed from an exact strcmp to a prefix check
+ * accordingly (matching "PAwR sync sample 2", ignoring the "#47" that
+ * varies per peripheral) -- see central's device_found().
  */
 #define PAWR_ADV_NAME "PAwR sync sample"
 
 /* Longest possible advertised name: PAWR_ADV_NAME + " " + up to 3 digits
- * (CONFIG_APP_CENTRAL_ID range, see Kconfig) + nul. BT_DATA_NAME_COMPLETE
- * has no hard length limit here (well under the 31-byte legacy adv payload
- * once the rest of the AD structure is accounted for), but this bounds the
- * stack buffer both apps format the name into.
+ * (CONFIG_APP_CENTRAL_ID range) + " #" + up to 3 digits (CONFIG_APP_NODE_ID
+ * range, see peripheral/Kconfig) + nul. BT_DATA_NAME_COMPLETE has no hard
+ * length limit here (well under the 31-byte legacy adv payload once the
+ * rest of the AD structure is accounted for), but this bounds the stack
+ * buffer both apps format the name into.
  */
-#define PAWR_ADV_NAME_MAX_LEN (sizeof(PAWR_ADV_NAME) + 1 + 3)
+#define PAWR_ADV_NAME_MAX_LEN (sizeof(PAWR_ADV_NAME) + 1 + 3 + 2 + 3)
 
-/* Formats "<PAWR_ADV_NAME>" (central_id == 0) or "<PAWR_ADV_NAME>
- * <central_id>" into buf (must be >= PAWR_ADV_NAME_MAX_LEN bytes). Shared
- * by both central (what it scans for) and peripheral (what it advertises
- * as) so the two can never drift apart on the exact suffix format.
+/* Formats "<PAWR_ADV_NAME>[ <central_id>][ #<node_id>]" into buf (must be
+ * >= PAWR_ADV_NAME_MAX_LEN bytes). Shared by both central (what it scans
+ * for/parses) and peripheral (what it advertises as) so the two can never
+ * drift apart on the exact suffix format.
+ *
+ * node_id is embedded here (rather than fetched via a GATT read after
+ * connecting) specifically so central can learn which physical node it's
+ * about to onboard BEFORE connecting -- needed for fixed/table-driven
+ * subevent assignment (see pawr_fixed_slot_lookup() below and NOTES.md
+ * 2026-08-07): central has to pick the right slot as part of the very
+ * first GATT write, and by then it's too late to still be guessing the
+ * node's identity from an extra round trip. node_id == 0 omits the "#..."
+ * suffix entirely, for any future caller that doesn't need per-node
+ * identification at scan time (kept optional, not required, so this
+ * doesn't force every use of the name-formatting helper to have a node_id
+ * on hand).
  */
-static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int central_id)
+static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int central_id,
+					 unsigned int node_id)
 {
-	if (central_id == 0) {
+	if (central_id == 0 && node_id == 0) {
 		snprintk(buf, buf_size, "%s", PAWR_ADV_NAME);
-	} else {
+	} else if (node_id == 0) {
 		snprintk(buf, buf_size, "%s %u", PAWR_ADV_NAME, central_id);
+	} else {
+		snprintk(buf, buf_size, "%s %u #%u", PAWR_ADV_NAME, central_id, node_id);
 	}
+}
+
+/* Parses the node_id embedded by pawr_format_adv_name() back out of a
+ * scanned advertised name, e.g. "PAwR sync sample 2 #47" -> 47. Returns 0
+ * (same sentinel as "no node_id" in pawr_format_adv_name()) if name has no
+ * "#<digits>" suffix, so callers can treat 0 uniformly as "unknown/not
+ * present" without a separate found/not-found out-parameter.
+ */
+static inline unsigned int pawr_parse_node_id(const char *name)
+{
+	const char *hash = strchr(name, '#');
+
+	if (!hash) {
+		return 0;
+	}
+
+	return (unsigned int)strtoul(hash + 1, NULL, 10);
 }
 
 /* Minimal-repro test mode (2026-07-31, see NOTES.md): both sides' HCI logs
@@ -100,26 +142,33 @@ static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int
  */
 #define APP_SCALE_TEST 0
 
-/* One subevent per node (50 nodes + 5 spare), one response slot per
- * subevent. interval_min/max are uint16_t in 1.25 ms units (0x1F40 * 1.25ms
- * = 10.00s exactly). subevent_interval is uint8_t in 1.25ms units,
- * response_slot_delay is uint8_t in 1.25ms units, response_slot_spacing is
- * uint8_t in 0.125ms units.
+/* One subevent per node, one response slot per subevent. interval_min/max
+ * are uint16_t in 1.25 ms units (0x1F40 * 1.25ms = 10.00s exactly).
+ * subevent_interval is uint8_t in 1.25ms units, response_slot_delay is
+ * uint8_t in 1.25ms units, response_slot_spacing is uint8_t in 0.125ms
+ * units.
  *
- * 2026-08-04: raised from 20 to 55 (50 nodes + 5 spare, up from 17+3) for
- * the 50-node deployment target. Subevent train span scales linearly with
- * NUM_SUBEVENTS (55 * 40ms = 2200ms), still comfortably inside the 10s
- * interval (4.5x headroom, vs. 12.5x at 20) -- no interval/subevent_interval
- * change needed, this is a straightforward capacity increase, not a new
- * timing regime. response_slot_delay/response_slot_spacing are per-subevent
- * constants (not per-count), so that budget is unaffected by the count
- * change. What DOES need re-validation on real hardware at this scale: the
- * SDC's PAwR TX/RX buffer counts (see central/prj.conf) -- confirmed by
- * hard experience (NOTES.md 2026-08-01) that these do NOT scale
- * automatically with subevent count, and guessing too high (12/12 at 20
- * subevents) broke things worse than the stock default, so treat the
- * scaled-up buffer values below as an unverified starting point, not a
- * proven-safe setting, until soak-tested.
+ * 2026-08-07: reverted 55 -> 20 (back to a 17-node-at-once deployment
+ * target). Buffer counts (central/prj.conf) reverted to 6/6 alongside this
+ * -- soak-tested at 20 subevents (NOTES.md 2026-08-03, both a 30-min
+ * single-node run and a 1-hour 5-node run).
+ *
+ * 2026-08-07 (later same day): raised 20 -> 25. Reason is capacity, not
+ * concurrency -- with the new fixed/table-driven subevent assignment (see
+ * central/node_slot_table.h, NOTES.md 2026-08-07), EVERY distinct node_id
+ * ever assigned to a central reserves its own permanent subevent, whether
+ * or not that physical board is currently powered on -- unlike the old
+ * dynamic allocation, where only currently-connected peripherals consumed a
+ * slot. User's real roster has up to 25 distinct node IDs on one central
+ * rig (even though only ~17 run concurrently), so 20 wasn't enough table
+ * capacity even though 17-concurrent would have fit fine under the old
+ * model. +5 is a small, deliberate step (not the kind of large jump that
+ * caused problems going 20->55 previously) -- subevent train span is still
+ * comfortable (25 * 40ms = 1000ms, 10x headroom inside the 10s interval).
+ * NOT yet re-validated: 6/6 buffers were only soak-tested at exactly 20
+ * subevents, not 25 -- treat as the best available starting point, not a
+ * proven-safe value, until a fresh soak confirms it (or finds a different
+ * buffer count is needed) at 25.
  */
 #if APP_MINIMAL_REPRO
 #define NUM_SUBEVENTS             5
@@ -134,7 +183,7 @@ static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             55
+#define NUM_SUBEVENTS             25
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1

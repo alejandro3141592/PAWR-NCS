@@ -96,6 +96,28 @@ static void status_led_init(void)
 	gpio_pin_configure_dt(&status_led, GPIO_OUTPUT_INACTIVE);
 }
 
+/* Power-on indicator: a single blink of the (unused otherwise) green LED
+ * right at boot, so a board is visibly alive the moment it's powered --
+ * distinct from status_led (red, led0) above, which tracks PAwR sync state
+ * throughout the rest of run time. Blocking sleep is fine here: this runs
+ * once in main(), before Bluetooth/sensors start, not in a latency-sensitive
+ * callback like status_led_blip().
+ */
+static const struct gpio_dt_spec power_on_led = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
+
+static void power_on_led_blink(void)
+{
+	if (!gpio_is_ready_dt(&power_on_led)) {
+		APP_LOG("Power-on LED device not ready\n");
+		return;
+	}
+
+	gpio_pin_configure_dt(&power_on_led, GPIO_OUTPUT_INACTIVE);
+	gpio_pin_set_dt(&power_on_led, 1);
+	k_sleep(K_MSEC(150));
+	gpio_pin_set_dt(&power_on_led, 0);
+}
+
 /* ======================================================
  * SENSORS: skin temperature (MAX30205, via the LM75-compatible in-tree
  * driver) + humidity (SHT4x). Each tracked independently so one sensor
@@ -592,10 +614,11 @@ int main(void)
 	APP_LOG("Starting Periodic Advertising with Responses Synchronization Demo (peripheral)\n");
 	APP_LOG("Node ID: %u, Central ID: %u\n", CONFIG_APP_NODE_ID, CONFIG_APP_CENTRAL_ID);
 
-	pawr_format_adv_name(adv_name, sizeof(adv_name), CONFIG_APP_CENTRAL_ID);
+	pawr_format_adv_name(adv_name, sizeof(adv_name), CONFIG_APP_CENTRAL_ID, CONFIG_APP_NODE_ID);
 	ad[0].data_len = strlen(adv_name);
 
 	status_led_init();
+	power_on_led_blink();
 	sensors_init();
 	storage_fcb_init();
 

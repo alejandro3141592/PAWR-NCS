@@ -34,6 +34,7 @@
 #include "pawr_protocol.h"
 #include "gateway_uart_tx.h"
 #include "sensor_log.h"
+#include "node_slot_table.h"
 
 /* Retired experiment (2026-08-03, see NOTES.md): stopping periodic
  * advertising during the onboarding connect step did eliminate the 0x08
@@ -97,48 +98,61 @@ BUILD_ASSERT(ARRAY_SIZE(backing_store) == ARRAY_SIZE(subevent_data_params));
 static uint8_t counter;
 
 /* ======================================================
- * Slot bookkeeping: which subevents are currently assigned, and when we
- * last heard a response on each, so a peripheral that drops off can have
- * its slot reclaimed instead of capacity leaking forever.
+ * Fixed slot assignment: node_id -> subevent is a permanent lookup in
+ * node_slot_table.h, not dynamically handed out at onboarding time (see
+ * NOTES.md 2026-08-07 for why -- avoids the silent-collision risk of a
+ * formula like node_id % NUM_SUBEVENTS over a sparse, non-contiguous set of
+ * ~50 real node IDs). No staleness/reclaim bookkeeping is needed anymore:
+ * a node's slot never changes and is never handed to anyone else, so
+ * there's nothing to go stale or leak.
  * ====================================================== */
 
-static bool slot_taken[NUM_SUBEVENTS];
-static int64_t last_seen_ms[NUM_SUBEVENTS];
-static bt_addr_le_t slot_owner[NUM_SUBEVENTS];
-
-static bool slot_is_stale(size_t idx)
-{
-	if (!slot_taken[idx]) {
-		return false;
-	}
-
-	int64_t stale_after_ms = (int64_t)PAWR_INTERVAL_UNITS * 5 / 4 *
-				  PAWR_SLOT_STALE_INTERVALS;
-
-	return (k_uptime_get() - last_seen_ms[idx]) > stale_after_ms;
-}
-
-/* Reuse the same subevent for a peripheral that already has one (identified
- * by its Bluetooth address), rather than handing out a fresh slot on every
- * reconnect -- otherwise a peripheral that repeatedly fails to sync (and
- * keeps reconnecting to retry) leaks a new slot each attempt while its
- * still-live previous assignment sits unused until it goes stale.
+/* Fails fast (rather than silently misbehaving at runtime) if the table has
+ * two entries for the same central_id claiming the same subevent -- the
+ * exact hazard a fixed table exists to prevent. O(n^2) in table size, but
+ * this runs once at boot against a list sized in the tens, not a hot path.
  */
-static int allocate_slot(const bt_addr_le_t *addr)
+static void node_slot_table_validate(void)
 {
-	for (size_t i = 0; i < NUM_SUBEVENTS; i++) {
-		if (slot_taken[i] && !slot_is_stale(i) && bt_addr_le_eq(&slot_owner[i], addr)) {
-			last_seen_ms[i] = k_uptime_get();
-			return (int)i;
+	for (size_t i = 0; i < ARRAY_SIZE(node_slot_table); i++) {
+		if (node_slot_table[i].subevent >= NUM_SUBEVENTS) {
+			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_SUBEVENTS (%d)\n",
+			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
+			       NUM_SUBEVENTS);
+			k_panic();
+		}
+
+		for (size_t j = i + 1; j < ARRAY_SIZE(node_slot_table); j++) {
+			if (node_slot_table[i].central_id == node_slot_table[j].central_id &&
+			    node_slot_table[i].subevent == node_slot_table[j].subevent) {
+				printk("FATAL: node_slot_table has a collision on central %u subevent %u -- nodes %u and %u\n",
+				       node_slot_table[i].central_id, node_slot_table[i].subevent,
+				       node_slot_table[i].node_id, node_slot_table[j].node_id);
+				k_panic();
+			}
+
+			if (node_slot_table[i].central_id == node_slot_table[j].central_id &&
+			    node_slot_table[i].node_id == node_slot_table[j].node_id) {
+				printk("FATAL: node_slot_table has node %u listed twice for central %u\n",
+				       node_slot_table[i].node_id, node_slot_table[i].central_id);
+				k_panic();
+			}
 		}
 	}
+}
 
-	for (size_t i = 0; i < NUM_SUBEVENTS; i++) {
-		if (!slot_taken[i] || slot_is_stale(i)) {
-			slot_taken[i] = true;
-			last_seen_ms[i] = k_uptime_get();
-			bt_addr_le_copy(&slot_owner[i], addr);
-			return (int)i;
+/* Looks up the fixed subevent for (CONFIG_APP_CENTRAL_ID, node_id). Returns
+ * -1 if this node_id has no entry for this central -- caller must refuse to
+ * onboard it rather than falling back to any kind of dynamic assignment
+ * (see device_found()): an unlisted node staying dark until it's added to
+ * the table is the intended failure mode, not a bug to work around.
+ */
+static int lookup_fixed_slot(unsigned int node_id)
+{
+	for (size_t i = 0; i < ARRAY_SIZE(node_slot_table); i++) {
+		if (node_slot_table[i].central_id == CONFIG_APP_CENTRAL_ID &&
+		    node_slot_table[i].node_id == node_id) {
+			return node_slot_table[i].subevent;
 		}
 	}
 
@@ -173,6 +187,15 @@ static void request_cb(struct bt_le_ext_adv *adv, const struct bt_le_per_adv_dat
 }
 
 static struct bt_conn *default_conn;
+/* Fixed subevent for whichever peripheral device_found() just decided to
+ * connect to -- resolved from node_slot_table.h before the connection is
+ * created, carried across to the GATT write later in the onboarding
+ * sequence. Only one onboarding attempt is ever in flight at a time (see
+ * default_conn's own single-connection design, central/src/main.c's file
+ * header), so a single static variable is safe here -- no risk of two
+ * concurrent onboardings overwriting each other's pending_slot.
+ */
+static int pending_slot;
 #if APP_STOP_PAWR_DURING_ONBOARDING
 static struct bt_le_ext_adv *pawr_adv;
 #endif
@@ -206,11 +229,6 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 
 	gateway_uart_tx_send(&payload);
 	sensor_log_append(&payload);
-
-	if (info->subevent < NUM_SUBEVENTS) {
-		slot_taken[info->subevent] = true;
-		last_seen_ms[info->subevent] = k_uptime_get();
-	}
 
 	/* Single printk call instead of up to 4 -- this callback fires once
 	 * per received response, per subevent, per interval (up to
@@ -333,16 +351,36 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	(void)memset(name, 0, sizeof(name));
 	bt_data_parse(ad, data_cb, name);
 
-	if (strcmp(name, target_adv_name)) {
+	/* Prefix check, not exact match: target_adv_name is built with
+	 * node_id=0 (no "#..." suffix, see main()), but a real peripheral's
+	 * name always has one (e.g. "PAwR sync sample 2 #47") -- strcmp
+	 * would never match anything. strlen(target_adv_name) also correctly
+	 * requires at least the separating space before whatever follows, so
+	 * this can't accidentally match e.g. central 2 against a "20"-suffix
+	 * peripheral name.
+	 */
+	if (strncmp(name, target_adv_name, strlen(target_adv_name)) != 0) {
+		return;
+	}
+
+	unsigned int node_id = pawr_parse_node_id(name);
+	int slot = lookup_fixed_slot(node_id);
+
+	if (slot < 0) {
+		printk("Peripheral advertised as \"%s\" (node_id %u) has no node_slot_table entry for central %u -- refusing to onboard. Add it to central/node_slot_table.h and reflash.\n",
+		       name, node_id, CONFIG_APP_CENTRAL_ID);
 		return;
 	}
 
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
-	printk("Found peripheral %s, connecting...\n", addr_str);
+	printk("Found peripheral %s (node_id %u, fixed subevent %d), connecting...\n", addr_str,
+	       node_id, slot);
 
 	if (bt_le_scan_stop()) {
 		return;
 	}
+
+	pending_slot = slot;
 
 	/* A slower interval + longer supervision timeout than the default
 	 * (30-50ms / 4s) gives the controller more slack to service this
@@ -431,8 +469,10 @@ int main(void)
 	printk("Starting Periodic Advertising Demo (central)\n");
 	printk("Central ID: %u\n", CONFIG_APP_CENTRAL_ID);
 
-	pawr_format_adv_name(target_adv_name, sizeof(target_adv_name), CONFIG_APP_CENTRAL_ID);
-	printk("Onboarding peripherals advertising as \"%s\"\n", target_adv_name);
+	node_slot_table_validate();
+
+	pawr_format_adv_name(target_adv_name, sizeof(target_adv_name), CONFIG_APP_CENTRAL_ID, 0);
+	printk("Onboarding peripherals advertising as \"%s ...\"\n", target_adv_name);
 
 	if (!gpio_is_ready_dt(&tx_led)) {
 		printk("TX LED device not ready\n");
@@ -585,15 +625,13 @@ int main(void)
 			goto disconnect;
 		}
 
-		int slot = allocate_slot(bt_conn_get_dst(default_conn));
-
-		if (slot < 0) {
-			printk("No free subevent slots available (capacity %d)\n", NUM_SUBEVENTS);
-
-			goto disconnect;
-		}
-
-		sync_config.subevent = (uint8_t)slot;
+		/* pending_slot was already resolved from node_slot_table.h back
+		 * in device_found(), before this connection was even created --
+		 * fixed assignment doesn't need anything learned during
+		 * discovery/connection to pick a slot, unlike the old dynamic
+		 * allocate_slot(bt_conn_get_dst(...)) call this replaced.
+		 */
+		sync_config.subevent = (uint8_t)pending_slot;
 		sync_config.response_slot = 0;
 
 		write_params.func = write_func;
@@ -605,7 +643,6 @@ int main(void)
 		err = bt_gatt_write(default_conn, &write_params);
 		if (err) {
 			printk("Write failed (err %d)\n", err);
-			slot_taken[slot] = false;
 
 			goto disconnect;
 		}
@@ -615,12 +652,11 @@ int main(void)
 		err = k_sem_take(&sem_written, K_SECONDS(10));
 		if (err) {
 			printk("Timed out during GATT write\n");
-			slot_taken[slot] = false;
 
 			goto disconnect;
 		}
 
-		printk("PAwR config written: subevent %d\n", slot);
+		printk("PAwR config written: subevent %d\n", pending_slot);
 
 disconnect:
 		/* Wait slightly longer than one periodic advertising interval
