@@ -1,14 +1,25 @@
 <#
 .SYNOPSIS
-    Batch pristine-build peripheral firmware for a range/list of node IDs,
-    each scoped to a given CONFIG_APP_CENTRAL_ID -- build-only, no flashing.
+    Batch-build peripheral firmware for a range/list of node IDs, each
+    scoped to a given CONFIG_APP_CENTRAL_ID -- build-only, no flashing.
 
 .DESCRIPTION
-    Builds one peripheral/build_node<N> directory per node ID, each with
-    -DCONFIG_APP_NODE_ID=<N> -DCONFIG_APP_CENTRAL_ID=<CentralId>. Intended
-    for staging firmware for a whole fleet at once (see NOTES.md 2026-08-05,
-    CONFIG_APP_CENTRAL_ID multi-rig scoping) so flashing each physical board
-    later is just a UF2 drive-copy per BUILD_AND_FLASH.md, no build wait.
+    Compiles once into a single shared peripheral/build_incremental
+    directory, reused across every node ID (only -DCONFIG_APP_NODE_ID
+    changes between builds -- same trick as Sync-And-Build.ps1's
+    -SkipPristine, see NOTES.md 2026-08-05/06: ~3min/node with a fresh
+    --pristine build_node<N> each time down to ~40s/node once warmed up).
+    After each node's build, the resulting zephyr.uf2/.elf/.hex are copied
+    out to their own peripheral/build_node<N>/peripheral/zephyr/ -- same
+    path every existing flashing instruction (NOTES.md, BUILD_AND_FLASH.md)
+    already expects -- so this is a drop-in speed-up, not an interface
+    change. The shared build_incremental dir itself is gitignored scratch
+    space; only the per-node copies are meant to be flashed from.
+
+    Intended for staging firmware for a whole fleet at once (see NOTES.md
+    2026-08-05, CONFIG_APP_CENTRAL_ID multi-rig scoping) so flashing each
+    physical board later is just a UF2 drive-copy per BUILD_AND_FLASH.md,
+    no build wait.
 
     Does not touch the central build or flash anything -- build central
     separately, e.g.:
@@ -75,14 +86,39 @@ $logDir = Join-Path $repoRoot 'logs'
 New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 $batchLog = Join-Path $logDir "build_fleet_central${CentralId}_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 
+# Shared, reused across every node ID in this run -- same directory name
+# Sync-And-Build.ps1's -SkipPristine uses, already in .gitignore, and lets
+# both tools' compiled-object caches benefit each other.
+$sharedBuildDir = Join-Path $peripheralDir 'build_incremental'
+
 foreach ($n in $uniqueIds) {
     Write-Output "`n===== Building node $n (central $CentralId) ====="
-    $buildDir = Join-Path $peripheralDir "build_node$n"
     $nodeIdArg = "-DCONFIG_APP_NODE_ID=$n"
     $centralIdArg = "-DCONFIG_APP_CENTRAL_ID=$CentralId"
 
-    $out = & $python -m west build --build-dir $buildDir $peripheralDir --pristine --board $Board -- $nodeIdArg $centralIdArg 2>&1
+    $out = & $python -m west build --build-dir $sharedBuildDir $peripheralDir --board $Board -- $nodeIdArg $centralIdArg 2>&1
     $ok = $LASTEXITCODE -eq 0
+
+    if ($ok) {
+        # Copy this node's result out of the shared dir into its own
+        # build_node<N>/peripheral/zephyr/ -- the exact path every existing
+        # flashing instruction expects -- before the next node's build
+        # overwrites the shared dir's output.
+        $srcZephyrDir = Join-Path $sharedBuildDir 'peripheral\zephyr'
+        $destZephyrDir = Join-Path $peripheralDir "build_node$n\peripheral\zephyr"
+        New-Item -ItemType Directory -Force -Path $destZephyrDir | Out-Null
+        foreach ($ext in @('uf2', 'elf', 'hex')) {
+            $srcFile = Join-Path $srcZephyrDir "zephyr.$ext"
+            if (Test-Path $srcFile) {
+                Copy-Item $srcFile -Destination $destZephyrDir -Force
+            }
+        }
+        $ok = Test-Path (Join-Path $destZephyrDir 'zephyr.uf2')
+        if (-not $ok) {
+            Write-Output "WARNING: node $n build reported success but zephyr.uf2 wasn't found to copy out"
+        }
+    }
+
     $results[$n] = $ok
 
     Add-Content -Path $batchLog -Value "===== node $n ====="
