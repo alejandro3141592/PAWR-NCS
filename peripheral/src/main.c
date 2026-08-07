@@ -60,6 +60,7 @@ static struct bt_conn *default_conn;
 static struct bt_le_per_adv_sync *default_sync;
 static struct __packed {
 	uint8_t subevent;
+	uint8_t backup_subevent;
 	uint8_t response_slot;
 
 } pawr_timing;
@@ -434,7 +435,12 @@ static void sensor_read_work_handler(struct k_work *work)
 static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_synced_info *info)
 {
 	struct bt_le_per_adv_sync_subevent_params params;
-	uint8_t subevents[1];
+	/* Two entries: primary + backup (see pawr_timing.backup_subevent /
+	 * common/pawr_protocol.h's NUM_PRIMARY_SLOTS comment) -- this node
+	 * answers whichever of its two assigned subevents' polls it actually
+	 * receives each interval, both carrying the same latest_payload/seq.
+	 */
+	uint8_t subevents[2];
 	char le_addr[BT_ADDR_LE_STR_LEN];
 	int err;
 
@@ -444,15 +450,16 @@ static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_s
 	default_sync = sync;
 
 	params.properties = 0;
-	params.num_subevents = 1;
+	params.num_subevents = 2;
 	params.subevents = subevents;
 	subevents[0] = pawr_timing.subevent;
+	subevents[1] = pawr_timing.backup_subevent;
 
 	err = bt_le_per_adv_sync_subevent(sync, &params);
 	if (err) {
 		APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 	} else {
-		APP_LOG("Changed sync to subevent %d\n", subevents[0]);
+		APP_LOG("Changed sync to subevents %d, %d\n", subevents[0], subevents[1]);
 	}
 
 	gpio_pin_set_dt(&status_led, 1);
@@ -538,24 +545,25 @@ static ssize_t write_timing(struct bt_conn *conn, const struct bt_gatt_attr *att
 
 	memcpy(&pawr_timing, buf, len);
 
-	APP_LOG("New timing: subevent %d, response slot %d\n", pawr_timing.subevent,
-	       pawr_timing.response_slot);
+	APP_LOG("New timing: subevent %d (backup %d), response slot %d\n", pawr_timing.subevent,
+	       pawr_timing.backup_subevent, pawr_timing.response_slot);
 
 	struct bt_le_per_adv_sync_subevent_params params;
-	uint8_t subevents[1];
+	uint8_t subevents[2];
 	int err;
 
 	params.properties = 0;
-	params.num_subevents = 1;
+	params.num_subevents = 2;
 	params.subevents = subevents;
 	subevents[0] = pawr_timing.subevent;
+	subevents[1] = pawr_timing.backup_subevent;
 
 	if (default_sync) {
 		err = bt_le_per_adv_sync_subevent(default_sync, &params);
 		if (err) {
 			APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 		} else {
-			APP_LOG("Changed sync to subevent %d\n", subevents[0]);
+			APP_LOG("Changed sync to subevents %d, %d\n", subevents[0], subevents[1]);
 		}
 	} else {
 		APP_LOG("Not synced yet\n");

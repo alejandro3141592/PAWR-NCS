@@ -183,10 +183,39 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             25
+#define NUM_SUBEVENTS             34
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1
+
+/* 2026-08-07 (redundant-slots-experiment branch): 17 nodes, each with TWO
+ * dedicated subevents instead of one -- a primary and a backup, both
+ * carrying the same latest_payload/seq each interval (peripheral reads
+ * sensors once per PAWR_INTERVAL_MS regardless of how many subevents it
+ * answers, see peripheral/src/main.c's sensor_read_work -- so both slots
+ * are genuinely redundant delivery attempts of the SAME reading, not two
+ * different readings). Goal: if one attempt is lost (radio contention,
+ * timing, interference), the other is an independent chance to get that
+ * same seq through before the next 10s reading replaces it.
+ *
+ * Backup subevent = primary + NUM_PRIMARY_SLOTS (fixed offset, not an
+ * explicit per-node table column) -- e.g. primary block is subevents
+ * 0-16, backup block is 17-33, node_slot_table.h only lists each node's
+ * primary and central computes the backup from it. Chosen over explicit
+ * per-node backup assignment for simplicity and because it makes
+ * collisions impossible by construction (each node's backup is uniquely
+ * determined by its own primary, which node_slot_table_validate() already
+ * guarantees is unique per central).
+ *
+ * NUM_SUBEVENTS = 34 (17*2) is higher than anything soak-tested with 6/6
+ * buffers so far (20 was the last clean validation) and enters the same
+ * territory as the still-unexplained NUM_SUBEVENTS=25 boot failure found
+ * on the coded-phy-experiment branch (NOTES.md 2026-08-07) -- treat this
+ * as genuinely unvalidated at the subevent-count level, independent of
+ * whether the redundant-slot logic itself works, until proven otherwise
+ * on real hardware.
+ */
+#define NUM_PRIMARY_SLOTS 17
 
 #define PAWR_SUBEVENT_INTERVAL    0x20    /* 40 ms   */
 #define PAWR_RESPONSE_SLOT_DELAY  0x8     /* 10 ms   */

@@ -8,6 +8,83 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-07 — redundant subevent slots implemented on a new branch (redundant-slots-experiment), 17 nodes x 2 slots each, build-verified only
+
+User's next request: exactly 17 fixed slots (one per the 17 nodes actually
+in use: 31,32,33,35,37,40,41,42,43,45,47,49,50,51,54,55,56), plus additional
+slots so a node that fails to get its response through has another chance.
+
+**Design chosen**: each node gets TWO dedicated subevents -- a primary and a
+backup -- rather than a shared retry pool. Peripheral reads sensors once per
+10s interval (unchanged) and answers whichever of its two assigned
+subevents' polls it actually receives that interval with the SAME
+`latest_payload`/`seq` on both -- so a response lost on one slot (radio
+contention, timing, interference) has an independent second delivery
+attempt on the other before the next reading replaces it. Chosen over a
+smaller shared backup pool specifically because it's collision-free by
+construction: no two nodes can ever contend for the same backup slot, no
+new "which node gets this spare" logic needed. `NUM_SUBEVENTS = 34` (17
+primary + 17 backup), `NUM_PRIMARY_SLOTS = 17`; backup subevent for a given
+node is always `primary + NUM_PRIMARY_SLOTS` -- a fixed offset, not a second
+node_slot_table.h column, so it's impossible to misconfigure into a
+collision (validated at boot in the now-expanded
+`node_slot_table_validate()`, which also checks every primary stays under
+17 and every derived backup stays under 34).
+
+**What actually changed** (build-verified, both apps, all 17 peripheral
+node IDs -- NOT flashed or tested on real hardware):
+- `common/pawr_protocol.h`: `NUM_SUBEVENTS` 25 -> 34 (this branch only,
+  `main` untouched), new `NUM_PRIMARY_SLOTS = 17`.
+- `central/node_slot_table.h`: regenerated from a fresh
+  `tools/node_roster_17.csv` (just these 17 nodes, all on central 1 --
+  separate from the existing ~49-node multi-rig table on `main`, per
+  explicit choice to keep this a clean, focused test).
+- `central/src/main.c`: `struct pawr_timing` (the GATT-write wire format)
+  gained a `backup_subevent` field between `subevent` and `response_slot`
+  -- **both sides must stay in sync on this struct's layout, they're not
+  independently versioned**. Central computes
+  `backup_subevent = pending_slot + NUM_PRIMARY_SLOTS` and writes both.
+  New `last_forwarded_seq[256]` array (indexed by `node_id`) added to
+  `response_cb` to dedup: if the SAME seq for a node arrives on its second
+  subevent after already being forwarded via the first, it's still
+  logged/printed (marked `[DUP: backup slot, already forwarded]`) but NOT
+  forwarded a second time to the gateway/on-board flash log -- otherwise
+  every good interval (both slots succeeding, the common case, not the
+  failure case this feature targets) would double every reading, same
+  class of bug as the gui/sensor_gui.py double-logging bug found earlier
+  this session.
+- `peripheral/src/main.c`: matching `backup_subevent` field added to the
+  local `pawr_timing` struct. Both places that call
+  `bt_le_per_adv_sync_subevent()` (`sync_cb` and `write_timing`'s handler)
+  now pass `num_subevents = 2` with both indices, instead of 1. `recv_cb`
+  (the actual response-sending logic) needed ZERO changes -- it already
+  derives which subevent to respond on from `info->subevent` (whichever
+  poll it just received), not from a single stored value, so it naturally
+  handles "answer either of my two slots, whichever gets polled" already.
+
+**Known risk, matches the coded-phy-experiment branch's still-unresolved
+finding**: `NUM_SUBEVENTS=34` is higher than anything soak-tested with 6/6
+buffers (20 was the last clean validation; 25 hit an unexplained boot
+failure on the other branch, user attributed it to being reset-specific
+rather than a real regression and didn't want it chased further). This
+branch has NOT been checked against that same failure mode at all yet --
+first real test should specifically watch for the same
+"Scanning successfully started" -> immediate `udc net_buf` exhaustion ->
+silence pattern before assuming the redundant-slot logic itself is what's
+being tested.
+
+Status: central + all 17 peripheral node builds compile clean. Nothing
+flashed. Next steps: flash central + the 17 peripherals, confirm central
+boots past the point the other branch failed at, then soak-test comparing
+PDR/reconnect-completeness against the existing 20-subevent-single-slot
+baseline (does redundancy actually reduce loss, and does the higher
+subevent count itself cost more than the redundancy gains -- both
+questions this test needs to answer, not just "does it work at all").
+
+— Alejandro (session assisted by Claude), 2026-08-07
+
+---
+
 ## 2026-08-07 — real node roster loaded into node_slot_table.h; NUM_SUBEVENTS raised 20 -> 25 for table capacity; two node-ID collisions found, need relabeling
 
 Follow-up to the fixed-slot-table entry directly below. User provided the

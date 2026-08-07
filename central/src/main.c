@@ -115,10 +115,25 @@ static uint8_t counter;
 static void node_slot_table_validate(void)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(node_slot_table); i++) {
+		uint32_t backup = (uint32_t)node_slot_table[i].subevent + NUM_PRIMARY_SLOTS;
+
 		if (node_slot_table[i].subevent >= NUM_SUBEVENTS) {
 			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_SUBEVENTS (%d)\n",
 			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
 			       NUM_SUBEVENTS);
+			k_panic();
+		}
+
+		if (node_slot_table[i].subevent >= NUM_PRIMARY_SLOTS) {
+			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_PRIMARY_SLOTS (%d) -- primary slots must stay in the first block, backups are derived by adding NUM_PRIMARY_SLOTS\n",
+			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
+			       NUM_PRIMARY_SLOTS);
+			k_panic();
+		}
+
+		if (backup >= NUM_SUBEVENTS) {
+			printk("FATAL: node_slot_table[%d] (node %u) has backup subevent %u >= NUM_SUBEVENTS (%d)\n",
+			       (int)i, node_slot_table[i].node_id, backup, NUM_SUBEVENTS);
 			k_panic();
 		}
 
@@ -200,6 +215,18 @@ static int pending_slot;
 static struct bt_le_ext_adv *pawr_adv;
 #endif
 
+/* Redundant-slot dedup (see common/pawr_protocol.h's NUM_PRIMARY_SLOTS
+ * comment): each node answers on two subevents (primary + backup) with the
+ * SAME seq every interval, so both can legitimately succeed -- without this,
+ * every reading would get forwarded to the gateway/DB twice on a good
+ * interval, not just once on a lucky recovery. Indexed directly by
+ * sensor_payload.node_id (uint8_t, so this covers the full possible range
+ * regardless of the current CONFIG_APP_NODE_ID Kconfig limit). -1
+ * (impossible for a uint16_t wire seq) means "nothing forwarded yet for
+ * this node_id".
+ */
+static int32_t last_forwarded_seq[UINT8_MAX + 1];
+
 static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response_info *info,
 		     struct net_buf_simple *buf)
 {
@@ -227,8 +254,20 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 
 	memcpy(&payload, buf->data, sizeof(payload));
 
-	gateway_uart_tx_send(&payload);
-	sensor_log_append(&payload);
+	/* Redundant-slot dedup: this exact seq for this node_id may already
+	 * have been forwarded via its OTHER subevent (primary vs. backup)
+	 * earlier in the same interval -- see last_forwarded_seq's own
+	 * comment. Still counted/printed below so the console/log shows both
+	 * receptions for diagnostics; only the gateway/on-board-flash forward
+	 * is skipped for the duplicate.
+	 */
+	bool is_duplicate = (last_forwarded_seq[payload.node_id] == (int32_t)payload.seq);
+
+	if (!is_duplicate) {
+		last_forwarded_seq[payload.node_id] = (int32_t)payload.seq;
+		gateway_uart_tx_send(&payload);
+		sensor_log_append(&payload);
+	}
 
 	/* Single printk call instead of up to 4 -- this callback fires once
 	 * per received response, per subevent, per interval (up to
@@ -238,12 +277,13 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	 * allocate net_buf" under load -- see NOTES.md 2026-08-03. Fewer,
 	 * larger writes reduce that pressure vs. many small ones.
 	 */
-	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s\n",
+	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s%s\n",
 	       payload.node_id, info->subevent,
 	       payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
 	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq,
 	       (payload.flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID) ? "  [FLAG: TEMP_FAIL]" : "",
-	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "");
+	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "",
+	       is_duplicate ? "  [DUP: backup slot, already forwarded]" : "");
 }
 
 static const struct bt_le_ext_adv_cb adv_cb = {
@@ -451,6 +491,7 @@ void init_bufs(void)
 
 struct pawr_timing {
 	uint8_t subevent;
+	uint8_t backup_subevent;
 	uint8_t response_slot;
 } __packed;
 
@@ -465,6 +506,10 @@ int main(void)
 	struct pawr_timing sync_config;
 
 	init_bufs();
+
+	for (size_t i = 0; i < ARRAY_SIZE(last_forwarded_seq); i++) {
+		last_forwarded_seq[i] = -1;
+	}
 
 	printk("Starting Periodic Advertising Demo (central)\n");
 	printk("Central ID: %u\n", CONFIG_APP_CENTRAL_ID);
@@ -630,8 +675,17 @@ int main(void)
 		 * fixed assignment doesn't need anything learned during
 		 * discovery/connection to pick a slot, unlike the old dynamic
 		 * allocate_slot(bt_conn_get_dst(...)) call this replaced.
+		 *
+		 * backup_subevent = pending_slot + NUM_PRIMARY_SLOTS (see
+		 * common/pawr_protocol.h for why this is a fixed offset, not a
+		 * second node_slot_table.h column): the peripheral answers
+		 * whichever of its two assigned subevents' polls it actually
+		 * receives each interval, so a response lost on one has an
+		 * independent second chance on the other before the next
+		 * sensor reading replaces the payload.
 		 */
 		sync_config.subevent = (uint8_t)pending_slot;
+		sync_config.backup_subevent = (uint8_t)(pending_slot + NUM_PRIMARY_SLOTS);
 		sync_config.response_slot = 0;
 
 		write_params.func = write_func;
@@ -656,7 +710,8 @@ int main(void)
 			goto disconnect;
 		}
 
-		printk("PAwR config written: subevent %d\n", pending_slot);
+		printk("PAwR config written: subevent %d (backup %d)\n", pending_slot,
+		       pending_slot + NUM_PRIMARY_SLOTS);
 
 disconnect:
 		/* Wait slightly longer than one periodic advertising interval
