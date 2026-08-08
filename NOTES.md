@@ -8,6 +8,37 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — folded +8dBm TX power in as a baseline change (from distance-test-17slot branch's findings)
+
+A separate branch (`distance-test-17slot`) ran a single-node PDR-vs-distance
+sweep and found `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` (the nRF52840's hardware TX
+power ceiling -- no external front-end amp on this board) alone recovered
+most of the range-related PDR loss: 1m 82.4%->96.9%, 1.5m 71.0%->91.9%, 2m
+78.3%->89.0%. No downside found. Folded in here as a baseline change on
+`main` (also applied to `redundant-slots-experiment` and
+`single-slot-17-baseline`, same date) rather than something to keep
+re-testing with/without.
+
+Decided against a full factorial sweep across every subevent-count/
+redundancy/PHY/power combination for the ongoing redundant-slot work --  TX
+power and Coded PHY improve every individual delivery attempt's reliability
+regardless of slot count, while the redundant slot is a structural hedge on
+top of whatever that reliability still misses, so they don't need
+re-validating together at every slot count. Plan: fold +8dBm in everywhere
+(this entry), then test Coded PHY once at the real deployment target (34
+slots + redundancy + power, real 17-node fleet), not in isolation at every
+config.
+
+Added `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` to both `central/prj.conf` and
+`peripheral/prj.conf`. Build-verified (central + peripheral node 31) -- not
+yet reflashed. **Not pushed** -- committed locally on `main`, holding until
+confirmed this should go out to the currently-deployed rigs (CENTRAL_ID=1
+and 2 both have real hardware running right now).
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
 ## 2026-08-07 — lost node 49's historical flash log while debugging retrieval; fixed the dump throttling, but flag the underlying risk
 
 Retrieving node 49's flash log (`CONFIG_APP_DUMP_ON_BOOT`) first showed a
