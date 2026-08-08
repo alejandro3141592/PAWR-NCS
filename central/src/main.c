@@ -572,8 +572,18 @@ int main(void)
 		}
 	}
 
-	/* Create a non-connectable advertising set */
-	err = bt_le_ext_adv_create(BT_LE_EXT_ADV_NCONN, &adv_cb, &pawr_adv);
+	/* Create a non-connectable advertising set. Same as BT_LE_EXT_ADV_NCONN
+	 * but with APP_USE_CODED_PHY able to add BT_LE_ADV_OPT_CODED -- can't
+	 * use that macro directly since it's a fixed options value, not
+	 * something this build-time toggle can OR a flag into.
+	 */
+	struct bt_le_adv_param pawr_adv_param = *BT_LE_EXT_ADV_NCONN;
+
+	if (IS_ENABLED(APP_USE_CODED_PHY)) {
+		pawr_adv_param.options |= BT_LE_ADV_OPT_CODED;
+	}
+
+	err = bt_le_ext_adv_create(&pawr_adv_param, &adv_cb, &pawr_adv);
 	if (err) {
 		printk("Failed to create advertising set (err %d)\n", err);
 		return 0;
@@ -601,9 +611,22 @@ int main(void)
 		return 0;
 	}
 
+	/* Same as BT_LE_SCAN_PASSIVE_CONTINUOUS but with APP_USE_CODED_PHY able
+	 * to add BT_LE_SCAN_OPT_CODED -- central has to actually scan on Coded
+	 * PHY to ever see a Coded-PHY peripheral's connectable advert; matching
+	 * the advertising-side toggle above without this would mean central's
+	 * own periodic train is on Coded PHY but it can never find/onboard
+	 * anyone in the first place.
+	 */
+	struct bt_le_scan_param onboard_scan_param = *BT_LE_SCAN_PASSIVE_CONTINUOUS;
+
+	if (IS_ENABLED(APP_USE_CODED_PHY)) {
+		onboard_scan_param.options |= BT_LE_SCAN_OPT_CODED;
+	}
+
 	while (true) {
 		/* Enable continuous scanning */
-		err = bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+		err = bt_le_scan_start(&onboard_scan_param, device_found);
 		if (err) {
 			printk("Scanning failed to start (err %d)\n", err);
 			return 0;

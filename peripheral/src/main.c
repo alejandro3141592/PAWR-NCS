@@ -58,6 +58,17 @@ static K_SEM_DEFINE(sem_disconnected, 0, 1);
 
 static struct bt_conn *default_conn;
 static struct bt_le_per_adv_sync *default_sync;
+/* Connectable advertising set. Only created (once, in main()) as an
+ * extended-advertising set -- not the older bt_le_adv_start()/legacy API --
+ * so this side can support LE Coded PHY (APP_USE_CODED_PHY, see
+ * common/pawr_protocol.h): Coded PHY is a Bluetooth 5 extended-advertising
+ * feature, bt_le_adv_start() explicitly cannot be combined with
+ * BT_LE_ADV_OPT_EXT_ADV at all per its own doc comment. Re-started (not
+ * re-created) each onboarding cycle via bt_le_ext_adv_start() -- same
+ * lifecycle bt_le_adv_start() had, just the create step now only happens
+ * once up front instead of implicitly on every call.
+ */
+static struct bt_le_ext_adv *conn_adv;
 static struct __packed {
 	uint8_t subevent;
 	uint8_t backup_subevent;
@@ -643,6 +654,34 @@ int main(void)
 
 	bt_le_per_adv_sync_cb_register(&sync_callbacks);
 
+	/* Same as BT_LE_ADV_CONN_FAST_1 (BT_LE_ADV_OPT_CONN, GAP's recommended
+	 * fast connectable-advertising interval) but as an extended-advertising
+	 * set with BT_LE_ADV_OPT_EXT_ADV, plus BT_LE_ADV_OPT_CODED when
+	 * APP_USE_CODED_PHY is set -- see conn_adv's own comment for why this
+	 * can't just be bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...) anymore.
+	 */
+	struct bt_le_adv_param conn_adv_param =
+		*BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_EXT_ADV,
+				 BT_GAP_ADV_FAST_INT_MIN_1, BT_GAP_ADV_FAST_INT_MAX_1, NULL);
+
+	if (IS_ENABLED(APP_USE_CODED_PHY)) {
+		conn_adv_param.options |= BT_LE_ADV_OPT_CODED;
+	}
+
+	err = bt_le_ext_adv_create(&conn_adv_param, NULL, &conn_adv);
+	if (err) {
+		APP_LOG("Failed to create advertising set (err %d)\n", err);
+
+		return 0;
+	}
+
+	err = bt_le_ext_adv_set_data(conn_adv, ad, ARRAY_SIZE(ad), NULL, 0);
+	if (err) {
+		APP_LOG("Failed to set advertising data (err %d)\n", err);
+
+		return 0;
+	}
+
 	/* skip=0: with a 10s periodic interval, skipping even one event
 	 * before the first sync attempt adds a full extra interval of
 	 * latency to onboarding for no benefit (the demo's skip=1 made
@@ -682,7 +721,7 @@ int main(void)
 			k_sem_take(&sem_disconnected, K_FOREVER);
 		}
 
-		err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
+		err = bt_le_ext_adv_start(conn_adv, BT_LE_EXT_ADV_START_DEFAULT);
 		if (err && err != -EALREADY) {
 			APP_LOG("Advertising failed to start (err %d)\n", err);
 

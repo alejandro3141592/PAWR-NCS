@@ -8,6 +8,53 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — ported Coded PHY toggle (APP_USE_CODED_PHY) from coded-phy-experiment onto redundant-slots-experiment
+
+Real deployment target for the Coded PHY question: 34 subevents + redundant
+slots + power, tested once at the real 17-node fleet scale, rather than
+re-validated in isolation at every slot count (see the +8dBm entry above
+for the full reasoning against a factorial sweep). Ported the
+`APP_USE_CODED_PHY` toggle and its supporting code from
+`coded-phy-experiment` onto this branch rather than reinventing it --
+that branch already worked out the real gotcha (peripheral's connectable
+advertising had to move from the legacy `bt_le_adv_start()` API to the
+extended-advertising `bt_le_ext_adv_create()`/`bt_le_ext_adv_start()` pair,
+since Coded PHY is an extended-advertising-only BLE 5 feature) and the
+`CONFIG_BT_CTLR_PHY_CODED=y` Kconfig requirement (confirmed the hard way
+there: the hardware-capability Kconfig alone does NOT enable Coded PHY,
+central fails outright at boot without the explicit line).
+
+**Changes** (mirroring coded-phy-experiment's, adapted to this branch's
+divergent code -- fixed-slot table, redundant-slot dedup, none of which
+existed yet when coded-phy-experiment forked):
+- `common/pawr_protocol.h`: `APP_USE_CODED_PHY` toggle (default 0).
+- `central/prj.conf`, `peripheral/prj.conf`: `CONFIG_BT_CTLR_PHY_CODED=y`.
+- `central/src/main.c`: `bt_le_ext_adv_create()`'s advertising-set param and
+  `bt_le_scan_start()`'s scan param both changed from fixed macros to local
+  mutable copies that conditionally OR in `BT_LE_ADV_OPT_CODED`/
+  `BT_LE_SCAN_OPT_CODED`.
+- `peripheral/src/main.c`: new `conn_adv` (`struct bt_le_ext_adv *`),
+  created once in `main()`, replacing the old per-loop-iteration
+  `bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...)` call with
+  `bt_le_ext_adv_start(conn_adv, ...)`. Did NOT port coded-phy-experiment's
+  dump-throttle/countdown changes to `storage_dump_walk_cb`/
+  `storage_dump_all` -- those were unrelated fixes for a different bug
+  (console buffer drops during a large flash-log dump) already landed on
+  `main` via a separate, later fix (NOTES.md 2026-08-07/08, "Throttle
+  flash-log dump") that this branch doesn't have yet; porting
+  coded-phy-experiment's version here would have reverted that separate
+  fix's real content, not just the Coded PHY parts.
+
+Build-verified both PHY values (0 and 1), both apps -- confirms the ext-adv
+refactor didn't regress normal 1M-PHY operation and the Coded-PHY path
+itself compiles on top of the fixed-slot-table/redundant-slot code.
+**Not yet flashed.** Toggle left at 0 (off) in the committed state, same
+convention as coded-phy-experiment.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
 ## 2026-08-08 — folded +8dBm TX power in as a baseline change (from distance-test-17slot branch's findings)
 
 Same change as made on `single-slot-17-baseline` -- see that branch's
