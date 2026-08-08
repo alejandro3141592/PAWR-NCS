@@ -1,0 +1,345 @@
+[12:01:41.638] >>> Node 24 (subevent 16): skin_temp=28.08C humidity=31.3% seq=44
+[12:01:41.642] >>> Node 24 (subevent 16): skin_temp=28.05C humidity=31.3% seq=45
+[12:01:48.189] >>> Node 24 (subevent 16): skin_temp=28.06C humidity=31.3% seq=46
+[12:01:58.186] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.4% seq=47
+[12:02:08.189] >>> Node 24 (subevent 16): skin_temp=28.05C humidity=31.3% seq=48
+[12:02:18.188] >>> Node 24 (subevent 16): skin_temp=28.06C humidity=31.3% seq=49
+[12:02:28.184] >>> Node 24 (subevent 16): skin_temp=28.06C humidity=31.3% seq=50
+[12:02:38.190] >>> Node 24 (subevent 16): skin_temp=28.05C humidity=31.3% seq=51
+[12:02:48.184] >>> Node 24 (subevent 16): skin_temp=28.07C humidity=31.3% seq=52
+[12:02:58.186] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=53
+[12:02:59.726] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.728] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.729] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.731] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.732] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.733] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.734] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.735] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.735] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:02:59.736] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.457] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.459] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.461] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.462] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.463] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.464] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.465] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.466] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.467] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.467] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.989] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.991] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.994] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.995] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.997] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.998] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:00.999] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.000] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.001] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.002] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.521] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.522] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.522] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.523] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.524] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.524] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.525] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.525] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.526] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.527] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.959] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.961] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.962] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.963] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.965] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.966] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.967] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.968] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.969] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:01.970] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.402] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.405] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.407] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.409] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.411] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.412] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.413] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.414] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.415] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.415] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.943] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.945] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.946] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.948] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.949] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.951] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.952] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.953] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.955] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:02.956] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.521] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.523] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.525] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.526] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.528] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.529] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.532] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.533] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.534] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:03.535] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.034] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.038] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.039] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.041] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.042] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.042] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.043] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.045] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.046] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.046] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.362] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.365] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.367] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.368] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.368] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.371] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.372] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.373] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.375] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.376] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.795] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.797] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.798] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.800] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.802] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.805] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.806] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.807] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.808] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:04.808] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.849] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.850] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.850] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.851] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.851] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:05.852] Peripheral advertised as "PAwR sync sample 1 #56" (node_id 56) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:08.186] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.4% seq=54
+[12:03:18.185] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=55
+[12:03:28.189] >>> Node 24 (subevent 16): skin_temp=28.04C humidity=31.3% seq=56
+[12:03:38.182] >>> Node 24 (subevent 16): skin_temp=28.05C humidity=31.3% seq=57
+[12:03:42.784] Peripheral advertised as "PAwR sync sample 1 #47" (node_id 47) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:03:48.176] >>> Node 24 (subevent 16): skin_temp=28.06C humidity=31.4% seq=58
+[12:03:58.179] >>> Node 24 (subevent 16): skin_temp=28.06C humidity=31.3% seq=59
+[12:04:05.647] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.649] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.651] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.653] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.654] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.655] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.655] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.656] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.657] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:05.657] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.450] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.452] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.453] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.455] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.456] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.457] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.458] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.459] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.460] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:06.461] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.378] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.380] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.382] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.383] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.385] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.386] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.386] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=60
+[12:04:07.388] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.388] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:07.389] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:08.544] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:08.547] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:08.548] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:08.550] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:13.972] Peripheral advertised as "PAwR sync sample 1 #37" (node_id 37) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:13.973] Peripheral advertised as "PAwR sync sample 1 #37" (node_id 37) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:15.952] Peripheral advertised as "PAwR sync sample 1 #37" (node_id 37) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:18.182] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.4% seq=61
+[12:04:21.739] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:23.287] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:23.290] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:23.292] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:23.293] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:26.170] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:27.345] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:27.347] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=62
+[12:04:29.742] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:29.744] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:29.746] Peripheral advertised as "PAwR sync sample 1 #54" (node_id 54) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:38.183] >>> Node 24 (subevent 16): skin_temp=28.05C humidity=31.3% seq=63
+[12:04:40.672] Peripheral advertised as "PAwR sync sample 1 #51" (node_id 51) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:48.188] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=64
+[12:04:54.085] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:54.088] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:54.090] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:54.092] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:54.093] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:54.095] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:55.870] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:55.872] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:55.874] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:55.876] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:57.051] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:57.054] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:58.081] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:58.083] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=65
+[12:04:58.086] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:58.087] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.575] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.577] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.579] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.580] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.581] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.582] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.583] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:04:59.585] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.604] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.605] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.607] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.608] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.609] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.610] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:00.611] Peripheral advertised as "PAwR sync sample 1 #55" (node_id 55) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:01.730] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:01.732] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.967] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.969] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.971] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.973] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.975] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.976] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.977] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:02.978] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.014] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.017] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.018] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.020] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.021] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.022] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:04.023] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:08.176] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=66
+[12:05:09.978] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.980] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.982] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.983] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.985] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.988] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.989] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.991] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.991] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:09.993] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:10.995] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:10.997] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:13.491] Peripheral advertised as "PAwR sync sample 1 #32" (node_id 32) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:18.180] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=67
+[12:05:18.183] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.633] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.635] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.637] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.639] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.641] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.642] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.644] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.645] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:19.646] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.815] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.818] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.819] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.821] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.822] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.824] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.825] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:20.826] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:21.903] Peripheral advertised as "PAwR sync sample 1 #43" (node_id 43) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:21.903] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:21.904] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:21.905] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.328] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.329] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.330] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.332] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.333] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.334] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.336] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.336] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.337] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:23.338] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:24.455] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:24.456] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:24.457] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:24.458] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:24.460] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.507] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.508] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.509] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.510] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.510] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.511] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.511] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.512] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:25.513] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.635] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.637] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.638] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.640] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.641] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.642] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.644] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:26.645] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:28.176] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=68
+[12:05:30.055] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:33.795] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:33.797] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:38.183] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=69
+[12:05:40.941] Peripheral advertised as "PAwR sync sample 1 #40" (node_id 40) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:05:48.194] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=70
+[12:05:58.187] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=71
+[12:06:08.179] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=72
+[12:06:18.183] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=73
+[12:06:28.185] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.3% seq=74
+[12:06:38.182] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=75
+[12:06:48.169] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=76
+[12:06:58.182] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=77
+[12:07:08.176] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=78
+[12:07:18.178] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=79
+[12:07:28.173] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=80
+[12:07:38.177] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=81
+[12:07:48.166] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=82
+[12:07:58.167] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.2% seq=83
+[12:08:08.173] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=84
+[12:08:18.183] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.2% seq=85
+[12:08:28.168] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.3% seq=86
+[12:08:38.172] >>> Node 24 (subevent 16): skin_temp=27.97C humidity=31.3% seq=87
+[12:08:48.164] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=88
+[12:08:58.172] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=89
+[12:09:08.172] >>> Node 24 (subevent 16): skin_temp=27.98C humidity=31.3% seq=90
+[12:09:18.164] >>> Node 24 (subevent 16): skin_temp=27.97C humidity=31.3% seq=91
+[12:09:28.172] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.3% seq=92
+[12:09:38.168] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.3% seq=93
+[12:09:48.173] >>> Node 24 (subevent 16): skin_temp=27.98C humidity=31.2% seq=94
+[12:09:58.166] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=95
+[12:10:08.169] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=96
+[12:10:18.171] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.3% seq=97
+[12:10:18.173] Peripheral advertised as "PAwR sync sample 1 #31" (node_id 31) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:10:28.171] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.3% seq=98
+[12:10:38.175] >>> Node 24 (subevent 16): skin_temp=28.03C humidity=31.3% seq=99
+[12:10:48.168] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.3% seq=100
+[12:10:58.176] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.2% seq=101
+[12:11:08.165] >>> Node 24 (subevent 16): skin_temp=28.02C humidity=31.2% seq=102
+[12:11:18.166] >>> Node 24 (subevent 16): skin_temp=28.01C humidity=31.2% seq=103
+[12:11:28.162] >>> Node 24 (subevent 16): skin_temp=27.99C humidity=31.2% seq=104
+[12:11:38.165] >>> Node 24 (subevent 16): skin_temp=28.00C humidity=31.3% seq=105

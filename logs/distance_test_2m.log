@@ -1,0 +1,65 @@
+[12:55:28.068] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.8% seq=319
+[12:55:28.073] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.7% seq=320
+[12:55:28.073] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.9% seq=321
+[12:55:28.074] Found peripheral D6:57:F0:76:46:3D (random) (node_id 24, fixed subevent 16), connecting...
+[12:55:28.075] Connected (err 0x00)
+[12:55:28.075] PAST sent
+[12:55:28.075] Discovery started
+[12:55:28.076] Characteristic handle: 14
+[12:55:28.076] Write started
+[12:55:28.076] PAwR config written: subevent 16
+[12:55:28.077] >>> Node 24 (subevent 16): skin_temp=27.76C humidity=31.9% seq=325
+[12:55:28.078] Disconnected, reason 0x22 
+[12:55:28.078] Scanning successfully started
+[12:55:28.078] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=327
+[12:55:28.078] >>> Node 24 (subevent 16): skin_temp=27.57C humidity=31.8% seq=328
+[12:55:28.079] >>> Node 24 (subevent 16): skin_temp=27.63C humidity=31.8% seq=329
+[12:55:28.079] >>> Node 24 (subevent 16): skin_temp=27.64C humidity=31.8% seq=330
+[12:55:28.079] >>> Node 24 (subevent 16): skin_temp=27.70C humidity=31.8% seq=331
+[12:55:28.080] Peripheral advertised as "PAwR sync sample 1 #41" (node_id 41) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[12:55:28.080] Peripheral advert>>> Node 24 (subevent 16): skin_temp=27.61C humidity=32.0% seq=368
+[12:55:38.083] >>> Node 24 (subevent 16): skin_temp=27.61C humidity=31.7% seq=369
+[12:55:48.076] >>> Node 24 (subevent 16): skin_temp=27.64C humidity=31.7% seq=370
+[12:55:58.073] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=31.8% seq=371
+[12:56:08.075] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.8% seq=372
+[12:56:18.092] >>> Node 24 (subevent 16): skin_temp=27.70C humidity=31.7% seq=373
+[12:56:28.076] >>> Node 24 (subevent 16): skin_temp=27.72C humidity=31.8% seq=374
+[12:56:38.071] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=31.8% seq=375
+[12:56:58.068] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=31.8% seq=377
+[12:57:18.071] >>> Node 24 (subevent 16): skin_temp=27.73C humidity=31.8% seq=379
+[12:57:38.079] >>> Node 24 (subevent 16): skin_temp=27.75C humidity=31.8% seq=381
+[12:57:58.071] >>> Node 24 (subevent 16): skin_temp=27.76C humidity=31.9% seq=383
+[12:58:18.072] >>> Node 24 (subevent 16): skin_temp=27.73C humidity=31.9% seq=385
+[12:58:38.077] >>> Node 24 (subevent 16): skin_temp=27.72C humidity=31.9% seq=387
+[12:58:48.068] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.9% seq=388
+[12:59:08.058] >>> Node 24 (subevent 16): skin_temp=27.70C humidity=31.9% seq=390
+[12:59:28.077] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=392
+[12:59:38.064] >>> Node 24 (subevent 16): skin_temp=27.64C humidity=31.9% seq=393
+[12:59:48.068] >>> Node 24 (subevent 16): skin_temp=27.65C humidity=31.9% seq=394
+[12:59:58.070] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=31.9% seq=395
+[13:00:08.065] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.9% seq=396
+[13:00:48.072] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=31.9% seq=400
+[13:00:58.065] >>> Node 24 (subevent 16): skin_temp=27.71C humidity=32.0% seq=401
+[13:01:08.057] >>> Node 24 (subevent 16): skin_temp=27.67C humidity=31.9% seq=402
+[13:01:18.064] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=403
+[13:01:28.071] >>> Node 24 (subevent 16): skin_temp=27.70C humidity=31.9% seq=404
+[13:01:38.065] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=405
+[13:01:48.062] >>> Node 24 (subevent 16): skin_temp=27.66C humidity=31.9% seq=406
+[13:01:58.066] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=407
+[13:02:18.070] >>> Node 24 (subevent 16): skin_temp=27.66C humidity=32.0% seq=409
+[13:02:28.064] >>> Node 24 (subevent 16): skin_temp=27.67C humidity=32.0% seq=410
+[13:02:38.059] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=32.0% seq=411
+[13:02:48.063] >>> Node 24 (subevent 16): skin_temp=27.65C humidity=32.0% seq=412
+[13:02:58.064] >>> Node 24 (subevent 16): skin_temp=27.66C humidity=32.0% seq=413
+[13:03:08.062] >>> Node 24 (subevent 16): skin_temp=27.67C humidity=32.0% seq=414
+[13:03:18.062] >>> Node 24 (subevent 16): skin_temp=27.64C humidity=32.0% seq=415
+[13:03:28.060] >>> Node 24 (subevent 16): skin_temp=27.67C humidity=32.0% seq=416
+[13:03:38.061] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=417
+[13:03:48.058] >>> Node 24 (subevent 16): skin_temp=27.70C humidity=31.9% seq=418
+[13:03:58.063] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=31.9% seq=419
+[13:04:08.061] >>> Node 24 (subevent 16): skin_temp=27.63C humidity=31.9% seq=420
+[13:04:18.056] >>> Node 24 (subevent 16): skin_temp=27.65C humidity=32.0% seq=421
+[13:04:28.060] >>> Node 24 (subevent 16): skin_temp=27.66C humidity=32.0% seq=422
+[13:04:48.054] >>> Node 24 (subevent 16): skin_temp=27.69C humidity=32.0% seq=424
+[13:04:58.057] >>> Node 24 (subevent 16): skin_temp=27.68C humidity=31.9% seq=425
+[13:05:18.056] >>> Node 24 (subevent 16): skin_temp=27.65C humidity=32.0% seq=427
