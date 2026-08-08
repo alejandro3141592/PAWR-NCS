@@ -55,7 +55,17 @@ config APP_MQTT_PASSWORD
 
 config APP_MQTT_CLIENT_ID
     string "MQTT client ID"
-    default "pawr-gateway-9151"
+    default ""
+    help
+      Must be unique per physical gateway board -- two gateways connecting
+      to the same broker with the same client ID makes the broker forcibly
+      disconnect whichever one connected first, every time the other
+      (re)connects (MQTT v3.1.1 duplicate-client-ID behavior). Left with no
+      default (was a single fixed "pawr-gateway-9151" for every board until
+      NOTES.md 2026-08-08's multi-gateway audit) so each board's secrets.conf
+      must set its own, e.g. "pawr-gateway-9151-<N>" matching its central's
+      CONFIG_APP_CENTRAL_ID. mqtt_publisher_init() panics at boot if this is
+      still empty, rather than silently connecting under a colliding ID.
 
 endmenu
 

@@ -99,13 +99,18 @@ DK configuration, not something the build/flash commands below can fix.
 
 **One-time, before the first build:** copy `gateway_9151/secrets.conf.example`
 to `gateway_9151/secrets.conf` (gitignored -- never commit real credentials)
-and fill in the real broker hostname/port/TLS/username/password.
+and fill in the real broker hostname/port/TLS/username/password, **and a
+client ID unique to this physical board** (`CONFIG_APP_MQTT_CLIENT_ID` --
+required if you have or will ever have more than one gateway on the same
+broker; the firmware panics at boot if it's left unset, see NOTES.md
+2026-08-08).
 
 **Build (plain, no broker secrets -- uses Kconfig defaults, non-TLS local
-testing only):**
+testing only):** `CONFIG_APP_MQTT_CLIENT_ID` has no default (see gateway_9151/
+Kconfig), so even this bench-testing build needs one passed inline:
 
 ```powershell
-& $python -m west build --build-dir gateway_9151/build gateway_9151 --pristine --board nrf9151dk/nrf9151/ns
+& $python -m west build --build-dir gateway_9151/build gateway_9151 --pristine --board nrf9151dk/nrf9151/ns -- -DCONFIG_APP_MQTT_CLIENT_ID=\"pawr-gateway-local-test\"
 ```
 
 **Build with real broker credentials (HiveMQ Cloud / TLS, or your own

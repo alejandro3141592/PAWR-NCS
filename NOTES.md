@@ -8,6 +8,78 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — multi-gateway compatibility audit: MQTT client ID collision fixed, node_id roster still needs manual discipline (+ a new check script)
+
+Ahead of deploying 4 gateway_9151 boards (one per person) against a
+previously single-gateway-tested setup, audited `gateway_9151/`, `gui/`,
+and the wire format for anything that would break/collide with 4
+concurrent gateways+centrals. Two real findings:
+
+**1. MQTT client ID collision (fixed).** `gateway_9151/Kconfig`'s
+`CONFIG_APP_MQTT_CLIENT_ID` defaulted to the literal `"pawr-gateway-9151"`
+for every board, and `secrets.conf.example` never overrode it. Per MQTT
+v3.1.1, a broker forcibly disconnects the existing client whenever a new
+CONNECT arrives with the same client ID -- so 4 gateways with the same ID
+would continuously kick each other offline. Fixed:
+- `gateway_9151/Kconfig`: `CONFIG_APP_MQTT_CLIENT_ID` now defaults to `""`
+  (no default), with a help string explaining why and the suggested
+  per-board naming convention (`"pawr-gateway-9151-<central_id>"`).
+- `gateway_9151/src/mqtt/mqtt_publisher.c`'s `mqtt_publisher_init()`: added
+  a boot-time `k_panic()` if the client ID is still empty, so a
+  not-yet-configured board fails loudly at boot instead of silently
+  connecting under a blank/shared ID.
+- `gateway_9151/secrets.conf.example`: added the required
+  `CONFIG_APP_MQTT_CLIENT_ID` line with the naming convention documented.
+- `BUILD_AND_FLASH.md`: updated the gateway build instructions --
+  including the plain/no-`secrets.conf` bench-testing build, which also
+  relied on the old default and now needs `-DCONFIG_APP_MQTT_CLIENT_ID=...`
+  passed inline.
+- **Any existing gateway's local `secrets.conf` (gitignored, not touched by
+  this commit) needs this line added before its next build**, or
+  `mqtt_publisher_init()` will panic at boot.
+
+**2. node_id has no rig-identifying field on the wire (design decision:
+kept as manual-roster discipline + added a validation script, not a wire
+format change).** `sensor_payload` (`common/pawr_protocol.h`) carries only
+`node_id`, `flags`, `seq`, `temp_cdeg`, `humidity_pct10` -- no central_id.
+Both the GUI and gateway's own flash-log fallback key purely off `node_id`,
+so the ENTIRE multi-rig disambiguation between people rests on manually
+keeping `node_id` non-overlapping across all 4 rigs' `tools/node_roster.csv`
+entries. This already caused 2 real collisions with only 2 rigs (see
+2026-08-07 entry below). Considered adding a `central_id` byte to
+`sensor_payload` instead, but that changes the wire format shared by
+central, gateway, and GUI and needs every board re-flashed -- decided
+against it for now in favor of the cheaper fix: added
+`tools/check_node_roster.py`, which reads the same CSV format as
+`gen_node_slot_table.py` and fails (exit 1) if any `node_id` is assigned to
+more than one `central_id`. `gen_node_slot_table.py` itself only catches a
+duplicate *(central_id, node_id)* pair (same node listed twice for the
+*same* rig) -- it does not catch the same `node_id` reused on two
+*different* rigs, which is the actual multi-gateway failure mode. Run
+`python tools/check_node_roster.py tools/node_roster.csv` before any
+multi-rig flash/deploy session. If a rig's roster ever needs to grow past
+what manual discipline can reliably catch, revisit the `central_id`-in-payload
+option above.
+
+**Also checked and confirmed already fine, no changes needed:** TLS/broker
+credentials (username+password can be legitimately shared across all 4
+gateways -- collision risk is client-ID-specific, not credential-specific);
+per-board flash/UART/LTE state (each board's own hardware, nothing shared);
+the GUI's 4-person/2x2-grid layout already assumes this exact topology
+(`NUM_PERSONS = 4` in `gui/sensor_gui.py`), it just doesn't validate the
+roster itself -- hence the new script above instead of a GUI change.
+
+**Not fixed, flagged as a pre-existing, unrelated observation:**
+`gateway_9151/secrets.conf.example` has a real-looking HiveMQ Cloud
+hostname committed to git (`9bfedb3b92a849fb856339994755a836.s1.eu.hivemq.cloud`).
+The password field is a placeholder, so this isn't a live credential leak,
+but the hostname itself is real broker identity information sitting in a
+tracked "example" file rather than a gitignored one -- worth deciding
+whether that's intentional (a shared dev/test broker) or should be
+scrubbed to a fake placeholder hostname like the password already is.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
 ## 2026-08-07 — lost node 49's historical flash log while debugging retrieval; fixed the dump throttling, but flag the underlying risk
 
 Retrieving node 49's flash log (`CONFIG_APP_DUMP_ON_BOOT`) first showed a

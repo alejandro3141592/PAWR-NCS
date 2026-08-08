@@ -168,6 +168,21 @@ static int wait_socket(int timeout_ms)
 
 int mqtt_publisher_init(void)
 {
+	/* CONFIG_APP_MQTT_CLIENT_ID has no default (see Kconfig) specifically
+	 * so this can't be silently skipped -- an empty client ID here means
+	 * this board's secrets.conf never set one, and connecting anyway
+	 * would risk colliding with another gateway's client ID on the same
+	 * broker (see NOTES.md 2026-08-08 multi-gateway audit). Fail loudly
+	 * at boot instead of connecting under a shared/blank ID.
+	 */
+	if (strlen(CONFIG_APP_MQTT_CLIENT_ID) == 0) {
+		printk("[MQTT] FATAL: CONFIG_APP_MQTT_CLIENT_ID is not set -- add a "
+		       "unique CONFIG_APP_MQTT_CLIENT_ID=\"...\" to this board's "
+		       "secrets.conf before flashing. Refusing to connect with a "
+		       "blank client ID.\n");
+		k_panic();
+	}
+
 	int err = resolve_broker(&broker_addr);
 
 	if (err) {
