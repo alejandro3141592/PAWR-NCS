@@ -8,6 +8,53 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — distance test round 2: +8dBm TX power and Coded PHY, both help, power does most of the work
+
+Follow-up to the same-day distance test below. Explored three ways to
+improve packet delivery rate at range: TX power, Coded PHY, and (ruled out
+without trying) reducing "transmission range" itself, which would obviously
+hurt rather than help.
+
+**TX power**: neither `prj.conf` had ever set a TX power Kconfig, so both
+apps were running the SDC default (0 dBm). Added
+`CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` to both `central/prj.conf` and
+`peripheral/prj.conf` -- **+8 dBm is the nRF52840's hardware ceiling**
+without an external front-end amp (checked
+`zephyr/subsys/bluetooth/controller/Kconfig`: everything above +8 dBm is
+gated to `SOC_SERIES_NRF54H` or ESP32). This one change alone took 1m from
+82.4% to 96.9%, 1.5m from 71.0% to 91.9%, 2m from 78.3% to 89.0% -- most of
+the total improvement in this round came from this single change.
+
+**Coded PHY**: swapped central's PAwR advertising set from
+`BT_LE_EXT_ADV_NCONN` to `BT_LE_EXT_ADV_CODED_NCONN`
+(`central/src/main.c`, the `bt_le_ext_adv_create` call) and added
+`CONFIG_BT_CTLR_PHY_CODED=y` to both `prj.conf`s. Periodic sync PHY is
+auto-detected from the advertising PDU, so **only central needs
+rebuilding/reflashing** to toggle Coded PHY on/off -- peripheral was
+flashed once (with the Kconfig on) and left alone for both the "off" and
+"on" comparison runs this round. Stacked on top of +8dBm: 1m 96.9%→96.7%
+(flat, within noise), 1.5m 91.9%→93.4% (+1.5pp), 2m 89.0%→94.0% (+5pp).
+Benefit grows with distance, as expected for an FEC scheme -- most useful
+exactly where the plain-power gain is running out of headroom.
+`PAWR_RESPONSE_SLOT_SPACING` (10ms) needed no changes; no systematic
+timing failures on Coded PHY, only isolated single-packet misses.
+
+**Gotcha hit twice this round**: a central reflash/reboot invalidates the
+peripheral's existing connection -- the first 1.5m +8dBm-only attempt got
+**zero** packets in the full 10-minute window because central never
+re-onboarded node 24 (no "Found peripheral" line at all in that log). A
+plain retry worked immediately. Also hit the `COM108: Access to the port
+... is denied` error again mid-run (same failure mode as the peripheral
+COM-port contention documented elsewhere) -- closing whatever else had the
+port open fixed it. Worth remembering for next time: after any central
+reflash, do a quick close-range check that the peripheral actually
+reconnects before trusting a longer-range capture.
+
+Full results table and raw logs: `logs/distance_test_summary.md`/`.csv`,
+`logs/distance_test_*_txpower8dbm*.log` on this branch.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
 ## 2026-08-08 — packet-delivery-rate vs. distance test: temporarily scoped NUM_SUBEVENTS to 17, CENTRAL_ID=2's table dropped
 
 Set up a controlled test to measure PAwR packet delivery rate as a function

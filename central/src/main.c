@@ -527,8 +527,19 @@ int main(void)
 		}
 	}
 
-	/* Create a non-connectable advertising set */
-	err = bt_le_ext_adv_create(BT_LE_EXT_ADV_NCONN, &adv_cb, &pawr_adv);
+	/* Create a non-connectable advertising set on LE Coded PHY -- trades
+	 * throughput for range via forward error correction (S=8 coding).
+	 * Only affects this PAwR advertising set (periodic advertising and
+	 * its subevent data/responses inherit the secondary PHY set here);
+	 * the separate onboarding connection to a new peripheral (see
+	 * device_found()/bt_conn_le_create below) is untouched, still 1M PHY.
+	 * See NOTES.md 2026-08-08 distance test for why. Requires
+	 * CONFIG_BT_CTLR_PHY_CODED=y (see prj.conf) on both central and
+	 * peripheral -- periodic sync PHY is auto-detected from the
+	 * advertising PDU, so the peripheral doesn't need a code change, just
+	 * the same Kconfig to be able to receive it.
+	 */
+	err = bt_le_ext_adv_create(BT_LE_EXT_ADV_CODED_NCONN, &adv_cb, &pawr_adv);
 	if (err) {
 		printk("Failed to create advertising set (err %d)\n", err);
 		return 0;

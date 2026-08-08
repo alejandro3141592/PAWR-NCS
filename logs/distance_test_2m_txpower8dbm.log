@@ -1,0 +1,76 @@
+[15:21:39.394] >>> Node 24 (subevent 16): skin_temp=27.11C humidity=31.4% seq=80
+[15:21:39.397] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=31.7% seq=81
+[15:21:39.398] >>> Node 24 (subevent 16): skin_temp=27.11C humidity=31.4% seq=82
+[15:21:39.399] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=32.5% seq=83
+[15:21:39.400] >>> Node 24 (subevent 16): skin_temp=27.11C humidity=31.5% seq=84
+[15:21:39.400] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=30.8% seq=85
+[15:21:39.401] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=30.6% seq=86
+[15:21:39.401] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=30.8% seq=87
+[15:21:39.402] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=31.8% seq=88
+[15:21:39.402] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=31.3% seq=89
+[15:21:39.403] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=30.9% seq=90
+[15:21:39.403] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=30.6% seq=91
+[15:21:39.404] >>> Node 24 (subevent 16): skin_temp=27.04C humidity=30.5% seq=92
+[15:21:40.959] >>> Node 24 (subevent 16): skin_temp=27.10C humidity=30.6% seq=93
+[15:21:50.973] >>> Node 24 (subevent 16): skin_temp=27.21C humidity=30.6% seq=94
+[15:22:00.966] >>> Node 24 (subevent 16): skin_temp=27.17C humidity=30.7% seq=95
+[15:22:10.962] >>> Node 24 (subevent 16): skin_temp=27.16C humidity=30.8% seq=96
+[15:22:20.953] >>> Node 24 (subevent 16): skin_temp=27.15C humidity=30.9% seq=97
+[15:22:30.963] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=31.0% seq=98
+[15:22:40.963] >>> Node 24 (subevent 16): skin_temp=27.19C humidity=30.8% seq=99
+[15:22:50.970] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=30.9% seq=100
+[15:23:00.958] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=31.1% seq=101
+[15:23:10.958] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=31.0% seq=102
+[15:23:20.960] >>> Node 24 (subevent 16): skin_temp=27.17C humidity=31.0% seq=103
+[15:23:30.949] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=30.9% seq=104
+[15:23:40.959] >>> Node 24 (subevent 16): skin_temp=27.08C humidity=30.9% seq=105
+[15:23:50.959] >>> Node 24 (subevent 16): skin_temp=27.06C humidity=30.6% seq=106
+[15:24:00.960] >>> Node 24 (subevent 16): skin_temp=27.07C humidity=30.7% seq=107
+[15:24:10.963] >>> Node 24 (subevent 16): skin_temp=27.05C humidity=30.8% seq=108
+[15:24:20.951] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=30.8% seq=109
+[15:24:30.961] >>> Node 24 (subevent 16): skin_temp=27.21C humidity=30.8% seq=110
+[15:24:40.959] >>> Node 24 (subevent 16): skin_temp=27.25C humidity=30.8% seq=111
+[15:24:50.950] >>> Node 24 (subevent 16): skin_temp=27.22C humidity=30.8% seq=112
+[15:25:00.947] >>> Node 24 (subevent 16): skin_temp=27.17C humidity=30.7% seq=113
+[15:25:15.195] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:25:15.196] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:25:30.957] >>> Node 24 (subevent 16): skin_temp=27.21C humidity=30.7% seq=116
+[15:25:35.189] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:25:40.952] >>> Node 24 (subevent 16): skin_temp=27.24C humidity=31.1% seq=117
+[15:25:55.192] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:25:55.193] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:00.955] >>> Node 24 (subevent 16): skin_temp=26.93C humidity=30.7% seq=119
+[15:26:10.947] >>> Node 24 (subevent 16): skin_temp=26.96C humidity=30.6% seq=120
+[15:26:15.226] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:15.227] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:20.954] >>> Node 24 (subevent 16): skin_temp=27.03C humidity=30.7% seq=121
+[15:26:30.955] >>> Node 24 (subevent 16): skin_temp=27.10C humidity=30.8% seq=122
+[15:26:35.192] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:35.193] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:35.194] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:26:40.962] >>> Node 24 (subevent 16): skin_temp=27.12C humidity=30.8% seq=123
+[15:27:00.940] >>> Node 24 (subevent 16): skin_temp=27.18C humidity=30.7% seq=125
+[15:27:10.951] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=30.6% seq=126
+[15:27:20.951] >>> Node 24 (subevent 16): skin_temp=27.16C humidity=30.6% seq=127
+[15:27:30.951] >>> Node 24 (subevent 16): skin_temp=27.08C humidity=30.6% seq=128
+[15:27:40.959] >>> Node 24 (subevent 16): skin_temp=27.04C humidity=30.6% seq=129
+[15:27:50.946] >>> Node 24 (subevent 16): skin_temp=27.07C humidity=30.7% seq=130
+[15:28:00.944] >>> Node 24 (subevent 16): skin_temp=27.17C humidity=30.7% seq=131
+[15:28:15.186] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:28:20.949] >>> Node 24 (subevent 16): skin_temp=27.10C humidity=30.8% seq=133
+[15:28:30.940] >>> Node 24 (subevent 16): skin_temp=27.01C humidity=30.9% seq=134
+[15:28:40.941] >>> Node 24 (subevent 16): skin_temp=26.98C humidity=30.8% seq=135
+[15:29:00.944] >>> Node 24 (subevent 16): skin_temp=27.06C humidity=30.9% seq=137
+[15:29:10.947] >>> Node 24 (subevent 16): skin_temp=27.09C humidity=30.9% seq=138
+[15:29:20.944] >>> Node 24 (subevent 16): skin_temp=27.09C humidity=30.7% seq=139
+[15:29:30.947] >>> Node 24 (subevent 16): skin_temp=27.10C humidity=30.9% seq=140
+[15:29:50.949] >>> Node 24 (subevent 16): skin_temp=27.07C humidity=30.8% seq=142
+[15:30:00.947] >>> Node 24 (subevent 16): skin_temp=26.96C humidity=30.7% seq=143
+[15:30:10.944] >>> Node 24 (subevent 16): skin_temp=26.94C humidity=30.8% seq=144
+[15:30:20.939] >>> Node 24 (subevent 16): skin_temp=26.96C humidity=30.8% seq=145
+[15:30:30.938] >>> Node 24 (subevent 16): skin_temp=26.92C humidity=30.8% seq=146
+[15:30:50.943] >>> Node 24 (subevent 16): skin_temp=27.07C humidity=30.8% seq=148
+[15:31:00.941] >>> Node 24 (subevent 16): skin_temp=27.13C humidity=30.9% seq=149
+[15:31:20.943] >>> Node 24 (subevent 16): skin_temp=27.14C humidity=30.8% seq=151
+[15:31:25.179] Peripheral advertised as "PAwR sync sample 1 #42" (node_id 42) has no node_slot_table entry for central 1 -- refusing to onboard. Add it to central/node_slot_table.h and reflash.
+[15:31:30.944] >>> Node 24 (subevent 16): skin_temp=27.17C humidity=30.8% seq=152
