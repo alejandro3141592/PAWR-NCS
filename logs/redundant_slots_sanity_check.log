@@ -1,0 +1,116 @@
+[13:01:23.522] [STORAGE] fcb_append failed (err -28)
+[13:01:23.525] >>> Node 32 (subevent 1): skin_temp=28.62C humidity=31.5% seq=323
+[13:01:23.527] [STORAGE] fcb_append failed (err -28)
+[13:01:23.527] >>> Node 33 (subevent 2): skin_temp=29.05C humidity=29.7% seq=330
+[13:01:23.527] [STORAGE] fcb_append failed (err -28)
+[13:01:23.528] >>> Node 35 (subevent 3): skin_temp=30.26C humidity=0.0% seq=53  [FLAG: HUMIDITY_FAIL]
+[13:01:23.529] [STORAGE] fcb_append failed (err -28)
+[13:01:23.531] >>> Node 41 (subevent 6): skin_temp=29.98C humidity=29.8% seq=52
+[13:01:23.539] [STORAGE] fcb_append failed (err -28)
+[13:01:23.540] >>> Node 42 (subevent 7): skin_temp=29.55C humidity=30.6% seq=329
+[13:01:23.540] >>> Node 43 (subevent 8): skin_temp=28.60C humidity=30.4% seq=322  [DUP: backup slot, already forwarded]
+[13:01:23.541] [STORAGE] fcb_append failed (err -28)
+[13:01:23.541] >>> Node 45 (subevent 9): skin_temp=28.48C humidity=33.7% seq=321
+[13:01:23.541] [STORAGE] fcb_append failed (err -28)
+[13:01:23.542] >>> Node 47 (subevent 10): skin_temp=29.50C humidity=29.1% seq=331
+[13:01:23.542] [STORAGE] fcb_append failed (err -28)
+[13:01:23.542] >>> Node 49 (subevent 11): skin_temp=29.41C humidity=30.2% seq=336
+[13:01:23.543] [STORAGE] fcb_append failed (err -28)
+[13:01:23.543] >>> Node 51 (subevent 13): skin_temp=30.12C humidity=29.5% seq=326
+[13:01:23.543] [STOR[STORAGE] fcb_append failed (err -28)
+[13:01:23.544] >>> Node 31 (subevent 0): skin_temp=30.05C humidity=29.2% seq=306
+[13:01:23.544] [STORAGE] fcb_append failed (err -28)
+[13:01:23.544] >>> Node 32 (subevent 1): skin_temp=28.64C humidity=31.2% seq=337
+[13:01:23.544] [STORAGE] fcb_append failed (err -28)
+[13:01:23.545] >>> Node 33 (subevent 2): skin_temp=29.07C humidity=29.5% seq=344
+[13:01:23.545] [STORAGE] fcb_append failed (err -28)
+[13:01:23.545] >>> Node 35 (subevent 3): skin_temp=30.23C humidity=0.0% seq=67  [FLAG: HUMIDITY_FAIL]
+[13:01:23.545] [STORAGE] fcb_append failed (err -28)
+[13:01:23.545] >>> Node 37 (subevent 4): skin_temp=30.10C humidity=28.8% seq=342
+[13:01:23.803] [STORAGE] fcb_append failed (err -28)
+[13:01:23.803] >>> Node 41 (subevent 6): skin_temp=29.97C humidity=29.3% seq=66
+[13:01:23.803] [STORAGE] fcb_append failed (err -28)
+[13:01:23.804] >>> Node 42 (subevent 7): skin_temp=29.57C humidity=30.1% seq=343
+[13:01:23.804] >>> Node 43 (subevent 8): skin_temp=28.57C humidity=30.4% seq=336  [DUP: backup slot, already forwarded]
+[13:01:23.804] [STORAGE] fcb_append failed (err -28)
+[13:01:23.804] >>> Node 45 (subevent 9): skin_temp=28.45C humidity=33.7% seq=335
+[13:01:23.804] [STORAGE] fcb_append failed (err -28)
+[13:01:23.805] >>> Node 47 (subevent 10): skin_temp=29.45C humidity=28.5% seq=345
+[13:01:23.805] [STORAGE] fcb_append failed (err -28)
+[13:01:23.805] >>> Node 49 (subevent 11): skin_temp=29.36C humidity=29.7% seq=350
+[13:01:24.001] [STORAGE] fcb_append failed (err -28)
+[13:01:24.002] >>> Node 50 (subevent 12): skin_temp=28.72C humidity=30.4% seq=277
+[13:01:24.003] [STORAGE] fcb_append failed (err -28)
+[13:01:24.003] >>> Node 51 (subevent 13): skin_temp=30.20C humidity=29.1% seq=340
+[13:01:24.003] [STORAGE] fcb_append failed (err -28)
+[13:01:24.003] >>> Node 54 (subevent 14): skin_temp=29.69C humidity=29.7% seq=341
+[13:01:24.003] [STORAGE] fcb_append failed (err -28)
+[13:01:24.004] >>> Node 55 (subevent 15): skin_temp=28.57C humidity=31.2% seq=338
+[13:01:24.004] [STORAGE] fcb_append failed (err -28)
+[13:01:24.004] >>> Node 56 (subevent 16): skin_temp=29.60C humidity=29.3% seq=350
+[13:01:24.407] >>> Node 31 (subevent 17): skin_temp=30.05C humidity=29.2% seq=306  [DUP: backup slot, already forwarded]
+[13:01:24.408] >>> Node 32 (subevent 18): skin_temp=28.64C humidity=31.2% seq=337  [DUP: backup slot, already forwarded]
+[13:01:24.408] >>> Node 33 (subevent 19): skin_temp=29.07C humidity=29.5% seq=344  [DUP: backup slot, already forwarded]
+[13:01:24.409] >>> Node 35 (subevent 20): skin_temp=30.23C humidity=0.0% seq=67  [FLAG: HUMIDITY_FAIL]  [DUP: backup slot, already forwarded]
+[13:01:24.410] >>> Node 37 (subevent 21): skin_temp=30.10C humidity=28.8% seq=342  [DUP: backup slot, already forwarded]
+[13:01:24.410] >>> Node 41 (subevent 23): skin_temp=29.97C humidity=29.3% seq=66  [DUP: backup slot, already forwarded]
+[13:01:24.410] >>> Node 42 (subevent 24): skin_temp=29.57C humidity=30.1% seq=343  [DUP: backup slot, already forwarded]
+[13:01:24.411] [STORAGE] fcb_append failed (err -28)
+[13:01:24.411] >>> Node 43 (subevent 25): skin_temp=28.56C humidity=30.4% seq=337
+[13:01:24.411] >>> Node 45 (subevent 26): skin_temp=28.45C humidity=33.7% seq=335  [DUP: backup slot, already forwarded]
+[13:01:25.443] >>> Node 47 (subevent 27): skin_temp=29.45C humidity=28.5% seq=345  [DUP: backup slot, already forwarded]
+[13:01:25.443] >>> Node 49 (subevent 28): skin_temp=29.36C humidity=29.7% seq=350  [DUP: backup slot, already forwarded]
+[13:01:25.444] >>> Node 50 (subevent 29): skin_temp=28.72C humidity=30.4% seq=277  [DUP: backup slot, already forwarded]
+[13:01:25.444] >>> Node 51 (subevent 30): skin_temp=30.20C humidity=29.1% seq=340  [DUP: backup slot, already forwarded]
+[13:01:25.444] >>> Node 55 (subevent 32): skin_temp=28.57C humidity=31.2% seq=338  [DUP: backup slot, already forwarded]
+[13:01:25.444] >>> Node 56 (subevent 33): skin_temp=29.60C humidity=29.3% seq=350  [DUP: backup slot, already forwarded]
+[13:01:33.521] [STORAGE] fcb_append failed (err -28)
+[13:01:33.522] >>> Node 31 (subevent 0): skin_temp=30.05C humidity=29.1% seq=307
+[13:01:33.522] [STORAGE] fcb_append failed (err -28)
+[13:01:33.522] >>> Node 32 (subevent 1): skin_temp=28.64C humidity=31.2% seq=338
+[13:01:33.522] [STORAGE] fcb_append failed (err -28)
+[13:01:33.522] >>> Node 33 (subevent 2): skin_temp=29.12C humidity=29.5% seq=345
+[13:01:33.523] [STORAGE] fcb_append failed (err -28)
+[13:01:33.523] >>> Node 35 (subevent 3): skin_temp=30.10C humidity=0.0% seq=68  [FLAG: HUMIDITY_FAIL]
+[13:01:33.523] [STORAGE] fcb_append failed (err -28)
+[13:01:33.523] >>> Node 37 (subevent 4): skin_temp=30.07C humidity=29.0% seq=343
+[13:01:33.764] [STORAGE] fcb_append failed (err -28)
+[13:01:33.765] >>> Node 40 (subevent 5): skin_temp=28.37C humidity=30.6% seq=337
+[13:01:33.765] [STORAGE] fcb_append failed (err -28)
+[13:01:33.765] >>> Node 41 (subevent 6): skin_temp=29.99C humidity=29.3% seq=67
+[13:01:33.765] [STORAGE] fcb_append failed (err -28)
+[13:01:33.765] >>> Node 42 (subevent 7): skin_temp=29.58C humidity=30.2% seq=344
+[13:01:33.765] >>> Node 43 (subevent 8): skin_temp=28.56C humidity=30.4% seq=337  [DUP: backup slot, already forwarded]
+[13:01:33.765] [STORAGE] fcb_append failed (err -28)
+[13:01:33.766] >>> Node 45 (subevent 9): skin_temp=28.46C humidity=33.7% seq=336
+[13:01:33.766] [STORAGE] fcb_append failed (err -28)
+[13:01:33.766] >>> Node 47 (subevent 10): skin_temp=29.47C humidity=28.6% seq=346
+[13:01:33.962] [STORAGE] fcb_append failed (err -28)
+[13:01:33.962] >>> Node 49 (subevent 11): skin_temp=29.39C humidity=29.7% seq=351
+[13:01:33.962] [STORAGE] fcb_append failed (err -28)
+[13:01:33.962] >>> Node 50 (subevent 12): skin_temp=28.67C humidity=30.3% seq=278
+[13:01:33.963] [STORAGE] fcb_append failed (err -28)
+[13:01:33.963] >>> Node 51 (subevent 13): skin_temp=30.12C humidity=29.2% seq=341
+[13:01:33.963] [STORAGE] fcb_append failed (err -28)
+[13:01:33.963] >>> Node 54 (subevent 14): skin_temp=29.62C humidity=29.8% seq=342
+[13:01:33.963] [STORAGE] fcb_append failed (err -28)
+[13:01:33.963] >>> Node 55 (subevent 15): skin_temp=28.57C humidity=31.2% seq=339
+[13:01:34.367] [STORAGE] fcb_append failed (err -28)
+[13:01:34.367] >>> Node 56 (subevent 16): skin_temp=29.59C humidity=29.3% seq=351
+[13:01:34.368] >>> Node 31 (subevent 17): skin_temp=30.05C humidity=29.1% seq=307  [DUP: backup slot, already forwarded]
+[13:01:34.368] >>> Node 32 (subevent 18): skin_temp=28.64C humidity=31.2% seq=338  [DUP: backup slot, already forwarded]
+[13:01:34.368] >>> Node 33 (subevent 19): skin_temp=29.12C humidity=29.5% seq=345  [DUP: backup slot, already forwarded]
+[13:01:34.370] >>> Node 35 (subevent 20): skin_temp=30.10C humidity=0.0% seq=68  [FLAG: HUMIDITY_FAIL]  [DUP: backup slot, already forwarded]
+[13:01:34.370] >>> Node 37 (subevent 21): skin_temp=30.07C humidity=29.0% seq=343  [DUP: backup slot, already forwarded]
+[13:01:34.371] >>> Node 40 (subevent 22): skin_temp=28.37C humidity=30.6% seq=337  [DUP: backup slot, already forwarded]
+[13:01:34.371] >>> Node 42 (subevent 24): skin_temp=29.58C humidity=30.2% seq=344  [DUP: backup slot, already forwarded]
+[13:01:34.371] [STORAGE] fcb_append failed (err -28)
+[13:01:34.371] >>> Node 43 (subevent 25): skin_temp=28.58C humidity=30.4% seq=338
+[13:01:35.405] >>> Node 45 (subevent 26): skin_temp=28.46C humidity=33.7% seq=336  [DUP: backup slot, already forwarded]
+[13:01:35.405] >>> Node 47 (subevent 27): skin_temp=29.47C humidity=28.6% seq=346  [DUP: backup slot, already forwarded]
+[13:01:35.405] >>> Node 49 (subevent 28): skin_temp=29.39C humidity=29.7% seq=351  [DUP: backup slot, already forwarded]
+[13:01:35.406] >>> Node 50 (subevent 29): skin_temp=28.67C humidity=30.3% seq=278  [DUP: backup slot, already forwarded]
+[13:01:35.406] >>> Node 51 (subevent 30): skin_temp=30.12C humidity=29.2% seq=341  [DUP: backup slot, already forwarded]
+[13:01:35.407] >>> Node 54 (subevent 31): skin_temp=29.62C humidity=29.8% seq=342  [DUP: backup slot, already forwarded]
+[13:01:35.407] >>> Node 55 (subevent 32): skin_temp=28.57C humidity=31.2% seq=339  [DUP: backup slot, already forwarded]
+[13:01:35.407] >>> Node 56 (subevent 33): skin_temp=29.59C humidity=29.3% seq=351  [DUP: backup slot, already forwarded]

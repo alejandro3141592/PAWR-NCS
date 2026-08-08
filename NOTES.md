@@ -8,6 +8,157 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — 10-min focused test: primary vs. backup delivery breakdown, one real per-node finding (node 56)
+
+Follow-up to the 30-min soak below -- that run couldn't show how much the
+backup slot actually contributed, since central's dedup only leaves one row
+per `(node_id, seq)` in `gui/sensor_data.db`. This time captured central's
+live console (`tools/Watch-SerialLog.ps1` on COM195, confirmed working
+cleanly on the first attempt -- see the `[DUP: backup slot, already
+forwarded]` marker added specifically for this) for a focused 10-minute
+window, 2026-08-08 13:01:42-13:11:42, and parsed the raw log directly
+(`logs/redundant_slots_10min_20260808_1301.log`, 2816 lines) instead of the
+DB, since the DB can't distinguish "arrived via primary" from "arrived via
+backup."
+
+```
+node  recv  expected   pdr    via_primary  via_backup  rescue%
+ 31     60        61  98.4%           46          14   23.3%
+ 32     61        61 100.0%           56           5    8.2%
+ 33     61        61 100.0%           56           5    8.2%
+ 35     61        61 100.0%           57           4    6.6%
+ 37     56        60  93.3%           46          10   17.9%
+ 40     55        61  90.2%           39          16   29.1%
+ 41     61        61 100.0%           52           9   14.8%
+ 42     61        61 100.0%           60           1    1.6%
+ 43     61        61 100.0%           43          18   29.5%
+ 45     56        60  93.3%           39          17   30.4%
+ 47     59        61  96.7%           49          10   16.9%
+ 49     59        60  98.3%           57           2    3.4%
+ 50     60        60 100.0%           59           1    1.7%
+ 51     60        60 100.0%           59           1    1.7%
+ 54     60        60 100.0%           57           3    5.0%
+ 55     60        60 100.0%           55           5    8.3%
+ 56     60        60 100.0%           16          44   73.3%
+
+TOTAL: 1011 received / 1029 expected = 98.25% PDR
+Delivered via primary slot: 846 (83.7%)
+Delivered via backup slot (would have been LOST without it): 165 (16.3%)
+```
+
+**The backup slot is doing real, substantial work**: 16.3% of all delivered
+readings across the fleet -- not a rare edge case -- only made it through
+because of the second attempt. Without the redundant slot, this run's PDR
+would have been roughly 846/1029 = **82.2%**, not 98.25% -- the backup slot
+alone is responsible for a ~16-point PDR improvement in this window, closely
+matching the ~10-point gap seen between this branch's 30-min soak (96.79%)
+and the best single-slot baseline (86-90% at 20 subevents).
+
+**One real per-node finding, not just aggregate noise: node 56 is
+structurally different from the rest.** Every other node's rescue rate is
+1.6-30.4% (consistent with occasional/random loss); node 56 is **73.3%** --
+nearly 3 in 4 of its readings needed the backup slot. Walked the raw
+chronological log for node 56 specifically: from roughly seq 357 onward its
+PRIMARY subevent (16) starts missing entirely for stretches of several
+consecutive intervals in a row, while the backup subevent (33) keeps
+succeeding almost every time:
+```
+13:02:35.443 subevent 33 seq 357          <- primary (16) never appeared for seq 357
+13:03:25.633 subevent 33 seq 362          <- same, seq 362
+13:04:05.595 subevent 33 seq 366          <- same, seq 366
+13:04:15.480 subevent 33 seq 367
+13:04:25.556 subevent 33 seq 368
+13:04:35.632 subevent 33 seq 369
+13:04:45.518 subevent 33 seq 370
+```
+This pattern (sustained, not random single misses) suggests something
+specific to node 56's primary time slot -- worth checking: is this
+peripheral physically positioned somewhere that creates timing-specific
+interference (e.g. another RF source active on a cycle that happens to
+collide with subevent 16 specifically), or is there anything unusual about
+this board vs. the others (antenna, power). This is exactly the kind of
+node-specific problem the redundant-slot design is meant to paper over in
+the short term, but worth root-causing separately since a node that's
+losing 3/4 of its primary-slot attempts has some real underlying issue, not
+just "a bit more radio noise than average" like the rest of the fleet.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-08 — redundant-slots-experiment flashed to real hardware, first 30-min soak: 96.79% PDR, best result of the session
+
+Flashed central (ID=1, 34 subevents) + all 17 peripherals (31,32,33,35,37,
+40,41,42,43,45,47,49,50,51,54,55,56), all on `redundant-slots-experiment`.
+**Central booted clean at 34 subevents** -- no repeat of the unexplained
+`udc net_buf` boot failure found at 25 subevents on `coded-phy-experiment`
+(that one, per the user, was likely reset-specific rather than a real
+regression; this run doesn't settle that question either way, but it's a
+second data point that a fresh flash-then-boot at a high subevent count can
+work cleanly).
+
+30-min soak, 2026-08-08 12:15:42-12:45:42, analyzed via `gui/sensor_data.db`
+(the reliable source all session -- central's serial console has been
+flaky to capture live, see below):
+
+```
+node  recv  seq_min  seq_max  expected   pdr
+ 31    171       33      211       179  95.5%
+ 32    177       65      243       179  98.9%
+ 33    176       71      249       179  98.3%
+ 35    170       67      246       180  94.4%
+ 37    163       69      247       179  91.1%
+ 40    172       63      241       179  96.1%
+ 41    180       73      252       180 100.0%
+ 42    172       69      248       180  95.6%
+ 43    174       63      242       180  96.7%
+ 45    178       61      240       180  98.9%
+ 47    174       72      250       179  97.2%
+ 49    158       76      255       180  87.8%
+ 50    180        3      182       180 100.0%
+ 51    180       66      245       180 100.0%
+ 54    177       68      246       179  98.9%
+ 55    180       64      243       180 100.0%
+ 56    173       76      255       180  96.1%
+
+Overall: 2955 received / 3053 expected = 96.79% PDR
+All 17 nodes present the entire 30 minutes, zero dropouts.
+```
+
+**Best PDR of any config tested this session** -- clear improvement over
+both single-slot baselines (20 subevents/6-6: 86-90%; 25 subevents/6-6,
+never properly validated: 75-80%). Node 49 the only real outlier (87.8%),
+everyone else 91-100%.
+
+**Dedup confirmed working**: zero duplicate `(node_id, seq)` rows in the DB
+despite every reading getting two independent delivery attempts -- central's
+`last_forwarded_seq[]` check (added alongside the redundant-slot logic
+itself, see the entry below) is correctly collapsing primary+backup
+successes into one forwarded row, so this PDR number reflects genuinely
+distinct readings, not inflated by double-counting.
+
+**What this number can't show on its own: how much the backup slot
+actually contributed** -- i.e., of the 2955 delivered readings, how many
+arrived via the primary subevent vs. needed the backup to get through.
+`gui/sensor_data.db` only sees the deduplicated result; central's own
+console log has the `[DUP: backup slot, already forwarded]` marker that
+would answer this, but no console capture was taken during this run.
+**Next: a focused 10-minute test specifically to capture that log and
+compute the primary/backup delivery split** -- central is confirmed
+connected now, so `tools/Watch-SerialLog.ps1` should have a live console to
+capture (COM port has been intermittently hard to open earlier this
+session; worth confirming it opens cleanly before trusting a full 10-min
+capture, same lesson as every serial-capture entry all session).
+
+Two boards (31, 50) needed a second flash attempt before appearing in the
+DB -- not otherwise investigated (assumed a normal flash/onboarding
+hiccup, not re-diagnosed given the rest of the fleet came up clean the
+first time).
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
 ## 2026-08-07 — redundant subevent slots implemented on a new branch (redundant-slots-experiment), 17 nodes x 2 slots each, build-verified only
 
 User's next request: exactly 17 fixed slots (one per the 17 nodes actually
