@@ -8,6 +8,33 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — folded +8dBm TX power in as a baseline change (from distance-test-17slot branch's findings)
+
+Same change as made on `single-slot-17-baseline` -- see that branch's
+NOTES.md entry (same date) for the full rationale and the distance-test
+data it's based on. Short version: `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` (the
+nRF52840's hardware TX power ceiling) recovered most of the range-related
+PDR loss in a separate single-node distance sweep (1m 82.4%->96.9%, 1.5m
+71.0%->91.9%, 2m 78.3%->89.0%), with no downside found -- folded in here as
+a baseline change rather than something to re-test with/without.
+
+Decided against a full factorial sweep across every subevent-count/
+redundancy/PHY/power combination -- TX power and Coded PHY improve every
+individual delivery attempt's reliability regardless of slot count, while
+the redundant slot is a structural hedge on top of whatever that
+reliability still misses. Plan: fold +8dBm in everywhere now (this entry),
+then test Coded PHY once at the real deployment target -- 34 subevents +
+redundancy + power, on the real 17-node fleet -- rather than re-validating
+it in isolation at every slot count.
+
+Added `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` to both `central/prj.conf` and
+`peripheral/prj.conf` on `redundant-slots-experiment`. Build-verified
+(central + peripheral node 31) -- not yet reflashed to the fleet.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
 ## 2026-08-08 — 10-min focused test: primary vs. backup delivery breakdown, one real per-node finding (node 56)
 
 Follow-up to the 30-min soak below -- that run couldn't show how much the
