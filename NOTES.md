@@ -8,6 +8,40 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-07 — lost node 49's historical flash log while debugging retrieval; fixed the dump throttling, but flag the underlying risk
+
+Retrieving node 49's flash log (`CONFIG_APP_DUMP_ON_BOOT`) first showed a
+real 2040-row history, but nearly all of it dropped on capture
+(`--- N messages dropped ---`, firmware's own console buffer overflowing
+under a burst of ~2040 back-to-back `printk()`s, not a capture-timing
+race). Fixed properly this session: throttled to 10ms/row plus a 5s
+pre-dump countdown (see `storage_dump_walk_cb`/`storage_dump_all` in
+`peripheral/src/main.c`) -- confirmed zero drops once in place.
+
+**But by the time the fix worked, the underlying 2040-row history was
+gone** -- somewhere across the several reflashes while iterating on the
+fix, `storage_fcb_init()`'s `-ENOMSG` "foreign data, erasing and retrying"
+path (added 2026-08-03 for legitimate first-use formatting) fired and
+wiped the partition. Only 6 rows survived, and their `seq` values
+(1,2,1,2,3,4,5 -- resets every boot) show they're just fragments from that
+same day's repeated test reboots, not the original history.
+
+**Worth knowing for next time:** that auto-erase path exists for a good
+reason (first-ever use of the partition looks identical to "foreign data"
+to `fcb_init()`), but it can't tell that case apart from "valid own data,
+but firmware/partition layout shifted slightly between builds" -- and a
+new Kconfig option like `CONFIG_APP_CENTRAL_ID` changing the binary is
+exactly the kind of change that could shift layout. **Any board holding
+real field data you care about should not be repeatedly reflashed with
+different builds while debugging something else** -- if a retrieval
+needs multiple iterations, do them against a scratch board with fake data
+first, not the one with real history. Didn't change the auto-erase
+behavior itself this session (that's a bigger design tradeoff -- silently
+never-erasing also has failure modes, e.g. actually needing to format a
+truly first-use partition) -- flagging as something to revisit, not fixed.
+
+— Alejandro (session assisted by Claude), 2026-08-07
+
 ## 2026-08-07 — real node roster loaded into node_slot_table.h; NUM_SUBEVENTS raised 20 -> 25 for table capacity; two node-ID collisions found, need relabeling
 
 Follow-up to the fixed-slot-table entry directly below. User provided the
