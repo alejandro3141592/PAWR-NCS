@@ -1,0 +1,24 @@
+[19:58:29.461] 49,605,0x00,2032,28.87,26.0
+[19:58:29.464] [1;31m--- 2044 messages dropped ---
+[19:58:29.464] [0m49,606,0x00,2033,28.76,25.9
+[19:58:29.465] 49,607,0x00,2034,28.70,25.9
+[19:58:29.465] 49,608,0x00,2035,28.56,25.9
+[19:58:29.465] 49,609,0x00,2036,28.61,25.9
+[19:58:29.465] 49,610,0x00,2037,28.73,26.0
+[19:58:29.465] 49,611,0x00,2038,28.73,25.9
+[19:58:29.466] 49,612,0x00,2039,28.74,25.9
+[19:58:29.466] # 2040 rows
+[19:58:29.466] [00:00:00.364,166] [0m<inf> bt_sdc_hci_driver: SoftDevice Controller build revision: 
+[19:58:29.468]                                             27 03 7d 53 04 8d fe 99  a9 f2 9a ad de 5b 6a e2 |'.}S.... .....[j.
+[19:58:29.469]                                             74 6c ac 75                                      |tl.u             [0m
+[19:58:29.470] [00:00:00.366,821] [0m<inf> bt_hci_core: HW Platform: Nordic Semiconductor (0x0002)[0m
+[19:58:29.470] [00:00:00.366,851] [0m<inf> bt_hci_core: HW Variant: nRF52x (0x0002)[0m
+[19:58:29.471] [00:00:00.366,882] [0m<inf> bt_hci_core: Firmware: Standard Bluetooth controller (0x00) Version 39.32003 Build 4270654547[0m
+[19:58:29.471] [00:00:00.367,767] [0m<inf> bt_hci_core: HCI transport: SDC[0m
+[19:58:29.471] [00:00:00.367,889] [0m<inf> bt_hci_core: Identity: E5:62:A3:47:6B:20 (random)[0m
+[19:58:29.472] [00:00:00.367,919] [0m<inf> bt_hci_core>>> Poll received: subevent 11, responding in slot 0
+[19:58:35.220] [STORAGE] fcb_append failed (err -28)
+[19:58:35.220] [SENSORS] node 49 seq 4 temp=35.07C humidity=27.1% flags=0x00
+[19:58:39.460] >>> Poll received: subevent 11, responding in slot 0
+[19:58:45.230] [STORAGE] fcb_append failed (err -28)
+[19:58:45.231] [SENSORS] node 49 seq 5 temp=34.89C humidity=26.4% flags=0x00

@@ -1,0 +1,40 @@
+[20:30:07.218] [00:00:00.000,671] [0m<inf> udc_nrf: Preinit[0m
+[20:30:07.220] *** Booting nRF Connect SDK v3.3.0-ba167d9f3db4 ***
+[20:30:07.221] *** Using Zephyr OS v4.3.99-fd9204a02d52 ***
+[20:30:07.221] [00:00:00.003,967] [0m<inf> udc_nrf: Initialized[0m
+[20:30:07.221] Starting Periodic Advertising with Responses Synchronization Demo (peripheral)
+[20:30:07.222] Node ID: 49, Central ID: 2
+[20:30:07.222] [00:00:00.008,178] [0m<inf> udc_nrf: SUSPEND state detected[0m
+[20:30:07.224] [00:00:00.106,750] [0m<inf> udc_nrf: Reset[0m
+[20:30:07.224] [00:00:00.106,811] [0m<inf> udc_nrf: RESUMING from suspend[0m
+[20:30:07.224] [STORAGE] Flash log ready (8 sectors)
+[20:30:07.224] # dump starting in 5s...
+[20:30:07.225] [00:00:00.195,220] [0m<inf> udc_nrf: Reset[0m
+[20:30:07.225] [00:00:00.468,170] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[20:30:07.226] [00:00:00.477,661] [1;31m<err> udc: Failed to allocate net_buf 4095, ep 0x80[0m
+[20:30:07.226] # dump starting in 4s...
+[20:30:07.227] # dump starting in 3s...
+[20:30:07.227] # dump starting in 2s...
+[20:30:07.228] # dump starting in 1s...
+[20:30:07.228] node_id,seq,flags,row,temp_c,humidity_pct
+[20:30:07.228] 49,1,0x00,0,29.56,28.2
+[20:30:07.228] 49,2,0x00,1,29.42,31.3
+[20:30:07.229] 49,1,0x00,2,30.22,27.1
+[20:30:07.229] 49,2,0x00,3,30.17,27.8
+[20:30:07.229] 49,3,0x00,4,30.03,26.1
+[20:30:07.230] 49,4,0x00,5,30.43,25.7
+[20:30:07.230] 49,5,0x00,6,30.69,25.8
+[20:30:07.230] [STORAGE] fcb_append failed (err -28)
+[20:30:07.231] [SENSORS] node 49 seq 1 temp=29.45C humidity=27.1% flags=0x00
+[20:30:07.231] Disconnected, reason 0x13 
+[20:30:09.412] >>> Poll received: subevent 11, responding in slot 0
+[20:30:17.225] [STORAGE] fcb_append failed (err -28)
+[20:30:17.226] [SENSORS] node 49 seq 2 temp=29.46C humidity=28.7% flags=0x00
+[20:30:19.412] >>> Poll received: subevent 11, responding in slot 0
+[20:30:27.236] [STORAGE] fcb_append failed (err -28)
+[20:30:27.237] [SENSORS] node 49 seq 3 temp=29.50C humidity=27.8% flags=0x00
+[20:30:29.412] >>> Poll received: subevent 11, responding in slot 0
+[20:30:37.245] [STORAGE] fcb_append failed (err -28)
+[20:30:37.246] [SENSORS] node 49 seq 4 temp=29.49C humidity=28.6% flags=0x00
+[20:30:39.411] >>> Poll received: subevent 11, responding in slot 0
+[20:30:47.255] [STORAGE] fcb_append failed (err -28)

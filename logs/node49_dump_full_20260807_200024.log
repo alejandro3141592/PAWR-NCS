@@ -1,0 +1,18 @@
+[20:00:24.423] [STORAGE] fcb_append failed (err -28)
+[20:00:24.425] [SENSORS] node 49 seq 12 temp=34.83C humidity=25.9% flags=0x00
+[20:00:24.425] >>> Poll received: subevent 11, responding in slot 0
+[20:00:24.426] [STORAGE] fcb_append failed (err -28)
+[20:00:24.426] [SENSORS] node 49 seq 13 temp=34.73C humidity=25.6% flags=0x00
+[20:00:24.427] >>> Poll received: subevent 11, responding in slot 0
+[20:00:24.427] [STORAGE] fcb_append failed (err -28)
+[20:00:24.427] [SENSORS] node 49 seq 14 temp=34.82C humidity=25.6% flags=0x00
+[20:00:24.430] >>> Poll received: subevent 11, responding in slot 0
+[20:00:25.328] [STORAGE] fcb_append failed (err -28)
+[20:00:25.329] [SENSORS] node 49 seq 15 temp=34.95C humidity=26.8% flags=0x00
+[20:00:29.457] >>> Poll received: subevent 11, responding in slot 0
+[20:00:35.339] [STORAGE] fcb_append failed (err -28)
+[20:00:35.340] [SENSORS] node 49 seq 16 temp=35.36C humidity=26.9% flags=0x00
+[20:00:39.458] >>> Poll received: subevent 11, responding in slot 0
+[20:00:45.348] [STORAGE] fcb_append failed (err -28)
+[20:00:45.349] [SENSORS] node 49 seq 17 temp=35.51C humidity=26.6% flags=0x00
+[20:00:49.458] >>> Poll received: subevent 11, responding in slot 0

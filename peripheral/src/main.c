@@ -384,7 +384,25 @@ static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 	       ctx->count, payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
 	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10);
 
+	/* Throttle: printing a large log (thousands of rows) back-to-back
+	 * outpaces the console's internal buffer, which silently drops
+	 * messages ("--- N messages dropped ---") -- confirmed on real
+	 * hardware 2026-08-07 retrieving node 49's ~2040-row log, where the
+	 * vast majority of rows never reached the capture tool no matter how
+	 * fast/early it attached (this is the firmware's own console losing
+	 * them before they ever reach USB, not a capture-timing race).
+	 *
+	 * First attempt at this fix batched the delay (2ms every 8 rows) and
+	 * it was nowhere near enough -- still ~2047 of 2040 rows dropped,
+	 * confirmed against a second real capture. Whatever's backing the
+	 * console (log deferred-message ring buffer, most likely) is small
+	 * enough, and/or drains slowly enough per scheduling opportunity,
+	 * that even 7 rapid-fire prints between pauses overflows it. Sleeping
+	 * after every single row instead, not batched -- 2040 rows * 5ms =
+	 * ~10s added to the dump, acceptable for a one-shot diagnostic.
+	 */
 	ctx->count++;
+	k_sleep(K_MSEC(10));
 
 	return 0;
 }
@@ -397,6 +415,19 @@ static void storage_dump_all(void)
 	if (!storage_fcb_ok) {
 		printk("# flash log not available (storage_fcb_init failed at boot)\n");
 		return;
+	}
+
+	/* Grace period before any dump output starts, so there's a reliable
+	 * window to get a capture tool attached after a reset/flash --
+	 * confirmed on real hardware 2026-08-07 that racing the very first
+	 * instant of USB re-enumeration against firmware output is unreliable
+	 * (tried multiple times, inconsistent drop counts each attempt).
+	 * Printed itself, so both console and capture tool have a visible
+	 * countdown to confirm the connection is live before data starts.
+	 */
+	for (int s = 5; s > 0; s--) {
+		printk("# dump starting in %ds...\n", s);
+		k_sleep(K_MSEC(1000));
 	}
 
 	printk("node_id,seq,flags,row,temp_c,humidity_pct\n");
