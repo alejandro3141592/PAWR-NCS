@@ -169,6 +169,17 @@ static inline unsigned int pawr_parse_node_id(const char *name)
  * subevents, not 25 -- treat as the best available starting point, not a
  * proven-safe value, until a fresh soak confirms it (or finds a different
  * buffer count is needed) at 25.
+ *
+ * 2026-08-07 (later still): dropped 25 -> 17 for the packet-delivery-rate
+ * vs. distance test (NOTES.md 2026-08-07) -- deliberately matches the real
+ * 17-node deployment target's subevent-train load/timing (central still
+ * has to poll all 17 every interval, same radio duty cycle as production),
+ * even though only node 24 is physically powered on for this test; the
+ * other 16 table entries are unpowered placeholders so central's real
+ * polling overhead is representative, not an artificially light 1-node
+ * test. Revert to 25 (or whatever the live roster needs) once this test is
+ * done -- this is a temporary scope-down for controlled testing, not a
+ * permanent capacity reduction.
  */
 #if APP_MINIMAL_REPRO
 #define NUM_SUBEVENTS             5
@@ -183,7 +194,7 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             25
+#define NUM_SUBEVENTS             17
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1

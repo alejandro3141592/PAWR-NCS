@@ -3,6 +3,7 @@ build/
 build2/
 */build/
 */build_node*/
+*/build_central*/
 */build_incremental/
 
 # CMake / Ninja stray files if ever configured outside build/

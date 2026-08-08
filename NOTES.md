@@ -8,6 +8,50 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-08 — packet-delivery-rate vs. distance test: temporarily scoped NUM_SUBEVENTS to 17, CENTRAL_ID=2's table dropped
+
+Set up a controlled test to measure PAwR packet delivery rate as a function
+of central-peripheral distance. Only node 24 is physically powered on;
+5 x 10-minute recordings planned at close/0m, 0.5m, 1m, 1.5m, and 2m from
+central ID 1.
+
+**Code changes (all currently uncommitted-turned-committed by this entry):**
+- `common/pawr_protocol.h`: `NUM_SUBEVENTS` dropped from 25 to 17 (the
+  `#else` production branch). This is deliberate, not a mistake -- with 17
+  slots defined, central still polls all 17 every interval (same radio duty
+  cycle/timing as the real 17-node deployment target) even though only node
+  24 answers. Keeps the test's RF load representative instead of
+  artificially light. **Must be reverted to 25 (or whatever the live roster
+  needs) once the 5 distance recordings are done** -- flagged in-code too.
+- `tools/nodes_distance_test.csv` (new): 17-row roster, all `central_id=1`,
+  node_ids 1-16 + 24 (16 unpowered placeholders + node 24). Regenerate
+  `central/node_slot_table.h` from it with:
+  `python tools/gen_node_slot_table.py tools/nodes_distance_test.csv --num-subevents 17 -o central/node_slot_table.h`
+- `central/node_slot_table.h`: regenerated from the CSV above. **This
+  dropped the previously-generated CENTRAL_ID=2 roster (nodes 33-66,
+  24 entries)** -- not an oversight, it's a hard constraint:
+  `gen_node_slot_table.py` refuses to build a table where any one
+  `central_id` has more entries than `--num-subevents`, and CENTRAL_ID=2's
+  24-node roster can't fit in 17 slots. `NUM_SUBEVENTS` is one global
+  compile-time constant shared by every central build, so as long as it's
+  17, CENTRAL_ID=2 cannot be represented at all.
+  **Don't rebuild/reflash the CENTRAL_ID=2 rig until NUM_SUBEVENTS is
+  reverted back to 25+ and the table is regenerated with both centrals'
+  CSVs included.**
+- `peripheral/node_id.txt` set to `24` (gitignored, local to this board).
+- `.gitignore`: added `*/build_central*/` -- central's build dir naming
+  (`build_central1`) wasn't covered by the existing `*/build_node*/` /
+  `*/build_incremental/` patterns, caught before commit.
+
+**Hardware:** all three apps built and flashed this session --
+`gateway_9151` (J-Link; needed `nrfutil install device` first, this
+machine's nrfutil had zero plugins installed -- if you hit
+`Subcommand nrfutil-device.exe not found` on `west flash`, that's the fix),
+`central` (UF2, central ID 1), `peripheral` (UF2, node 24). Ready for the
+5 distance recordings.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
 ## 2026-08-07 — lost node 49's historical flash log while debugging retrieval; fixed the dump throttling, but flag the underlying risk
 
 Retrieving node 49's flash log (`CONFIG_APP_DUMP_ON_BOOT`) first showed a
