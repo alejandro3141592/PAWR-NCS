@@ -60,8 +60,8 @@ static struct bt_conn *default_conn;
 static struct bt_le_per_adv_sync *default_sync;
 /* Connectable advertising set. Only created (once, in main()) as an
  * extended-advertising set -- not the older bt_le_adv_start()/legacy API --
- * so this side can support LE Coded PHY (APP_USE_CODED_PHY, see
- * common/pawr_protocol.h): Coded PHY is a Bluetooth 5 extended-advertising
+ * so this side can support LE Coded PHY (CONFIG_APP_USE_CODED_PHY, see
+ * Kconfig and common/pawr_protocol.h): Coded PHY is a Bluetooth 5 extended-advertising
  * feature, bt_le_adv_start() explicitly cannot be combined with
  * BT_LE_ADV_OPT_EXT_ADV at all per its own doc comment. Re-started (not
  * re-created) each onboarding cycle via bt_le_ext_adv_start() -- same
@@ -657,18 +657,30 @@ int main(void)
 	/* Same as BT_LE_ADV_CONN_FAST_1 (BT_LE_ADV_OPT_CONN, GAP's recommended
 	 * fast connectable-advertising interval) but as an extended-advertising
 	 * set with BT_LE_ADV_OPT_EXT_ADV, plus BT_LE_ADV_OPT_CODED when
-	 * APP_USE_CODED_PHY is set -- see conn_adv's own comment for why this
-	 * can't just be bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...) anymore.
+	 * CONFIG_APP_USE_CODED_PHY is set -- see conn_adv's own comment for why
+	 * this can't just be bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...) anymore.
+	 *
+	 * Preprocessor #if instead of runtime IS_ENABLED() -- see central/src/
+	 * main.c's matching comment for why: an always-allocated local struct
+	 * copy at this kind of call site (there, bt_le_ext_adv_create's own
+	 * params) was confirmed to break PAST sync at NUM_SUBEVENTS=34 even
+	 * with CONFIG_APP_USE_CODED_PHY off. Applying the same belt-and-braces
+	 * fix here even though the crash was only reproduced on central.
 	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
 	struct bt_le_adv_param conn_adv_param =
 		*BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_EXT_ADV,
 				 BT_GAP_ADV_FAST_INT_MIN_1, BT_GAP_ADV_FAST_INT_MAX_1, NULL);
 
-	if (IS_ENABLED(APP_USE_CODED_PHY)) {
-		conn_adv_param.options |= BT_LE_ADV_OPT_CODED;
-	}
+	conn_adv_param.options |= BT_LE_ADV_OPT_CODED;
 
 	err = bt_le_ext_adv_create(&conn_adv_param, NULL, &conn_adv);
+#else
+	err = bt_le_ext_adv_create(BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_EXT_ADV,
+						    BT_GAP_ADV_FAST_INT_MIN_1,
+						    BT_GAP_ADV_FAST_INT_MAX_1, NULL),
+				    NULL, &conn_adv);
+#endif
 	if (err) {
 		APP_LOG("Failed to create advertising set (err %d)\n", err);
 

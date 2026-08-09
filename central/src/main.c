@@ -573,17 +573,33 @@ int main(void)
 	}
 
 	/* Create a non-connectable advertising set. Same as BT_LE_EXT_ADV_NCONN
-	 * but with APP_USE_CODED_PHY able to add BT_LE_ADV_OPT_CODED -- can't
-	 * use that macro directly since it's a fixed options value, not
+	 * but with CONFIG_APP_USE_CODED_PHY able to add BT_LE_ADV_OPT_CODED --
+	 * can't use that macro directly since it's a fixed options value, not
 	 * something this build-time toggle can OR a flag into.
+	 *
+	 * 2026-08-09: this used to be a plain runtime IS_ENABLED() check that
+	 * ALWAYS allocated a local struct bt_le_adv_param and copied
+	 * BT_LE_EXT_ADV_NCONN into it, even when CONFIG_APP_USE_CODED_PHY is
+	 * off -- confirmed the hard way (isolated single-change A/B test) that
+	 * the extra ~32 bytes of stack usage and struct-copy this added at
+	 * this exact call site was enough, on its own, to break PAST sync at
+	 * NUM_SUBEVENTS=34 (peripheral stuck in a permanent "Waiting for
+	 * periodic sync... / Timed out" loop,100% reproducible). Using a
+	 * preprocessor #if instead of runtime IS_ENABLED() so the
+	 * CONFIG_APP_USE_CODED_PHY=n path (the common case today) compiles to
+	 * the exact same direct BT_LE_EXT_ADV_NCONN pointer pass as before
+	 * this option existed -- zero extra stack, zero extra copy. See
+	 * NOTES.md 2026-08-09.
 	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
 	struct bt_le_adv_param pawr_adv_param = *BT_LE_EXT_ADV_NCONN;
 
-	if (IS_ENABLED(APP_USE_CODED_PHY)) {
-		pawr_adv_param.options |= BT_LE_ADV_OPT_CODED;
-	}
+	pawr_adv_param.options |= BT_LE_ADV_OPT_CODED;
 
 	err = bt_le_ext_adv_create(&pawr_adv_param, &adv_cb, &pawr_adv);
+#else
+	err = bt_le_ext_adv_create(BT_LE_EXT_ADV_NCONN, &adv_cb, &pawr_adv);
+#endif
 	if (err) {
 		printk("Failed to create advertising set (err %d)\n", err);
 		return 0;
@@ -604,6 +620,17 @@ int main(void)
 		return 0;
 	}
 
+	/* 2026-08-09: tried staggering radio startup here (50ms, then 500ms
+	 * delays between per_adv_start/ext_adv_start/scan_start) while chasing
+	 * a PAST sync failure at NUM_SUBEVENTS=34 -- made no measurable
+	 * difference either way, and the eventual finding (see NOTES.md
+	 * 2026-08-09) was that the SAME known-good 0dBm/34-subevent config
+	 * later failed too, meaning none of the config knobs tried that day
+	 * (TX power, PAST timeout, event-length budget, this stagger) were
+	 * ever the actual variable. Reverted to no artificial delay here to
+	 * stop carrying an unproven change forward.
+	 */
+
 	printk("Start Extended Advertising\n");
 	err = bt_le_ext_adv_start(pawr_adv, BT_LE_EXT_ADV_START_DEFAULT);
 	if (err) {
@@ -611,22 +638,31 @@ int main(void)
 		return 0;
 	}
 
-	/* Same as BT_LE_SCAN_PASSIVE_CONTINUOUS but with APP_USE_CODED_PHY able
-	 * to add BT_LE_SCAN_OPT_CODED -- central has to actually scan on Coded
+	/* Same as BT_LE_SCAN_PASSIVE_CONTINUOUS but with CONFIG_APP_USE_CODED_PHY
+	 * able to add BT_LE_SCAN_OPT_CODED -- central has to actually scan on Coded
 	 * PHY to ever see a Coded-PHY peripheral's connectable advert; matching
 	 * the advertising-side toggle above without this would mean central's
 	 * own periodic train is on Coded PHY but it can never find/onboard
 	 * anyone in the first place.
+	 *
+	 * Preprocessor #if instead of runtime IS_ENABLED() -- see the matching
+	 * comment above bt_le_ext_adv_create() for why (the always-allocated
+	 * local copy here was the confirmed cause of a real PAST sync failure
+	 * at NUM_SUBEVENTS=34, even with CONFIG_APP_USE_CODED_PHY off).
 	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
 	struct bt_le_scan_param onboard_scan_param = *BT_LE_SCAN_PASSIVE_CONTINUOUS;
 
-	if (IS_ENABLED(APP_USE_CODED_PHY)) {
-		onboard_scan_param.options |= BT_LE_SCAN_OPT_CODED;
-	}
+	onboard_scan_param.options |= BT_LE_SCAN_OPT_CODED;
+#endif
 
 	while (true) {
 		/* Enable continuous scanning */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
 		err = bt_le_scan_start(&onboard_scan_param, device_found);
+#else
+		err = bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+#endif
 		if (err) {
 			printk("Scanning failed to start (err %d)\n", err);
 			return 0;

@@ -3170,3 +3170,133 @@ unaffected. Committed and pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+## 2026-08-09 — long detour chasing a false +8dBm/34-subevent failure, real bug found, +8dBm confirmed to work: 99.47% PDR over 30 min, full 17-node fleet
+
+**Goal for the day**: combine the two things `redundant-slots-experiment`
+(34 subevents, 17 nodes x primary+backup, 96.79% PDR/30min at 0dBm) and
+`distance-test-17slot` (single-node distance sweep) each separately found --
+fold `+8dBm` TX power in as a baseline change, and separately validate LE
+Coded PHY once at the real 34-subevent/redundant-slot/17-node target instead
+of re-testing every slot-count/power/PHY combination in isolation.
+
+**What actually happened: several hours chasing a failure that turned out
+not to be about power, subevent count, or PHY at all.** Full blow-by-blow:
+
+1. Ported the Coded-PHY toggle from `coded-phy-experiment` onto this branch
+   and folded `+8dBm` in, built, flashed the whole fleet. Central crashed at
+   boot: `udc: Failed to allocate net_buf 4095, ep 0x80` right after
+   "Scanning successfully started," zero peripherals ever onboarded.
+2. First hypothesis: `CONFIG_BT_CTLR_PHY_CODED` was left **unconditionally**
+   set in `prj.conf` (not gated by the runtime toggle) -- a real bug,
+   confirmed and fixed (new `CONFIG_APP_USE_CODED_PHY` Kconfig option with
+   `select BT_CTLR_PHY_CODED`, single source of truth). But reflashing with
+   this fix **did not** resolve the crash -- wrong diagnosis, real bug fixed
+   anyway.
+3. Second hypothesis: `+8dBm` itself. Byte-diffed `.config` against a fresh
+   rebuild of the last known-good commit (`aba6a56`) -- confirmed the only
+   functional difference really was `CONFIG_BT_CTLR_TX_PWR_DBM` 0 vs 8, RAM/
+   FLASH identical. Reverted to 0dBm -- **still crashed.** Went back to the
+   literal, unmodified `aba6a56` build (git worktree, not hand-reconstructed)
+   -- **that worked**, 5+ minutes clean, one node. This was the first sign
+   the `udc` noise itself is a red herring: it turns out to happen on every
+   single boot, including this known-good one -- it's benign USB-CDC console
+   enumeration noise, not fatal, and normal onboarding proceeds right after
+   it on a good build.
+4. With the `udc` noise ruled out as the signal, re-tested `+8dBm` at the
+   real 34-subevent target and hit a **different, real** failure: peripheral
+   stuck forever in `Waiting for periodic sync... / Timed out while
+   synchronizing`, never once completing PAST sync, fast and consistent
+   (not a slow-acquisition problem). Chased this for a while: bumped
+   `PAWR_PAST_TIMEOUT_UNITS` 30s->60s (no change), bumped
+   `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_EVENT_LEN_DEFAULT` 7.5ms->1.5s (no
+   change), staggered central's radio-startup calls with `k_sleep()` 50ms
+   then 500ms (no change), tried `+4dBm` as an intermediate power step (same
+   failure) -- none of it mattered. Searched Nordic DevZone and the SDC
+   changelog for a matching known bug -- nothing matched NCS v3.3.0.
+5. Reverted every diagnostic change back to (what was believed to be) the
+   original state -- **still failed.** Rebuilt from the literal `3eaad70`
+   commit (docs-only on top of `aba6a56`, code-identical) -- **worked
+   again**, cleanly. Diffed the "should be equivalent" reconstructed build
+   against this literal one: `.config` was one no-op line different, but the
+   **binary genuinely differed** -- `main()`'s stack frame was 120 bytes in
+   the reconstruction vs 88 bytes in the literal build (confirmed via
+   `arm-zephyr-eabi-objdump`/`size`). Root cause: the Coded-PHY refactor
+   used a runtime `IS_ENABLED(CONFIG_APP_USE_CODED_PHY)` check that always
+   allocated a local `struct bt_le_adv_param`/`struct bt_le_scan_param` and
+   copied the const `BT_LE_EXT_ADV_NCONN`/`BT_LE_SCAN_PASSIVE_CONTINUOUS`
+   macro into it -- even with the toggle off -- adding real stack usage and
+   an extra struct-copy at the exact `bt_le_ext_adv_create()`/
+   `bt_le_scan_start()` call sites. **Isolated A/B test (this one change
+   alone, nothing else) reproduced the PAST sync failure 100% of the time.**
+6. Fixed properly: converted the runtime checks to preprocessor
+   `#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)` in both `central/src/main.c`
+   and `peripheral/src/main.c`, so the (default) Coded-PHY-off path compiles
+   to the exact original direct-pointer-to-const-macro form -- zero extra
+   stack, zero extra copy. Verified byte-identical `.elf` text size and
+   `main()` stack frame to the pre-refactor working baseline, and byte-
+   identical `zephyr.uf2` MD5 to a build that had worked successfully twice.
+7. Reflashed that MD5-identical binary -- **failed anyway.** Swapped in a
+   completely different physical peripheral board (as node 41) against the
+   same central -- **also failed.** At this point: identical firmware
+   (verified MD5) had produced both a 5+ minute clean run and a hard failure
+   on the same central board, and a board swap didn't change the outcome.
+   Wrote up the full investigation in
+   `logs/2026-08-09_sync_failure_investigation.md` rather than keep guessing
+   blindly.
+8. Reflashed the exact known-good baseline one more time as a fresh control
+   (suggested next step from that writeup) -- **worked again**, cleanly.
+   Whatever caused the intermittent failures in steps 3-7 never recurred
+   after this point and was never conclusively identified -- most likely
+   some transient board/USB/RF state from an unusually high number of rapid
+   reflash-and-reset cycles in a single session (this branch's boards were
+   reflashed 15-20+ times over a few hours today), though this is a
+   plausible-not-proven explanation, not a confirmed root cause.
+9. Added `+8dBm` back as the **single** minimal change on top of the now-
+   confirmed-stable baseline (nothing else touched) -- worked cleanly,
+   node 40 reporting continuously with zero gaps. Built and flashed the
+   full 17-node fleet from this exact verified source. All 17 onboarded
+   within about 2 minutes of the last board being flashed.
+
+**Result: 30-minute soak, full 17-node fleet, `+8dBm`, 34 subevents
+(redundant primary+backup slots), Coded PHY off (not yet re-tested this
+session) -- 99.47% overall PDR (3190/3207), all 17 nodes present the entire
+session, zero dropouts.** 12 of 17 nodes hit a perfect 100%; worst node
+(54) was 96.81%. Compares directly against the earlier 0dBm baseline on
+this same branch (96.79% PDR) -- **`+8dBm` is a real, confirmed ~2.7
+percentage-point improvement at the actual 34-subevent deployment target**,
+consistent with (though smaller in absolute terms than) what the single-node
+`distance-test-17slot` sweep predicted. This also confirms 34 subevents
+itself was never the problem at any point today -- every failure this
+session happened with 34 subevents present in both the working and broken
+runs alike.
+
+**Bugs actually fixed and kept, real and worth keeping regardless of the
+above detour:**
+- `CONFIG_APP_USE_CODED_PHY` as a proper Kconfig option (`select
+  BT_CTLR_PHY_CODED`) instead of an unconditional `prj.conf` line plus a
+  separate C-level toggle that could drift out of sync (central/Kconfig,
+  peripheral/Kconfig).
+- The runtime-`IS_ENABLED()` -> preprocessor-`#if` fix in both apps'
+  `main.c`, removing all extra stack/struct-copy overhead when Coded PHY is
+  off (the default).
+
+**Not yet done / open follow-ups:**
+- Coded PHY itself still hasn't been tested at the real 34-subevent target
+  this session -- that was the original goal before today's detour. Next
+  candidate now that the fleet is stable and `+8dBm` is confirmed.
+- `[STORAGE] fcb_append failed (err -28)` (`-ENOSPC`) is appearing on at
+  least node 40's console -- the on-board flash circular buffer log is full
+  from today's very high number of reflashes/test runs. Cosmetic (doesn't
+  affect PAwR delivery -- confirmed seq numbers and DB rows both continued
+  incrementing normally through it), but the log should wrap instead of
+  erroring once full. Not fixed yet -- next up.
+- The intermittent failure in steps 3-7 above was never conclusively
+  explained. If it recurs, worth trying: a much longer (not just quick
+  unplug/replug) power-off cool-down, testing with a spare **central**
+  board specifically (only the peripheral side got a board-swap test today),
+  or capturing a BLE sniffer trace during a failing run to separate
+  "central's periodic-adv train is malformed" from "peripheral's receiver
+  is failing" definitively instead of inferring it from console logs.
+
+— Alejandro (session assisted by Claude), 2026-08-09
+

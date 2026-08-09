@@ -142,7 +142,7 @@ static inline unsigned int pawr_parse_node_id(const char *name)
  */
 #define APP_SCALE_TEST 0
 
-/* 2026-08-07/08: toggle for LE Coded PHY (Long Range) -- ported from
+/* 2026-08-07/08: LE Coded PHY (Long Range) support -- ported from
  * coded-phy-experiment onto this branch, now that a separate single-node
  * distance test (distance-test-17slot) confirmed Coded PHY's benefit
  * grows with distance (roughly flat at 1m, +5pp at 2m over +8dBm-power-
@@ -151,27 +151,31 @@ static inline unsigned int pawr_parse_node_id(const char *name)
  * than re-validating it in isolation at every slot count (see NOTES.md
  * 2026-08-08 for the reasoning against a full factorial sweep).
  *
- * Both central and every peripheral must be built with this set to the
- * same value (BT_LE_ADV_OPT_CODED/BT_LE_SCAN_OPT_CODED in
- * central/src/main.c, matching connectable-adv option in
- * peripheral/src/main.c) -- a 1M-PHY central can't onboard a Coded-PHY
- * peripheral or vice versa, so a mismatched pair would just never connect,
- * not degrade gracefully. Also requires CONFIG_BT_CTLR_PHY_CODED=y on both
- * apps' prj.conf -- confirmed the hard way on coded-phy-experiment that
- * the nRF52840's hardware-capability Kconfig alone does NOT enable this;
- * without the explicit Kconfig, bt_le_ext_adv_create() fails outright at
- * boot (err -5, HCI status 0x11) and NOTHING onboards, on any PHY.
+ * Controlled by CONFIG_APP_USE_CODED_PHY (see central/Kconfig,
+ * peripheral/Kconfig -- check with IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+ * at call sites, no separate C-level macro here). Both central and every
+ * peripheral must be built with this set to the same value
+ * (BT_LE_ADV_OPT_CODED/BT_LE_SCAN_OPT_CODED in central/src/main.c,
+ * matching connectable-adv option in peripheral/src/main.c) -- a 1M-PHY
+ * central can't onboard a Coded-PHY peripheral or vice versa, so a
+ * mismatched pair would just never connect, not degrade gracefully.
  *
- * REAL RISK, still not fully validated at scale: Coded PHY's S=8 coding is
- * substantially slower over the air than 1M PHY -- PAWR_RESPONSE_SLOT_SPACING/
- * PAWR_SUBEVENT_INTERVAL below were tuned assuming 1M-PHY transmission
- * time. The distance-test branch found no systematic slot-timing failures
- * at 1 node, but 34 subevents (17 nodes x 2 slots) is a much busier train
- * than that single-node test ever exercised -- if this causes widespread
- * response failures (not just "no improvement" but actively worse, across
- * near AND far nodes), that's the likely cause.
+ * 2026-08-08 (real bug, found the hard way): this used to be a plain
+ * `#define APP_USE_CODED_PHY 0/1` here, with CONFIG_BT_CTLR_PHY_CODED set
+ * UNCONDITIONALLY in both apps' prj.conf (reasoning at the time: "the code
+ * paths don't request Coded PHY when the toggle is off, so this has no
+ * effect"). That reasoning was wrong -- CONFIG_BT_CTLR_PHY_CODED makes the
+ * SDC controller reserve extra internal resources for Coded PHY support
+ * regardless of whether any connection actually uses it, and at
+ * NUM_SUBEVENTS=34 that extra baseline overhead alone was enough to cause
+ * a deterministic boot-time crash (immediate "udc: Failed to allocate
+ * net_buf" right after "Scanning successfully started", confirmed
+ * reproducible across a fresh reflash) -- with the runtime toggle left
+ * OFF the whole time. Fixed by making CONFIG_APP_USE_CODED_PHY a real
+ * Kconfig option that `select`s CONFIG_BT_CTLR_PHY_CODED only when
+ * actually enabled -- single source of truth, can't drift out of sync
+ * like the old #define + unconditional prj.conf line could.
  */
-#define APP_USE_CODED_PHY 0
 
 /* One subevent per node, one response slot per subevent. interval_min/max
  * are uint16_t in 1.25 ms units (0x1F40 * 1.25ms = 10.00s exactly).
@@ -260,6 +264,12 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 
 /* PAST subscribe timeout on the peripheral: 10ms units, 30s = 3 missed
  * 10s intervals of margin before sync is torn down.
+ *
+ * 2026-08-09: briefly bumped to 6000 (60s) as a diagnostic step while
+ * chasing a sync failure at NUM_SUBEVENTS=34 -- made no difference (same
+ * failure, same timing, regardless of 30s vs 60s), so reverted back to
+ * 3000. See NOTES.md 2026-08-09 -- the timeout value was never the actual
+ * variable.
  */
 #define PAWR_PAST_TIMEOUT_UNITS   3000
 
