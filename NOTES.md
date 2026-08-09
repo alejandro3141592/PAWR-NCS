@@ -3300,3 +3300,58 @@ above detour:**
 
 — Alejandro (session assisted by Claude), 2026-08-09
 
+## 2026-08-09 (later) — flash-log wraparound attempt caused a real regression, reverted; commit 4bf10b2 declared the first stable version
+
+Tried fixing the `[STORAGE] fcb_append failed (err -28)` (`-ENOSPC`) noise
+flagged above: added an `fcb_rotate()`-and-retry path to both
+`common/sensor_log.c` (central) and peripheral's own separate, duplicated
+copy of the same FCB logic in `peripheral/src/main.c` (these are two
+independent implementations of the same pattern, not shared code -- worth
+unifying at some point but not touched today). The change itself compiled
+clean and was small (peripheral: +one retry branch in
+`storage_fcb_append()`; central: same in `sensor_log_append()`, only ~300
+bytes of added `text`, nowhere near `main()`'s own stack).
+
+Flashed central + node 40 with this change: the flash-log error was
+genuinely gone, but **node 40 stopped syncing entirely** -- back to
+`Waiting for periodic sync... / Timed out while synchronizing` forever,
+identical symptom to the false alarm chased most of today. First assumed
+this was the same still-unexplained transient flakiness (see previous
+entry) and reflashed central twice with its unmodified, MD5-verified
+binary -- both attempts **still failed**, which was new: earlier
+transient flakiness had never failed the *same* binary twice in a row.
+That pointed at the one thing that had actually changed and stayed
+changed: node 40's peripheral, still running the FCB-fix build.
+
+**Reverted node 40 alone back to the pre-fix peripheral build (central left
+untouched) -- sync recovered immediately.** This is a real, reproducible
+regression from the FCB-rotate change, not more of today's earlier
+flakiness -- confirmed by isolating the one board that mattered. Root cause
+not investigated further (not worth more time chasing it today given how
+much of the session was already spent on false leads) -- plausible
+candidates for later: `fcb_rotate()` itself takes real time / does a flash
+erase synchronously, and if this runs from inside a BT-stack callback path
+(sensor read -> `sensor_log_append()` -> PAwR response, all on the same
+timing-sensitive path that already showed itself fragile to small
+stack/timing changes earlier today), a synchronous flash erase blocking
+that path at exactly the wrong moment is a believable mechanism, though
+unconfirmed.
+
+**Decision: reverted the FCB-rotate change entirely** (`git checkout --
+common/sensor_log.c peripheral/src/main.c`, back to what commit `4bf10b2`
+already has -- the FCB-rotate attempt was never committed, only tried as
+uncommitted working-tree changes, so reverting was a clean no-op on git
+history). The flash-log-full cosmetic issue is unfixed and parked --
+revisit later with the flash-erase-timing theory above as a starting point,
+probably by moving `fcb_rotate()` off the hot PAwR response path (e.g. into
+a deferred work item) rather than calling it synchronously from
+`sensor_log_append()`/`storage_fcb_append()`.
+
+**Commit `4bf10b2` is the first stable version of this branch.** Verified,
+not assumed: rebuilt central from a clean working tree at this exact commit
+and confirmed its `zephyr.uf2` MD5 matches byte-for-byte what's actually
+running on hardware right now, which just came off a clean 30-minute,
+17-node, 99.47%-PDR soak test (previous entry). Pushed to `origin/redundant-slots-experiment`.
+
+— Alejandro (session assisted by Claude), 2026-08-09
+

@@ -1,109 +1,149 @@
-# PAwR smoke test (NCS / Zephyr, not PlatformIO)
+# PAwR skin-sensor network (NCS / Zephyr, not PlatformIO)
 
-Two minimal apps to confirm Periodic Advertising with Responses actually
-works between two Seeed XIAO nRF52840 (Sense) boards, per the findings in
-`../PAwR/does-pawr-is-supported-idempotent-origami.md`: PAwR needs the
-Zephyr Bluetooth stack (nRF Connect SDK), not the Arduino/Bluefruit stack
-the main `PAwR` PlatformIO project uses. These are separate from that
-project and are **not** built with PlatformIO.
+A 17-node wearable skin-temperature + humidity sensor network built on
+**PAwR** (Periodic Advertising with Responses), a BLE 5.4 feature designed
+for exactly this "one hub, many low-power sensor nodes" topology. Despite
+living under a folder named `PlatformIO`, this project is **not** built
+with PlatformIO — it's an nRF Connect SDK (NCS) / Zephyr project, built
+with `west`/CMake/sysbuild. See `../PAwR/does-pawr-is-supported-idempotent-origami.md`
+for why: the sibling `PAwR` PlatformIO/Arduino project's Bluefruit/SoftDevice
+stack can't do PAwR at all, which is why this project exists as a separate
+NCS-based rewrite.
 
-- `central/` — the PAwR advertiser (source of periodic advertising +
-  subevent data, receives responses). Based on the NCS sample
-  `periodic_adv_rsp`.
-- `peripheral/` — the PAwR sync/responder (syncs to the advertiser, echoes
-  each subevent payload back as its response). Based on the NCS sample
-  `periodic_sync_rsp`.
+**Current status (2026-08-09): stable.** Full 17-node fleet, redundant
+primary+backup subevent slots, `+8dBm` TX power, 30-minute soak confirmed
+at **99.47% packet delivery ratio**, zero node dropouts. Commit `4bf10b2`
+on branch `redundant-slots-experiment` is the first version tagged
+"stable" — see [NOTES.md](NOTES.md)'s 2026-08-09 entries for how it got
+there and what's still open.
 
-Both are copied near-verbatim from the NCS v3.3.0 samples at
-`C:/ncs/v3.3.0/zephyr/samples/bluetooth/periodic_adv_rsp` and
-`periodic_sync_rsp` (Nordic's own tested reference for this exact feature),
-with a couple of extra `printk`s so a successful packet round-trip is
-obvious in the console output.
+## What it does
 
-## What the test proves
+Each of 17 wearable peripheral nodes reads skin temperature (MAX30205) and
+humidity (SHT4x) over I2C every 10 seconds and reports it to one central
+hub over BLE. The central hub forwards every reading over UART to an
+nRF9151 gateway board, which bridges it over LTE-M/NB-IoT to an MQTT broker
+(HiveMQ Cloud), where a Python GUI/DB consumer stores and displays it.
 
-1. `central` starts periodic advertising and, for every subevent, writes an
-   incrementing counter byte as the payload.
-2. `central` also scans for a device named `PAwR sync sample`. When one is
-   found, it connects, transfers periodic sync info (PAST), discovers the
-   peripheral's GATT characteristic, and writes it a `{subevent,
-   response_slot}` assignment, then disconnects.
-3. `peripheral` advertises as `PAwR sync sample`, accepts the connection,
-   receives the assignment, and uses PAST to sync to `central`'s periodic
-   advertising train on that subevent.
-4. Every time `peripheral` receives a subevent packet it prints
-   `>>> Packet received: subevent N` and echoes the payload back in its
-   assigned response slot.
-5. `central`'s `response_cb` prints `>>> Response received: subevent N, slot
-   M` with the echoed bytes.
+```
+17x peripheral (XIAO nRF52840)  --PAwR (BLE)-->  central (XIAO nRF52840)
+                                                        |
+                                          UART1, 115200, framed+CRC16
+                                                        v
+                                    gateway_9151 (nRF9151 DK)
+                                                        |
+                                        MQTT/TLS over LTE-M/NB-IoT
+                                                        v
+                                       HiveMQ Cloud  -->  gui/ (Python)
+```
 
-Seeing both `>>> Packet received` (on peripheral) and `>>> Response
-received` (on central) in the serial logs is the actual proof PAwR — the
-bidirectional part specifically — works on this hardware.
+Each peripheral also keeps a local on-board flash log (Flash Circular
+Buffer) of every reading as a fallback, independent of whether the BLE
+round-trip, UART link, or LTE/MQTT hop is up.
 
-## Prerequisites
+## Repo layout
 
-You already have NCS v3.3.0 installed at `C:/ncs/v3.3.0` with its toolchain
-at `C:/ncs/toolchains/936afb6332`. Build using the same environment the nRF
-Connect for VS Code extension uses, i.e. either:
+- **`central/`** — the PAwR hub. Runs periodic advertising with a fixed
+  node-ID→subevent table (`central/node_slot_table.h`, not dynamic
+  assignment — see below), onboards peripherals via PAST (Periodic
+  Advertising Sync Transfer) + a GATT slot-assignment write, and forwards
+  every response over UART to the gateway board.
+- **`peripheral/`** — the sensor node. Syncs to central via PAST, reads
+  both sensors every 10s, answers its assigned subevent(s) with the latest
+  reading, and keeps a local flash-log fallback.
+- **`common/pawr_protocol.h`** — single source of truth for the wire
+  format (`struct sensor_payload`, 8 bytes, fixed-point not float) and all
+  PAwR timing constants (subevent count, interval, slot spacing). Any
+  protocol/timing change belongs here, not duplicated per-app.
+- **`gateway_9151/`** — nRF9151 DK firmware bridging central's UART output
+  to MQTT/TLS over cellular. See its own `README.md`.
+- **`gui/`** — Python MQTT consumer + SQLite store (`sensor_data.db`) +
+  dashboard (`sensor_gui.py`). Where PDR/soak-test results are computed
+  from.
+- **`tools/`** — build/flash/log automation:
+  `Build-NodeFleet.ps1` (batch-builds all peripheral node IDs from one
+  incremental build dir), `Watch-SerialLog.ps1` (COM-port capture — see
+  the caveat below), `gen_node_slot_table.py` (generates
+  `node_slot_table.h` from a CSV roster), `Read-StorageFlash.ps1` /
+  `decode_fcb_dump.py` (retrieve + decode a node's on-board flash log).
+- **`NOTES.md`** — the full, dated, blow-by-blow diagnostic log. This is
+  the authoritative history of every bug found/fixed and every experiment
+  run — read it before assuming something is broken or unexplored.
+- **`PROJECT_STATUS.md`**, **`Summary.md`** — older condensed snapshots
+  (2026-08-01, 2026-07-31 respectively). Useful for context on earlier
+  design decisions, but dated — `NOTES.md` and this file are more current.
+- **`BUILD_AND_FLASH.md`** — copy-paste build/flash commands for all
+  three apps.
+- **`logs/`** — soak-test capture logs and dated investigation writeups
+  (e.g. `2026-08-09_sync_failure_investigation.md`).
 
-- **nRF Connect for VS Code**: use "Add Build Configuration" on each app
-  folder, board target `xiao_ble/nrf52840/sense`, then build/flash from the
-  extension's UI, or
-- **Toolchain terminal**: open a terminal via the extension's "Open
-  Toolchain Terminal" (or `nrfutil toolchain-manager launch --shell` if you
-  use nrfutil directly), which sets `ZEPHYR_BASE`, `PATH`, etc. for
-  `west`/`cmake`/`ninja`/the arm toolchain automatically.
+## Key design points (current state, not history)
+
+- **Fixed, not dynamic, slot assignment.** Earlier versions of this
+  project had central assign subevent slots to peripherals dynamically at
+  onboarding time. The current design uses a fixed compile-time table
+  (`central/node_slot_table.h`, generated by
+  `tools/gen_node_slot_table.py` from `tools/node_roster_17.csv`) mapping
+  each `node_id` to a specific subevent — simpler and more predictable at
+  a fixed 17-node deployment, at the cost of the dynamic-membership
+  flexibility the earlier design aimed for.
+- **Redundant primary+backup slots.** Each of the 17 nodes gets *two*
+  subevents (`NUM_SUBEVENTS = 34` in `common/pawr_protocol.h`) — a primary
+  and a backup, both carrying the same reading each interval. If one
+  delivery attempt is lost, the other is an independent chance to get it
+  through before the next 10s reading replaces it. Confirmed to raise PDR
+  from ~88.8% (single-slot baseline) to 96.79% (0dBm) / 99.47% (`+8dBm`).
+- **`+8dBm` TX power** (`CONFIG_BT_CTLR_TX_PWR_PLUS_8`, both apps) is the
+  current default — confirmed via a single-node distance sweep and, as of
+  2026-08-09, a full 17-node/30-min soak, to meaningfully improve PDR.
+  Chasing this down took most of a day due to an unrelated bug (a
+  Coded-PHY refactor that broke PAST sync only in combination with high
+  subevent counts, since fixed) that looked like a `+8dBm` incompatibility
+  at first — see NOTES.md 2026-08-09 for the full story before assuming
+  TX power is fragile.
+- **LE Coded PHY support exists** (`CONFIG_APP_USE_CODED_PHY` Kconfig
+  option, both apps) but is **off by default** and not yet validated at
+  the real 17-node/34-subevent target — next thing to test once revisited.
+- **10-second reporting interval**, `PAWR_INTERVAL_UNITS = 0x1F40` exactly
+  10.00s, independent of subevent count.
+- No app-layer CRC on the sensor payload (BLE already CRCs every PDU at
+  the link layer) or on the PAwR hop generally — the UART link to the
+  gateway does use a CRC16, since that's a much noisier physical link.
 
 ## Building and flashing
 
-Run from inside a toolchain-configured shell (see above). You need two
-boards connected (or flash one, then the other).
+See [BUILD_AND_FLASH.md](BUILD_AND_FLASH.md) for exact commands. Quick
+summary: NCS v3.3.0 must already be installed (`C:/ncs/v3.3.0`, toolchain
+at `C:/ncs/toolchains/936afb6332`); boards are Seeed XIAO nRF52840 (plain,
+not Sense) flashed via their on-board UF2 bootloader (double-tap reset →
+mounts as a `XIAO-BOOT` drive → copy `zephyr.uf2` onto it).
 
-```sh
-# From C:/Users/mtzal/OneDrive/Dokumente/PlatformIO/Projects/PAwR-ncs
+```powershell
+# central (build once per rig — CONFIG_APP_CENTRAL_ID scopes multi-rig deployments)
+west build --build-dir central/build central --pristine --board xiao_ble/nrf52840 -- -DCONFIG_APP_CENTRAL_ID=1
 
-west build -p -b xiao_ble/nrf52840/sense -d central/build central
-west flash -d central/build
-
-west build -p -b xiao_ble/nrf52840/sense -d peripheral/build peripheral
-west flash -d peripheral/build
+# one peripheral (repeat per node, or use tools/Build-NodeFleet.ps1 to batch-build all 17)
+west build --build-dir peripheral/build peripheral --pristine --board xiao_ble/nrf52840 -- -DCONFIG_APP_CENTRAL_ID=1 -DCONFIG_APP_NODE_ID=<node id from node_slot_table.h>
 ```
 
-If your board is the non-Sense XIAO BLE, use board target
-`xiao_ble/nrf52840` instead.
+Flash by copying the resulting `zephyr.uf2` onto the board's `XIAO-BOOT`
+drive while in bootloader mode.
 
-`west flash` uses the on-board bootloader/DFU or a debug probe depending on
-how your boards are set up — same as any other NCS app for this board; this
-isn't PAwR-specific.
+## A note on serial log capture
 
-## Watching it work
+`tools/Watch-SerialLog.ps1` is known to be unreliable — frequent "Access to
+the port denied" errors and silent 0-byte captures, especially trying to
+catch a board's boot-time output in the narrow (~400ms) window right after
+reset. When it fails, a manual terminal (VS Code Serial Monitor, PuTTY,
+etc.) attached directly to the board's COM port has repeatedly worked where
+the tool didn't. Not yet fixed — treat as a known limitation, not a sign
+the board itself is broken.
 
-Open a serial monitor on both boards (e.g. `west build -d central/build -t
-menuconfig` isn't needed — just any terminal at 115200 8N1 on each board's
-CDC-ACM port, or `nrfutil device x-serial-terminal` / VS Code's Serial
-Monitor view). Power/reset both. Expected order:
+## Where to look for more
 
-1. `peripheral`: `Waiting for periodic sync...`
-2. `central`: `Scanning successfully started` → `Found peripheral ..., connecting...` → `Connected` → `PAST sent` → discovery → `PAwR config written to sync 0, disconnecting`
-3. `peripheral`: `Connected` → `New timing: subevent 0, response slot 0` → `Disconnected` → `Synced to ... with 5 subevents` → `Periodic sync established.`
-4. Then repeatedly, on `peripheral`: `>>> Packet received: subevent 0` and on `central`: `>>> Response received: subevent 0, slot 0` with matching payload bytes.
-
-## Notes / things that can trip this up
-
-- **Two separate boards required.** One is the advertiser/central, the
-  other is the peripheral — flash each app to a different board.
-- `central` only connects to a peripheral advertising the name `PAwR sync
-  sample` (set via `CONFIG_BT_DEVICE_NAME` in `peripheral/prj.conf`, and
-  matched against in `central/src/main.c`'s `device_found()`). Don't rename
-  one without the other if you edit these.
-- This uses **PAST (Periodic Advertising Sync Transfer)** to get the
-  peripheral synced, which is how Nordic's own sample does onboarding. It
-  requires a normal GATT connection to happen first (steps 2 above) — that
-  connection is torn down once sync + config are handed off; PAwR itself is
-  connectionless after that.
-- `CONFIG_BT_PER_ADV_RSP` / `CONFIG_BT_PER_ADV_SYNC_RSP` are the Kconfig
-  symbols that gate PAwR support in the controller/host — if your
-  `west build` fails complaining these are undefined, your NCS version is
-  older than needed (want ≥ v2.4.0; you have v3.3.0, so this shouldn't
-  happen).
+- **Something seems broken or unexplained?** Check `NOTES.md` first — it's
+  dated and extremely thorough; most "new" problems turn out to already
+  have an entry.
+- **Want the full history of a specific investigation?** `logs/*.md` has
+  dedicated writeups for the larger multi-hour debugging sessions.
+- **Just need to build/flash something right now?** `BUILD_AND_FLASH.md`.
