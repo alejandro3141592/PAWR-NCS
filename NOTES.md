@@ -8,6 +8,59 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
+## 2026-08-11 — Node 3 / central 1 confirmed working on this machine; exact commit + build environment recorded for cross-machine repro
+
+Central (`CONFIG_APP_CENTRAL_ID=1`) and peripheral node 3 (`CONFIG_APP_NODE_ID=3`,
+`CONFIG_APP_CENTRAL_ID=1`) built, flashed, and confirmed working together on
+this machine (rebuilt+reflashed twice in one session, both times pristine,
+same result). User reports the same pairing does **not** work when built on
+a second machine -- recording the known-good state here so the two machines
+can be diffed.
+
+**Commit:** built from `1798da4` (branch `main`). Also content-identical for
+everything that matters to this pairing on `multi-gateway-support`@`880c0dd`
+-- `git diff --stat 1798da4 880c0dd -- central peripheral common
+tools/node_roster.csv tools/gen_node_slot_table.py` is empty, so the two
+branches agree on `central/`, `peripheral/`, `common/`, and the roster.
+Roster entry used: `tools/node_roster.csv` line `1,3` (central 1, node 3),
+matching `central/node_slot_table.h`'s fixed subevent assignment (see
+2026-08-07 entry below on the fixed-slot-table design).
+
+**Build commands (pristine, both apps), from repo root:**
+```powershell
+& $python -m west build --build-dir central\build central --pristine --board xiao_ble/nrf52840 -- -DCONFIG_APP_CENTRAL_ID=1
+& $python -m west build --build-dir peripheral\build_node3 peripheral --pristine --board xiao_ble/nrf52840 -- -DCONFIG_APP_NODE_ID=3 -DCONFIG_APP_CENTRAL_ID=1
+```
+
+**Toolchain environment (set before either build):**
+```powershell
+$tc = 'C:\ncs\toolchains\936afb6332'
+$env:PATH = "$tc\opt\bin;$tc\opt\bin\Scripts;$tc\mingw64\bin;$tc\bin;$tc\cmd;$tc\usr\bin;$tc\opt\nanopb\generator-bin;$tc\nrfutil\bin;$tc\opt\zephyr-sdk\arm-zephyr-eabi\bin;$tc\opt\zephyr-sdk\riscv64-zephyr-elf\bin"
+$env:ZEPHYR_TOOLCHAIN_VARIANT = 'zephyr'
+$env:ZEPHYR_SDK_INSTALL_DIR = "$tc\opt\zephyr-sdk"
+$env:ZEPHYR_BASE = 'C:\ncs\v3.3.0\zephyr'
+```
+i.e. NCS toolchain id `936afb6332`, Zephyr base `C:\ncs\v3.3.0\zephyr`,
+board target `xiao_ble/nrf52840`.
+
+**Caught mid-session, likely relevant to "works here, not there":** this
+machine's git `HEAD` silently moved from `multi-gateway-support`@`880c0dd`
+to `main`@`1798da4` partway through the session -- nobody in this session ran
+`git checkout`, so it must have happened in another window/terminal on this
+machine. Confirmed via the commit-diff above that it did *not* change the
+firmware actually built. But it's a live reminder that **branch/commit drift
+is an easy-to-miss cause of "works on my machine, not on the other one."**
+First things to check on the failing machine, in order: (1) `git log
+--oneline -1` and `git status` -- is it even on the branch/commit you think,
+and clean; (2) whether `central/`, `peripheral/`, `common/`, and
+`tools/node_roster.csv` there actually match this machine's (a `git diff` of
+those paths against `1798da4` or `880c0dd` costs nothing); (3) the toolchain
+path/NCS version (`C:\ncs\toolchains\<id>`, `ZEPHYR_BASE`) -- a different NCS
+version is also a plausible source of build-time behavior differences even
+from identical source.
+
+— Alejandro (session assisted by Claude), 2026-08-11
+
 ## 2026-08-07 — lost node 49's historical flash log while debugging retrieval; fixed the dump throttling, but flag the underlying risk
 
 Retrieving node 49's flash log (`CONFIG_APP_DUMP_ON_BOOT`) first showed a
