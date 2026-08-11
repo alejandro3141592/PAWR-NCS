@@ -183,39 +183,48 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             34
+#define NUM_SUBEVENTS             33
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1
 
-/* 2026-08-07 (redundant-slots-experiment branch): 17 nodes, each with TWO
- * dedicated subevents instead of one -- a primary and a backup, both
+/* 2026-08-07 (redundant-slots-experiment branch), extended 2026-08-11: each
+ * node gets NUM_REDUNDANT_COPIES dedicated subevents instead of one, all
  * carrying the same latest_payload/seq each interval (peripheral reads
  * sensors once per PAWR_INTERVAL_MS regardless of how many subevents it
- * answers, see peripheral/src/main.c's sensor_read_work -- so both slots
- * are genuinely redundant delivery attempts of the SAME reading, not two
- * different readings). Goal: if one attempt is lost (radio contention,
- * timing, interference), the other is an independent chance to get that
- * same seq through before the next 10s reading replaces it.
+ * answers, see peripheral/src/main.c's sensor_read_work -- so every copy is
+ * a genuinely redundant delivery attempt of the SAME reading, not a
+ * different one). Goal: if an attempt is lost (radio contention, timing,
+ * interference), the others are independent chances to get that same seq
+ * through before the next 10s reading replaces it.
  *
- * Backup subevent = primary + NUM_PRIMARY_SLOTS (fixed offset, not an
- * explicit per-node table column) -- e.g. primary block is subevents
- * 0-16, backup block is 17-33, node_slot_table.h only lists each node's
- * primary and central computes the backup from it. Chosen over explicit
- * per-node backup assignment for simplicity and because it makes
- * collisions impossible by construction (each node's backup is uniquely
- * determined by its own primary, which node_slot_table_validate() already
- * guarantees is unique per central).
+ * Copy k's subevent = primary + k * NUM_PRIMARY_SLOTS, for k = 0 ..
+ * NUM_REDUNDANT_COPIES - 1 (fixed offsets, not explicit per-node table
+ * columns) -- e.g. with NUM_PRIMARY_SLOTS = 11, the primary block is
+ * subevents 0-10, 2nd copy is 11-21, 3rd copy is 22-32; node_slot_table.h
+ * only lists each node's primary, central computes the rest. Chosen over
+ * explicit per-node assignment for simplicity and because it makes
+ * collisions impossible by construction (each node's redundant subevents
+ * are uniquely determined by its own primary, which
+ * node_slot_table_validate() already guarantees is unique per central).
  *
- * NUM_SUBEVENTS = 34 (17*2) is higher than anything soak-tested with 6/6
- * buffers so far (20 was the last clean validation) and enters the same
- * territory as the still-unexplained NUM_SUBEVENTS=25 boot failure found
- * on the coded-phy-experiment branch (NOTES.md 2026-08-07) -- treat this
- * as genuinely unvalidated at the subevent-count level, independent of
- * whether the redundant-slot logic itself works, until proven otherwise
- * on real hardware.
+ * 2026-08-11: dropped from 17 primary/2 copies (34 subevents) to 11
+ * primary/3 copies (33 subevents) to match the real deployment split of 4
+ * central rigs x 11 nodes each (see NOTES.md). Still in the same
+ * unvalidated-at-this-subevent-count territory flagged before (20 was the
+ * last clean 6/6-buffer soak validation, and NUM_SUBEVENTS=25 hit a still-
+ * unexplained boot failure on the coded-phy-experiment branch, NOTES.md
+ * 2026-08-07) -- treat as unvalidated at the subevent-count level,
+ * independent of whether the redundant-slot logic itself works, until
+ * proven otherwise on real hardware. NUM_REDUNDANT_COPIES going 2 -> 3 is
+ * also new and itself unvalidated -- test incrementally, same as
+ * everything else in this project.
  */
-#define NUM_PRIMARY_SLOTS 17
+#define NUM_PRIMARY_SLOTS 11
+#define NUM_REDUNDANT_COPIES 3
+
+BUILD_ASSERT(NUM_PRIMARY_SLOTS * NUM_REDUNDANT_COPIES == NUM_SUBEVENTS,
+	     "NUM_SUBEVENTS must equal NUM_PRIMARY_SLOTS * NUM_REDUNDANT_COPIES");
 
 #define PAWR_SUBEVENT_INTERVAL    0x20    /* 40 ms   */
 #define PAWR_RESPONSE_SLOT_DELAY  0x8     /* 10 ms   */

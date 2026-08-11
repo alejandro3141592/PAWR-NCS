@@ -115,26 +115,21 @@ static uint8_t counter;
 static void node_slot_table_validate(void)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(node_slot_table); i++) {
-		uint32_t backup = (uint32_t)node_slot_table[i].subevent + NUM_PRIMARY_SLOTS;
-
-		if (node_slot_table[i].subevent >= NUM_SUBEVENTS) {
-			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_SUBEVENTS (%d)\n",
-			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
-			       NUM_SUBEVENTS);
-			k_panic();
-		}
-
 		if (node_slot_table[i].subevent >= NUM_PRIMARY_SLOTS) {
-			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_PRIMARY_SLOTS (%d) -- primary slots must stay in the first block, backups are derived by adding NUM_PRIMARY_SLOTS\n",
+			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_PRIMARY_SLOTS (%d) -- primary slots must stay in the first block, redundant copies are derived by adding k * NUM_PRIMARY_SLOTS\n",
 			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
 			       NUM_PRIMARY_SLOTS);
 			k_panic();
 		}
 
-		if (backup >= NUM_SUBEVENTS) {
-			printk("FATAL: node_slot_table[%d] (node %u) has backup subevent %u >= NUM_SUBEVENTS (%d)\n",
-			       (int)i, node_slot_table[i].node_id, backup, NUM_SUBEVENTS);
-			k_panic();
+		for (unsigned int k = 0; k < NUM_REDUNDANT_COPIES; k++) {
+			uint32_t copy = (uint32_t)node_slot_table[i].subevent + k * NUM_PRIMARY_SLOTS;
+
+			if (copy >= NUM_SUBEVENTS) {
+				printk("FATAL: node_slot_table[%d] (node %u) has redundant copy %u subevent %u >= NUM_SUBEVENTS (%d)\n",
+				       (int)i, node_slot_table[i].node_id, k, copy, NUM_SUBEVENTS);
+				k_panic();
+			}
 		}
 
 		for (size_t j = i + 1; j < ARRAY_SIZE(node_slot_table); j++) {
@@ -155,6 +150,15 @@ static void node_slot_table_validate(void)
 		}
 	}
 }
+
+#if CONFIG_APP_ACCEPT_ANY_NODE
+/* Bring-up/triage mode only (see Kconfig) -- hands out subevents 0, 1, 2...
+ * to whichever peripherals show up, in order, no reclaim/reuse. Only ever
+ * used to test one physical node at a time (reflash between nodes), so
+ * running out of subevents mid-session isn't a real concern in practice.
+ */
+static unsigned int next_test_slot;
+#endif
 
 /* Looks up the fixed subevent for (CONFIG_APP_CENTRAL_ID, node_id). Returns
  * -1 if this node_id has no entry for this central -- caller must refuse to
@@ -404,13 +408,26 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	}
 
 	unsigned int node_id = pawr_parse_node_id(name);
-	int slot = lookup_fixed_slot(node_id);
+	int slot;
+
+#if CONFIG_APP_ACCEPT_ANY_NODE
+	if (next_test_slot >= NUM_SUBEVENTS) {
+		printk("Peripheral advertised as \"%s\" (node_id %u) -- out of test subevents (%d used), refusing to onboard. Reflash central to reset.\n",
+		       name, node_id, NUM_SUBEVENTS);
+		return;
+	}
+	slot = (int)next_test_slot++;
+	printk("[TEST MODE] Assigning node_id %u -> subevent %d (node_slot_table.h ignored)\n",
+	       node_id, slot);
+#else
+	slot = lookup_fixed_slot(node_id);
 
 	if (slot < 0) {
 		printk("Peripheral advertised as \"%s\" (node_id %u) has no node_slot_table entry for central %u -- refusing to onboard. Add it to central/node_slot_table.h and reflash.\n",
 		       name, node_id, CONFIG_APP_CENTRAL_ID);
 		return;
 	}
+#endif
 
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
 	printk("Found peripheral %s (node_id %u, fixed subevent %d), connecting...\n", addr_str,
@@ -489,9 +506,16 @@ void init_bufs(void)
 	}
 }
 
+/* subevents[0] is always the primary (the node_slot_table.h entry);
+ * subevents[1..NUM_REDUNDANT_COPIES-1] are the redundant copies, each at
+ * primary + k * NUM_PRIMARY_SLOTS (see common/pawr_protocol.h). Fixed-size
+ * array (not just NUM_REDUNDANT_COPIES fields) so this struct's wire
+ * layout only needs to change in one place if the copy count changes
+ * again -- peripheral/src/main.c's identical copy must match exactly,
+ * same as before this struct grew from 2 explicit fields to this.
+ */
 struct pawr_timing {
-	uint8_t subevent;
-	uint8_t backup_subevent;
+	uint8_t subevents[NUM_REDUNDANT_COPIES];
 	uint8_t response_slot;
 } __packed;
 
@@ -676,16 +700,29 @@ int main(void)
 		 * discovery/connection to pick a slot, unlike the old dynamic
 		 * allocate_slot(bt_conn_get_dst(...)) call this replaced.
 		 *
-		 * backup_subevent = pending_slot + NUM_PRIMARY_SLOTS (see
-		 * common/pawr_protocol.h for why this is a fixed offset, not a
-		 * second node_slot_table.h column): the peripheral answers
-		 * whichever of its two assigned subevents' polls it actually
-		 * receives each interval, so a response lost on one has an
-		 * independent second chance on the other before the next
-		 * sensor reading replaces the payload.
+		 * subevents[k] = pending_slot + k * NUM_PRIMARY_SLOTS (see
+		 * common/pawr_protocol.h for why this is a fixed offset, not
+		 * explicit node_slot_table.h columns): the peripheral answers
+		 * whichever of its NUM_REDUNDANT_COPIES assigned subevents'
+		 * polls it actually receives each interval, so a response
+		 * lost on one has independent further chances on the others
+		 * before the next sensor reading replaces the payload.
 		 */
-		sync_config.subevent = (uint8_t)pending_slot;
-		sync_config.backup_subevent = (uint8_t)(pending_slot + NUM_PRIMARY_SLOTS);
+#if CONFIG_APP_ACCEPT_ANY_NODE
+		/* Test mode: no redundant copies (see Kconfig) -- point every
+		 * copy at the same subevent as the primary so the
+		 * peripheral's existing multi-slot write path needs no
+		 * changes; it just answers that one subevent
+		 * NUM_REDUNDANT_COPIES times, which is harmless.
+		 */
+		for (size_t k = 0; k < NUM_REDUNDANT_COPIES; k++) {
+			sync_config.subevents[k] = (uint8_t)pending_slot;
+		}
+#else
+		for (size_t k = 0; k < NUM_REDUNDANT_COPIES; k++) {
+			sync_config.subevents[k] = (uint8_t)(pending_slot + k * NUM_PRIMARY_SLOTS);
+		}
+#endif
 		sync_config.response_slot = 0;
 
 		write_params.func = write_func;
@@ -710,8 +747,8 @@ int main(void)
 			goto disconnect;
 		}
 
-		printk("PAwR config written: subevent %d (backup %d)\n", pending_slot,
-		       pending_slot + NUM_PRIMARY_SLOTS);
+		printk("PAwR config written: subevents %d, %d, %d\n", sync_config.subevents[0],
+		       sync_config.subevents[1], sync_config.subevents[2]);
 
 disconnect:
 		/* Wait slightly longer than one periodic advertising interval
