@@ -8,26 +8,16 @@ This file is pushed automatically by `tools/Sync-And-Build.ps1` alongside the
 serial logs in `logs/`, so it'll show up on the other person's next `git
 pull`/`fetch` without either of you needing to remember to push it by hand.
 
-## 2026-08-08 — folded +8dBm TX power in as a baseline change (from distance-test-17slot branch's findings)
+## 2026-08-08 — folded +8dBm TX power in as a baseline change on `main` (from distance-test-17slot branch's findings)
 
 A separate branch (`distance-test-17slot`) ran a single-node PDR-vs-distance
 sweep and found `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` (the nRF52840's hardware TX
 power ceiling -- no external front-end amp on this board) alone recovered
 most of the range-related PDR loss: 1m 82.4%->96.9%, 1.5m 71.0%->91.9%, 2m
 78.3%->89.0%. No downside found. Folded in here as a baseline change on
-`main` (also applied to `redundant-slots-experiment` and
-`single-slot-17-baseline`, same date) rather than something to keep
-re-testing with/without.
-
-Decided against a full factorial sweep across every subevent-count/
-redundancy/PHY/power combination for the ongoing redundant-slot work --  TX
-power and Coded PHY improve every individual delivery attempt's reliability
-regardless of slot count, while the redundant slot is a structural hedge on
-top of whatever that reliability still misses, so they don't need
-re-validating together at every slot count. Plan: fold +8dBm in everywhere
-(this entry), then test Coded PHY once at the real deployment target (34
-slots + redundancy + power, real 17-node fleet), not in isolation at every
-config.
+`main` (also applied independently to `redundant-slots-experiment` and
+`single-slot-17-baseline`, same date -- see that branch's own entry below)
+rather than something to keep re-testing with/without.
 
 Added `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` to both `central/prj.conf` and
 `peripheral/prj.conf`. Build-verified (central + peripheral node 31) -- not
@@ -36,6 +26,308 @@ confirmed this should go out to the currently-deployed rigs (CENTRAL_ID=1
 and 2 both have real hardware running right now).
 
 — Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-08 — ported Coded PHY toggle (APP_USE_CODED_PHY) from coded-phy-experiment onto redundant-slots-experiment
+
+Real deployment target for the Coded PHY question: 34 subevents + redundant
+slots + power, tested once at the real 17-node fleet scale, rather than
+re-validated in isolation at every slot count (see the +8dBm entry above
+for the full reasoning against a factorial sweep). Ported the
+`APP_USE_CODED_PHY` toggle and its supporting code from
+`coded-phy-experiment` onto this branch rather than reinventing it --
+that branch already worked out the real gotcha (peripheral's connectable
+advertising had to move from the legacy `bt_le_adv_start()` API to the
+extended-advertising `bt_le_ext_adv_create()`/`bt_le_ext_adv_start()` pair,
+since Coded PHY is an extended-advertising-only BLE 5 feature) and the
+`CONFIG_BT_CTLR_PHY_CODED=y` Kconfig requirement (confirmed the hard way
+there: the hardware-capability Kconfig alone does NOT enable Coded PHY,
+central fails outright at boot without the explicit line).
+
+**Changes** (mirroring coded-phy-experiment's, adapted to this branch's
+divergent code -- fixed-slot table, redundant-slot dedup, none of which
+existed yet when coded-phy-experiment forked):
+- `common/pawr_protocol.h`: `APP_USE_CODED_PHY` toggle (default 0).
+- `central/prj.conf`, `peripheral/prj.conf`: `CONFIG_BT_CTLR_PHY_CODED=y`.
+- `central/src/main.c`: `bt_le_ext_adv_create()`'s advertising-set param and
+  `bt_le_scan_start()`'s scan param both changed from fixed macros to local
+  mutable copies that conditionally OR in `BT_LE_ADV_OPT_CODED`/
+  `BT_LE_SCAN_OPT_CODED`.
+- `peripheral/src/main.c`: new `conn_adv` (`struct bt_le_ext_adv *`),
+  created once in `main()`, replacing the old per-loop-iteration
+  `bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...)` call with
+  `bt_le_ext_adv_start(conn_adv, ...)`. Did NOT port coded-phy-experiment's
+  dump-throttle/countdown changes to `storage_dump_walk_cb`/
+  `storage_dump_all` -- those were unrelated fixes for a different bug
+  (console buffer drops during a large flash-log dump) already landed on
+  `main` via a separate, later fix (NOTES.md 2026-08-07/08, "Throttle
+  flash-log dump") that this branch doesn't have yet; porting
+  coded-phy-experiment's version here would have reverted that separate
+  fix's real content, not just the Coded PHY parts.
+
+Build-verified both PHY values (0 and 1), both apps -- confirms the ext-adv
+refactor didn't regress normal 1M-PHY operation and the Coded-PHY path
+itself compiles on top of the fixed-slot-table/redundant-slot code.
+**Not yet flashed.** Toggle left at 0 (off) in the committed state, same
+convention as coded-phy-experiment.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-08 — folded +8dBm TX power in as a baseline change (from distance-test-17slot branch's findings)
+
+Same change as made on `single-slot-17-baseline` -- see that branch's
+NOTES.md entry (same date) for the full rationale and the distance-test
+data it's based on. Short version: `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` (the
+nRF52840's hardware TX power ceiling) recovered most of the range-related
+PDR loss in a separate single-node distance sweep (1m 82.4%->96.9%, 1.5m
+71.0%->91.9%, 2m 78.3%->89.0%), with no downside found -- folded in here as
+a baseline change rather than something to re-test with/without.
+
+Decided against a full factorial sweep across every subevent-count/
+redundancy/PHY/power combination -- TX power and Coded PHY improve every
+individual delivery attempt's reliability regardless of slot count, while
+the redundant slot is a structural hedge on top of whatever that
+reliability still misses. Plan: fold +8dBm in everywhere now (this entry),
+then test Coded PHY once at the real deployment target -- 34 subevents +
+redundancy + power, on the real 17-node fleet -- rather than re-validating
+it in isolation at every slot count.
+
+Added `CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` to both `central/prj.conf` and
+`peripheral/prj.conf` on `redundant-slots-experiment`. Build-verified
+(central + peripheral node 31) -- not yet reflashed to the fleet.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-08 — 10-min focused test: primary vs. backup delivery breakdown, one real per-node finding (node 56)
+
+Follow-up to the 30-min soak below -- that run couldn't show how much the
+backup slot actually contributed, since central's dedup only leaves one row
+per `(node_id, seq)` in `gui/sensor_data.db`. This time captured central's
+live console (`tools/Watch-SerialLog.ps1` on COM195, confirmed working
+cleanly on the first attempt -- see the `[DUP: backup slot, already
+forwarded]` marker added specifically for this) for a focused 10-minute
+window, 2026-08-08 13:01:42-13:11:42, and parsed the raw log directly
+(`logs/redundant_slots_10min_20260808_1301.log`, 2816 lines) instead of the
+DB, since the DB can't distinguish "arrived via primary" from "arrived via
+backup."
+
+```
+node  recv  expected   pdr    via_primary  via_backup  rescue%
+ 31     60        61  98.4%           46          14   23.3%
+ 32     61        61 100.0%           56           5    8.2%
+ 33     61        61 100.0%           56           5    8.2%
+ 35     61        61 100.0%           57           4    6.6%
+ 37     56        60  93.3%           46          10   17.9%
+ 40     55        61  90.2%           39          16   29.1%
+ 41     61        61 100.0%           52           9   14.8%
+ 42     61        61 100.0%           60           1    1.6%
+ 43     61        61 100.0%           43          18   29.5%
+ 45     56        60  93.3%           39          17   30.4%
+ 47     59        61  96.7%           49          10   16.9%
+ 49     59        60  98.3%           57           2    3.4%
+ 50     60        60 100.0%           59           1    1.7%
+ 51     60        60 100.0%           59           1    1.7%
+ 54     60        60 100.0%           57           3    5.0%
+ 55     60        60 100.0%           55           5    8.3%
+ 56     60        60 100.0%           16          44   73.3%
+
+TOTAL: 1011 received / 1029 expected = 98.25% PDR
+Delivered via primary slot: 846 (83.7%)
+Delivered via backup slot (would have been LOST without it): 165 (16.3%)
+```
+
+**The backup slot is doing real, substantial work**: 16.3% of all delivered
+readings across the fleet -- not a rare edge case -- only made it through
+because of the second attempt. Without the redundant slot, this run's PDR
+would have been roughly 846/1029 = **82.2%**, not 98.25% -- the backup slot
+alone is responsible for a ~16-point PDR improvement in this window, closely
+matching the ~10-point gap seen between this branch's 30-min soak (96.79%)
+and the best single-slot baseline (86-90% at 20 subevents).
+
+**One real per-node finding, not just aggregate noise: node 56 is
+structurally different from the rest.** Every other node's rescue rate is
+1.6-30.4% (consistent with occasional/random loss); node 56 is **73.3%** --
+nearly 3 in 4 of its readings needed the backup slot. Walked the raw
+chronological log for node 56 specifically: from roughly seq 357 onward its
+PRIMARY subevent (16) starts missing entirely for stretches of several
+consecutive intervals in a row, while the backup subevent (33) keeps
+succeeding almost every time:
+```
+13:02:35.443 subevent 33 seq 357          <- primary (16) never appeared for seq 357
+13:03:25.633 subevent 33 seq 362          <- same, seq 362
+13:04:05.595 subevent 33 seq 366          <- same, seq 366
+13:04:15.480 subevent 33 seq 367
+13:04:25.556 subevent 33 seq 368
+13:04:35.632 subevent 33 seq 369
+13:04:45.518 subevent 33 seq 370
+```
+This pattern (sustained, not random single misses) suggests something
+specific to node 56's primary time slot -- worth checking: is this
+peripheral physically positioned somewhere that creates timing-specific
+interference (e.g. another RF source active on a cycle that happens to
+collide with subevent 16 specifically), or is there anything unusual about
+this board vs. the others (antenna, power). This is exactly the kind of
+node-specific problem the redundant-slot design is meant to paper over in
+the short term, but worth root-causing separately since a node that's
+losing 3/4 of its primary-slot attempts has some real underlying issue, not
+just "a bit more radio noise than average" like the rest of the fleet.
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-08 — redundant-slots-experiment flashed to real hardware, first 30-min soak: 96.79% PDR, best result of the session
+
+Flashed central (ID=1, 34 subevents) + all 17 peripherals (31,32,33,35,37,
+40,41,42,43,45,47,49,50,51,54,55,56), all on `redundant-slots-experiment`.
+**Central booted clean at 34 subevents** -- no repeat of the unexplained
+`udc net_buf` boot failure found at 25 subevents on `coded-phy-experiment`
+(that one, per the user, was likely reset-specific rather than a real
+regression; this run doesn't settle that question either way, but it's a
+second data point that a fresh flash-then-boot at a high subevent count can
+work cleanly).
+
+30-min soak, 2026-08-08 12:15:42-12:45:42, analyzed via `gui/sensor_data.db`
+(the reliable source all session -- central's serial console has been
+flaky to capture live, see below):
+
+```
+node  recv  seq_min  seq_max  expected   pdr
+ 31    171       33      211       179  95.5%
+ 32    177       65      243       179  98.9%
+ 33    176       71      249       179  98.3%
+ 35    170       67      246       180  94.4%
+ 37    163       69      247       179  91.1%
+ 40    172       63      241       179  96.1%
+ 41    180       73      252       180 100.0%
+ 42    172       69      248       180  95.6%
+ 43    174       63      242       180  96.7%
+ 45    178       61      240       180  98.9%
+ 47    174       72      250       179  97.2%
+ 49    158       76      255       180  87.8%
+ 50    180        3      182       180 100.0%
+ 51    180       66      245       180 100.0%
+ 54    177       68      246       179  98.9%
+ 55    180       64      243       180 100.0%
+ 56    173       76      255       180  96.1%
+
+Overall: 2955 received / 3053 expected = 96.79% PDR
+All 17 nodes present the entire 30 minutes, zero dropouts.
+```
+
+**Best PDR of any config tested this session** -- clear improvement over
+both single-slot baselines (20 subevents/6-6: 86-90%; 25 subevents/6-6,
+never properly validated: 75-80%). Node 49 the only real outlier (87.8%),
+everyone else 91-100%.
+
+**Dedup confirmed working**: zero duplicate `(node_id, seq)` rows in the DB
+despite every reading getting two independent delivery attempts -- central's
+`last_forwarded_seq[]` check (added alongside the redundant-slot logic
+itself, see the entry below) is correctly collapsing primary+backup
+successes into one forwarded row, so this PDR number reflects genuinely
+distinct readings, not inflated by double-counting.
+
+**What this number can't show on its own: how much the backup slot
+actually contributed** -- i.e., of the 2955 delivered readings, how many
+arrived via the primary subevent vs. needed the backup to get through.
+`gui/sensor_data.db` only sees the deduplicated result; central's own
+console log has the `[DUP: backup slot, already forwarded]` marker that
+would answer this, but no console capture was taken during this run.
+**Next: a focused 10-minute test specifically to capture that log and
+compute the primary/backup delivery split** -- central is confirmed
+connected now, so `tools/Watch-SerialLog.ps1` should have a live console to
+capture (COM port has been intermittently hard to open earlier this
+session; worth confirming it opens cleanly before trusting a full 10-min
+capture, same lesson as every serial-capture entry all session).
+
+Two boards (31, 50) needed a second flash attempt before appearing in the
+DB -- not otherwise investigated (assumed a normal flash/onboarding
+hiccup, not re-diagnosed given the rest of the fleet came up clean the
+first time).
+
+— Alejandro (session assisted by Claude), 2026-08-08
+
+---
+
+## 2026-08-07 — redundant subevent slots implemented on a new branch (redundant-slots-experiment), 17 nodes x 2 slots each, build-verified only
+
+User's next request: exactly 17 fixed slots (one per the 17 nodes actually
+in use: 31,32,33,35,37,40,41,42,43,45,47,49,50,51,54,55,56), plus additional
+slots so a node that fails to get its response through has another chance.
+
+**Design chosen**: each node gets TWO dedicated subevents -- a primary and a
+backup -- rather than a shared retry pool. Peripheral reads sensors once per
+10s interval (unchanged) and answers whichever of its two assigned
+subevents' polls it actually receives that interval with the SAME
+`latest_payload`/`seq` on both -- so a response lost on one slot (radio
+contention, timing, interference) has an independent second delivery
+attempt on the other before the next reading replaces it. Chosen over a
+smaller shared backup pool specifically because it's collision-free by
+construction: no two nodes can ever contend for the same backup slot, no
+new "which node gets this spare" logic needed. `NUM_SUBEVENTS = 34` (17
+primary + 17 backup), `NUM_PRIMARY_SLOTS = 17`; backup subevent for a given
+node is always `primary + NUM_PRIMARY_SLOTS` -- a fixed offset, not a second
+node_slot_table.h column, so it's impossible to misconfigure into a
+collision (validated at boot in the now-expanded
+`node_slot_table_validate()`, which also checks every primary stays under
+17 and every derived backup stays under 34).
+
+**What actually changed** (build-verified, both apps, all 17 peripheral
+node IDs -- NOT flashed or tested on real hardware):
+- `common/pawr_protocol.h`: `NUM_SUBEVENTS` 25 -> 34 (this branch only,
+  `main` untouched), new `NUM_PRIMARY_SLOTS = 17`.
+- `central/node_slot_table.h`: regenerated from a fresh
+  `tools/node_roster_17.csv` (just these 17 nodes, all on central 1 --
+  separate from the existing ~49-node multi-rig table on `main`, per
+  explicit choice to keep this a clean, focused test).
+- `central/src/main.c`: `struct pawr_timing` (the GATT-write wire format)
+  gained a `backup_subevent` field between `subevent` and `response_slot`
+  -- **both sides must stay in sync on this struct's layout, they're not
+  independently versioned**. Central computes
+  `backup_subevent = pending_slot + NUM_PRIMARY_SLOTS` and writes both.
+  New `last_forwarded_seq[256]` array (indexed by `node_id`) added to
+  `response_cb` to dedup: if the SAME seq for a node arrives on its second
+  subevent after already being forwarded via the first, it's still
+  logged/printed (marked `[DUP: backup slot, already forwarded]`) but NOT
+  forwarded a second time to the gateway/on-board flash log -- otherwise
+  every good interval (both slots succeeding, the common case, not the
+  failure case this feature targets) would double every reading, same
+  class of bug as the gui/sensor_gui.py double-logging bug found earlier
+  this session.
+- `peripheral/src/main.c`: matching `backup_subevent` field added to the
+  local `pawr_timing` struct. Both places that call
+  `bt_le_per_adv_sync_subevent()` (`sync_cb` and `write_timing`'s handler)
+  now pass `num_subevents = 2` with both indices, instead of 1. `recv_cb`
+  (the actual response-sending logic) needed ZERO changes -- it already
+  derives which subevent to respond on from `info->subevent` (whichever
+  poll it just received), not from a single stored value, so it naturally
+  handles "answer either of my two slots, whichever gets polled" already.
+
+**Known risk, matches the coded-phy-experiment branch's still-unresolved
+finding**: `NUM_SUBEVENTS=34` is higher than anything soak-tested with 6/6
+buffers (20 was the last clean validation; 25 hit an unexplained boot
+failure on the other branch, user attributed it to being reset-specific
+rather than a real regression and didn't want it chased further). This
+branch has NOT been checked against that same failure mode at all yet --
+first real test should specifically watch for the same
+"Scanning successfully started" -> immediate `udc net_buf` exhaustion ->
+silence pattern before assuming the redundant-slot logic itself is what's
+being tested.
+
+Status: central + all 17 peripheral node builds compile clean. Nothing
+flashed. Next steps: flash central + the 17 peripherals, confirm central
+boots past the point the other branch failed at, then soak-test comparing
+PDR/reconnect-completeness against the existing 20-subevent-single-slot
+baseline (does redundancy actually reduce loss, and does the higher
+subevent count itself cost more than the redundancy gains -- both
+questions this test needs to answer, not just "does it work at all").
+
+— Alejandro (session assisted by Claude), 2026-08-07
 
 ---
 
@@ -70,8 +362,14 @@ first, not the one with real history. Didn't change the auto-erase
 behavior itself this session (that's a bigger design tradeoff -- silently
 never-erasing also has failure modes, e.g. actually needing to format a
 truly first-use partition) -- flagging as something to revisit, not fixed.
+This entry is from `main` -- `redundant-slots-experiment` (the entries
+above) doesn't have this fix yet as of the point these branches were last
+in sync; check `peripheral/src/main.c`'s dump path directly rather than
+assume.
 
 — Alejandro (session assisted by Claude), 2026-08-07
+
+---
 
 ## 2026-08-07 — real node roster loaded into node_slot_table.h; NUM_SUBEVENTS raised 20 -> 25 for table capacity; two node-ID collisions found, need relabeling
 
@@ -2932,4 +3230,134 @@ reverting the test flag -- normal boot, flash log init, and sync all
 unaffected. Committed and pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-03
+
+## 2026-08-09 — long detour chasing a false +8dBm/34-subevent failure, real bug found, +8dBm confirmed to work: 99.47% PDR over 30 min, full 17-node fleet
+
+**Goal for the day**: combine the two things `redundant-slots-experiment`
+(34 subevents, 17 nodes x primary+backup, 96.79% PDR/30min at 0dBm) and
+`distance-test-17slot` (single-node distance sweep) each separately found --
+fold `+8dBm` TX power in as a baseline change, and separately validate LE
+Coded PHY once at the real 34-subevent/redundant-slot/17-node target instead
+of re-testing every slot-count/power/PHY combination in isolation.
+
+**What actually happened: several hours chasing a failure that turned out
+not to be about power, subevent count, or PHY at all.** Full blow-by-blow:
+
+1. Ported the Coded-PHY toggle from `coded-phy-experiment` onto this branch
+   and folded `+8dBm` in, built, flashed the whole fleet. Central crashed at
+   boot: `udc: Failed to allocate net_buf 4095, ep 0x80` right after
+   "Scanning successfully started," zero peripherals ever onboarded.
+2. First hypothesis: `CONFIG_BT_CTLR_PHY_CODED` was left **unconditionally**
+   set in `prj.conf` (not gated by the runtime toggle) -- a real bug,
+   confirmed and fixed (new `CONFIG_APP_USE_CODED_PHY` Kconfig option with
+   `select BT_CTLR_PHY_CODED`, single source of truth). But reflashing with
+   this fix **did not** resolve the crash -- wrong diagnosis, real bug fixed
+   anyway.
+3. Second hypothesis: `+8dBm` itself. Byte-diffed `.config` against a fresh
+   rebuild of the last known-good commit (`aba6a56`) -- confirmed the only
+   functional difference really was `CONFIG_BT_CTLR_TX_PWR_DBM` 0 vs 8, RAM/
+   FLASH identical. Reverted to 0dBm -- **still crashed.** Went back to the
+   literal, unmodified `aba6a56` build (git worktree, not hand-reconstructed)
+   -- **that worked**, 5+ minutes clean, one node. This was the first sign
+   the `udc` noise itself is a red herring: it turns out to happen on every
+   single boot, including this known-good one -- it's benign USB-CDC console
+   enumeration noise, not fatal, and normal onboarding proceeds right after
+   it on a good build.
+4. With the `udc` noise ruled out as the signal, re-tested `+8dBm` at the
+   real 34-subevent target and hit a **different, real** failure: peripheral
+   stuck forever in `Waiting for periodic sync... / Timed out while
+   synchronizing`, never once completing PAST sync, fast and consistent
+   (not a slow-acquisition problem). Chased this for a while: bumped
+   `PAWR_PAST_TIMEOUT_UNITS` 30s->60s (no change), bumped
+   `CONFIG_BT_CTLR_SDC_PERIODIC_ADV_EVENT_LEN_DEFAULT` 7.5ms->1.5s (no
+   change), staggered central's radio-startup calls with `k_sleep()` 50ms
+   then 500ms (no change), tried `+4dBm` as an intermediate power step (same
+   failure) -- none of it mattered. Searched Nordic DevZone and the SDC
+   changelog for a matching known bug -- nothing matched NCS v3.3.0.
+5. Reverted every diagnostic change back to (what was believed to be) the
+   original state -- **still failed.** Rebuilt from the literal `3eaad70`
+   commit (docs-only on top of `aba6a56`, code-identical) -- **worked
+   again**, cleanly. Diffed the "should be equivalent" reconstructed build
+   against this literal one: `.config` was one no-op line different, but the
+   **binary genuinely differed** -- `main()`'s stack frame was 120 bytes in
+   the reconstruction vs 88 bytes in the literal build (confirmed via
+   `arm-zephyr-eabi-objdump`/`size`). Root cause: the Coded-PHY refactor
+   used a runtime `IS_ENABLED(CONFIG_APP_USE_CODED_PHY)` check that always
+   allocated a local `struct bt_le_adv_param`/`struct bt_le_scan_param` and
+   copied the const `BT_LE_EXT_ADV_NCONN`/`BT_LE_SCAN_PASSIVE_CONTINUOUS`
+   macro into it -- even with the toggle off -- adding real stack usage and
+   an extra struct-copy at the exact `bt_le_ext_adv_create()`/
+   `bt_le_scan_start()` call sites. **Isolated A/B test (this one change
+   alone, nothing else) reproduced the PAST sync failure 100% of the time.**
+6. Fixed properly: converted the runtime checks to preprocessor
+   `#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)` in both `central/src/main.c`
+   and `peripheral/src/main.c`, so the (default) Coded-PHY-off path compiles
+   to the exact original direct-pointer-to-const-macro form -- zero extra
+   stack, zero extra copy. Verified byte-identical `.elf` text size and
+   `main()` stack frame to the pre-refactor working baseline, and byte-
+   identical `zephyr.uf2` MD5 to a build that had worked successfully twice.
+7. Reflashed that MD5-identical binary -- **failed anyway.** Swapped in a
+   completely different physical peripheral board (as node 41) against the
+   same central -- **also failed.** At this point: identical firmware
+   (verified MD5) had produced both a 5+ minute clean run and a hard failure
+   on the same central board, and a board swap didn't change the outcome.
+   Wrote up the full investigation in
+   `logs/2026-08-09_sync_failure_investigation.md` rather than keep guessing
+   blindly.
+8. Reflashed the exact known-good baseline one more time as a fresh control
+   (suggested next step from that writeup) -- **worked again**, cleanly.
+   Whatever caused the intermittent failures in steps 3-7 never recurred
+   after this point and was never conclusively identified -- most likely
+   some transient board/USB/RF state from an unusually high number of rapid
+   reflash-and-reset cycles in a single session (this branch's boards were
+   reflashed 15-20+ times over a few hours today), though this is a
+   plausible-not-proven explanation, not a confirmed root cause.
+9. Added `+8dBm` back as the **single** minimal change on top of the now-
+   confirmed-stable baseline (nothing else touched) -- worked cleanly,
+   node 40 reporting continuously with zero gaps. Built and flashed the
+   full 17-node fleet from this exact verified source. All 17 onboarded
+   within about 2 minutes of the last board being flashed.
+
+**Result: 30-minute soak, full 17-node fleet, `+8dBm`, 34 subevents
+(redundant primary+backup slots), Coded PHY off (not yet re-tested this
+session) -- 99.47% overall PDR (3190/3207), all 17 nodes present the entire
+session, zero dropouts.** 12 of 17 nodes hit a perfect 100%; worst node
+(54) was 96.81%. Compares directly against the earlier 0dBm baseline on
+this same branch (96.79% PDR) -- **`+8dBm` is a real, confirmed ~2.7
+percentage-point improvement at the actual 34-subevent deployment target**,
+consistent with (though smaller in absolute terms than) what the single-node
+`distance-test-17slot` sweep predicted. This also confirms 34 subevents
+itself was never the problem at any point today -- every failure this
+session happened with 34 subevents present in both the working and broken
+runs alike.
+
+**Bugs actually fixed and kept, real and worth keeping regardless of the
+above detour:**
+- `CONFIG_APP_USE_CODED_PHY` as a proper Kconfig option (`select
+  BT_CTLR_PHY_CODED`) instead of an unconditional `prj.conf` line plus a
+  separate C-level toggle that could drift out of sync (central/Kconfig,
+  peripheral/Kconfig).
+- The runtime-`IS_ENABLED()` -> preprocessor-`#if` fix in both apps'
+  `main.c`, removing all extra stack/struct-copy overhead when Coded PHY is
+  off (the default).
+
+**Not yet done / open follow-ups:**
+- Coded PHY itself still hasn't been tested at the real 34-subevent target
+  this session -- that was the original goal before today's detour. Next
+  candidate now that the fleet is stable and `+8dBm` is confirmed.
+- `[STORAGE] fcb_append failed (err -28)` (`-ENOSPC`) is appearing on at
+  least node 40's console -- the on-board flash circular buffer log is full
+  from today's very high number of reflashes/test runs. Cosmetic (doesn't
+  affect PAwR delivery -- confirmed seq numbers and DB rows both continued
+  incrementing normally through it), but the log should wrap instead of
+  erroring once full. Not fixed yet -- next up.
+- The intermittent failure in steps 3-7 above was never conclusively
+  explained. If it recurs, worth trying: a much longer (not just quick
+  unplug/replug) power-off cool-down, testing with a spare **central**
+  board specifically (only the peripheral side got a board-swap test today),
+  or capturing a BLE sniffer trace during a failing run to separate
+  "central's periodic-adv train is malformed" from "peripheral's receiver
+  is failing" definitively instead of inferring it from console logs.
+
+— Alejandro (session assisted by Claude), 2026-08-09
 

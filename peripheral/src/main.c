@@ -58,8 +58,20 @@ static K_SEM_DEFINE(sem_disconnected, 0, 1);
 
 static struct bt_conn *default_conn;
 static struct bt_le_per_adv_sync *default_sync;
+/* Connectable advertising set. Only created (once, in main()) as an
+ * extended-advertising set -- not the older bt_le_adv_start()/legacy API --
+ * so this side can support LE Coded PHY (CONFIG_APP_USE_CODED_PHY, see
+ * Kconfig and common/pawr_protocol.h): Coded PHY is a Bluetooth 5 extended-advertising
+ * feature, bt_le_adv_start() explicitly cannot be combined with
+ * BT_LE_ADV_OPT_EXT_ADV at all per its own doc comment. Re-started (not
+ * re-created) each onboarding cycle via bt_le_ext_adv_start() -- same
+ * lifecycle bt_le_adv_start() had, just the create step now only happens
+ * once up front instead of implicitly on every call.
+ */
+static struct bt_le_ext_adv *conn_adv;
 static struct __packed {
 	uint8_t subevent;
+	uint8_t backup_subevent;
 	uint8_t response_slot;
 
 } pawr_timing;
@@ -465,7 +477,12 @@ static void sensor_read_work_handler(struct k_work *work)
 static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_synced_info *info)
 {
 	struct bt_le_per_adv_sync_subevent_params params;
-	uint8_t subevents[1];
+	/* Two entries: primary + backup (see pawr_timing.backup_subevent /
+	 * common/pawr_protocol.h's NUM_PRIMARY_SLOTS comment) -- this node
+	 * answers whichever of its two assigned subevents' polls it actually
+	 * receives each interval, both carrying the same latest_payload/seq.
+	 */
+	uint8_t subevents[2];
 	char le_addr[BT_ADDR_LE_STR_LEN];
 	int err;
 
@@ -475,15 +492,16 @@ static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_s
 	default_sync = sync;
 
 	params.properties = 0;
-	params.num_subevents = 1;
+	params.num_subevents = 2;
 	params.subevents = subevents;
 	subevents[0] = pawr_timing.subevent;
+	subevents[1] = pawr_timing.backup_subevent;
 
 	err = bt_le_per_adv_sync_subevent(sync, &params);
 	if (err) {
 		APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 	} else {
-		APP_LOG("Changed sync to subevent %d\n", subevents[0]);
+		APP_LOG("Changed sync to subevents %d, %d\n", subevents[0], subevents[1]);
 	}
 
 	gpio_pin_set_dt(&status_led, 1);
@@ -569,24 +587,25 @@ static ssize_t write_timing(struct bt_conn *conn, const struct bt_gatt_attr *att
 
 	memcpy(&pawr_timing, buf, len);
 
-	APP_LOG("New timing: subevent %d, response slot %d\n", pawr_timing.subevent,
-	       pawr_timing.response_slot);
+	APP_LOG("New timing: subevent %d (backup %d), response slot %d\n", pawr_timing.subevent,
+	       pawr_timing.backup_subevent, pawr_timing.response_slot);
 
 	struct bt_le_per_adv_sync_subevent_params params;
-	uint8_t subevents[1];
+	uint8_t subevents[2];
 	int err;
 
 	params.properties = 0;
-	params.num_subevents = 1;
+	params.num_subevents = 2;
 	params.subevents = subevents;
 	subevents[0] = pawr_timing.subevent;
+	subevents[1] = pawr_timing.backup_subevent;
 
 	if (default_sync) {
 		err = bt_le_per_adv_sync_subevent(default_sync, &params);
 		if (err) {
 			APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
 		} else {
-			APP_LOG("Changed sync to subevent %d\n", subevents[0]);
+			APP_LOG("Changed sync to subevents %d, %d\n", subevents[0], subevents[1]);
 		}
 	} else {
 		APP_LOG("Not synced yet\n");
@@ -666,6 +685,46 @@ int main(void)
 
 	bt_le_per_adv_sync_cb_register(&sync_callbacks);
 
+	/* Same as BT_LE_ADV_CONN_FAST_1 (BT_LE_ADV_OPT_CONN, GAP's recommended
+	 * fast connectable-advertising interval) but as an extended-advertising
+	 * set with BT_LE_ADV_OPT_EXT_ADV, plus BT_LE_ADV_OPT_CODED when
+	 * CONFIG_APP_USE_CODED_PHY is set -- see conn_adv's own comment for why
+	 * this can't just be bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ...) anymore.
+	 *
+	 * Preprocessor #if instead of runtime IS_ENABLED() -- see central/src/
+	 * main.c's matching comment for why: an always-allocated local struct
+	 * copy at this kind of call site (there, bt_le_ext_adv_create's own
+	 * params) was confirmed to break PAST sync at NUM_SUBEVENTS=34 even
+	 * with CONFIG_APP_USE_CODED_PHY off. Applying the same belt-and-braces
+	 * fix here even though the crash was only reproduced on central.
+	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+	struct bt_le_adv_param conn_adv_param =
+		*BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_EXT_ADV,
+				 BT_GAP_ADV_FAST_INT_MIN_1, BT_GAP_ADV_FAST_INT_MAX_1, NULL);
+
+	conn_adv_param.options |= BT_LE_ADV_OPT_CODED;
+
+	err = bt_le_ext_adv_create(&conn_adv_param, NULL, &conn_adv);
+#else
+	err = bt_le_ext_adv_create(BT_LE_ADV_PARAM(BT_LE_ADV_OPT_CONN | BT_LE_ADV_OPT_EXT_ADV,
+						    BT_GAP_ADV_FAST_INT_MIN_1,
+						    BT_GAP_ADV_FAST_INT_MAX_1, NULL),
+				    NULL, &conn_adv);
+#endif
+	if (err) {
+		APP_LOG("Failed to create advertising set (err %d)\n", err);
+
+		return 0;
+	}
+
+	err = bt_le_ext_adv_set_data(conn_adv, ad, ARRAY_SIZE(ad), NULL, 0);
+	if (err) {
+		APP_LOG("Failed to set advertising data (err %d)\n", err);
+
+		return 0;
+	}
+
 	/* skip=0: with a 10s periodic interval, skipping even one event
 	 * before the first sync attempt adds a full extra interval of
 	 * latency to onboarding for no benefit (the demo's skip=1 made
@@ -705,7 +764,7 @@ int main(void)
 			k_sem_take(&sem_disconnected, K_FOREVER);
 		}
 
-		err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
+		err = bt_le_ext_adv_start(conn_adv, BT_LE_EXT_ADV_START_DEFAULT);
 		if (err && err != -EALREADY) {
 			APP_LOG("Advertising failed to start (err %d)\n", err);
 

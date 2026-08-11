@@ -18,6 +18,14 @@
  * don't need to know their own subevent -- central still hands it out over
  * the existing GATT write_timing characteristic, just from this table now
  * instead of first-free-slot allocation).
+ *
+ * 2026-08-07 (redundant-slots-experiment branch): .subevent below is each
+ * node's PRIMARY slot only. Its backup/redundant slot is computed as
+ * .subevent + NUM_PRIMARY_SLOTS (see common/pawr_protocol.h) -- not a
+ * second table column, to make collisions impossible by construction.
+ * Generated from tools/node_roster_17.csv via --num-subevents 17 (NOT the
+ * real NUM_SUBEVENTS=34 -- this table only needs to fit the primary block,
+ * central/src/main.c derives the backup separately).
  */
 
 #ifndef NODE_SLOT_TABLE_H_
@@ -30,56 +38,23 @@ struct node_slot_entry {
 };
 
 static const struct node_slot_entry node_slot_table[] = {
-	{ .central_id = 1, .node_id = 1, .subevent = 0 },
-	{ .central_id = 1, .node_id = 2, .subevent = 1 },
-	{ .central_id = 1, .node_id = 3, .subevent = 2 },
-	{ .central_id = 1, .node_id = 4, .subevent = 3 },
-	{ .central_id = 1, .node_id = 5, .subevent = 4 },
-	{ .central_id = 1, .node_id = 6, .subevent = 5 },
-	{ .central_id = 1, .node_id = 7, .subevent = 6 },
-	{ .central_id = 1, .node_id = 8, .subevent = 7 },
-	{ .central_id = 1, .node_id = 9, .subevent = 8 },
-	{ .central_id = 1, .node_id = 11, .subevent = 9 },
-	{ .central_id = 1, .node_id = 12, .subevent = 10 },
-	{ .central_id = 1, .node_id = 13, .subevent = 11 },
-	{ .central_id = 1, .node_id = 16, .subevent = 12 },
-	{ .central_id = 1, .node_id = 18, .subevent = 13 },
-	{ .central_id = 1, .node_id = 19, .subevent = 14 },
-	{ .central_id = 1, .node_id = 20, .subevent = 15 },
-	{ .central_id = 1, .node_id = 21, .subevent = 16 },
-	{ .central_id = 1, .node_id = 24, .subevent = 17 },
-	{ .central_id = 1, .node_id = 25, .subevent = 18 },
-	{ .central_id = 1, .node_id = 26, .subevent = 19 },
-	{ .central_id = 1, .node_id = 27, .subevent = 20 },
-	{ .central_id = 1, .node_id = 29, .subevent = 21 },
-	{ .central_id = 1, .node_id = 30, .subevent = 22 },
-	{ .central_id = 1, .node_id = 31, .subevent = 23 },
-	{ .central_id = 1, .node_id = 32, .subevent = 24 },
-
-	{ .central_id = 2, .node_id = 33, .subevent = 0 },
-	{ .central_id = 2, .node_id = 34, .subevent = 1 },
-	{ .central_id = 2, .node_id = 35, .subevent = 2 },
-	{ .central_id = 2, .node_id = 37, .subevent = 3 },
-	{ .central_id = 2, .node_id = 38, .subevent = 4 },
-	{ .central_id = 2, .node_id = 40, .subevent = 5 },
-	{ .central_id = 2, .node_id = 41, .subevent = 6 },
-	{ .central_id = 2, .node_id = 42, .subevent = 7 },
-	{ .central_id = 2, .node_id = 43, .subevent = 8 },
-	{ .central_id = 2, .node_id = 45, .subevent = 9 },
-	{ .central_id = 2, .node_id = 47, .subevent = 10 },
-	{ .central_id = 2, .node_id = 49, .subevent = 11 },
-	{ .central_id = 2, .node_id = 50, .subevent = 12 },
-	{ .central_id = 2, .node_id = 51, .subevent = 13 },
-	{ .central_id = 2, .node_id = 54, .subevent = 14 },
-	{ .central_id = 2, .node_id = 55, .subevent = 15 },
-	{ .central_id = 2, .node_id = 56, .subevent = 16 },
-	{ .central_id = 2, .node_id = 57, .subevent = 17 },
-	{ .central_id = 2, .node_id = 58, .subevent = 18 },
-	{ .central_id = 2, .node_id = 61, .subevent = 19 },
-	{ .central_id = 2, .node_id = 63, .subevent = 20 },
-	{ .central_id = 2, .node_id = 64, .subevent = 21 },
-	{ .central_id = 2, .node_id = 65, .subevent = 22 },
-	{ .central_id = 2, .node_id = 66, .subevent = 23 },
+	{ .central_id = 1, .node_id = 31, .subevent = 0 },
+	{ .central_id = 1, .node_id = 32, .subevent = 1 },
+	{ .central_id = 1, .node_id = 33, .subevent = 2 },
+	{ .central_id = 1, .node_id = 35, .subevent = 3 },
+	{ .central_id = 1, .node_id = 37, .subevent = 4 },
+	{ .central_id = 1, .node_id = 40, .subevent = 5 },
+	{ .central_id = 1, .node_id = 41, .subevent = 6 },
+	{ .central_id = 1, .node_id = 42, .subevent = 7 },
+	{ .central_id = 1, .node_id = 43, .subevent = 8 },
+	{ .central_id = 1, .node_id = 45, .subevent = 9 },
+	{ .central_id = 1, .node_id = 47, .subevent = 10 },
+	{ .central_id = 1, .node_id = 49, .subevent = 11 },
+	{ .central_id = 1, .node_id = 50, .subevent = 12 },
+	{ .central_id = 1, .node_id = 51, .subevent = 13 },
+	{ .central_id = 1, .node_id = 54, .subevent = 14 },
+	{ .central_id = 1, .node_id = 55, .subevent = 15 },
+	{ .central_id = 1, .node_id = 56, .subevent = 16 },
 };
 
 #endif /* NODE_SLOT_TABLE_H_ */
