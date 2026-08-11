@@ -3286,6 +3286,8 @@ unaffected. Committed and pushed.
 
 — Alejandro (session assisted by Claude), 2026-08-03
 
+---
+
 ## 2026-08-09 — long detour chasing a false +8dBm/34-subevent failure, real bug found, +8dBm confirmed to work: 99.47% PDR over 30 min, full 17-node fleet
 
 **Goal for the day**: combine the two things `redundant-slots-experiment`
@@ -3415,4 +3417,154 @@ above detour:**
   is failing" definitively instead of inferring it from console logs.
 
 — Alejandro (session assisted by Claude), 2026-08-09
+
+---
+
+## 2026-08-11 — reset to the known-good checkpoint, two-rig renumbering, Coded PHY re-confirmed broken (disproves the stack-overhead theory), and flash-log wraparound implemented
+
+After losing track of which combination of recent changes was actually
+responsible for the sync problems seen in the prior session, the user asked
+to stop layering more changes and instead go back to `aba6a56` (the commit
+confirmed at 96.79% PDR) on a fresh branch (`working-checkpoint`) and re-add
+changes one at a time, testing each on real hardware before adding the next.
+
+**1. Two-rig node table split.** Previously the fixed slot table only
+covered one rig. Split it into two independent `central_id`s: **Central
+1 = a separate/new set of boards, node_ids 1-17** (simple sequential,
+nothing physically built yet), **Central 2 = the existing real 17-node
+fleet**, node_ids 31,32,33,35,37,40,41,42,43,45,47,49,50,51,54,55,56 (the
+same physical boards this branch's soak tests were run against). Generated
+from a new `tools/node_roster_two_rigs_renumbered.csv` via the existing
+`tools/gen_node_slot_table.py --num-subevents 17`, producing
+`central/node_slot_table.h`. Both rigs validated cleanly at build time
+(generator reports 17 nodes / subevents 0-16 for each).
+
+**2. Re-isolated +8dBm as the one real contributor to the 99.47% PDR
+result.** `git diff aba6a56 4bf10b2 -- central/prj.conf peripheral/prj.conf`
+showed a clean, single-purpose diff: just
+`CONFIG_BT_CTLR_TX_PWR_PLUS_8=y` on both apps, nothing else. Added it back
+alone, confirmed working on real hardware (node 55 synced normally).
+
+**3. Coded PHY toggle re-confirmed to break sync -- on a byte-verified
+build this time, which rules out the previous session's stack-overhead
+theory.** Re-applied the exact working-tree diff from `4bf10b2`
+(`central/Kconfig`, `peripheral/Kconfig`, `common/pawr_protocol.h`,
+`central/src/main.c`, `peripheral/src/main.c`) on top of the clean
+checkpoint+8dBm state. This time, before flashing, checked
+`arm-zephyr-eabi-objdump -d --disassemble=main` and confirmed `main()`'s
+stack frame (`sub sp, #88`) was **byte-identical** to the known-working
+build -- unlike the earlier session's runtime-`IS_ENABLED()` version, which
+had a larger frame (`sub sp, #120`) and was the basis for the
+"stack overhead" theory of why this broke things. Built (RAM unchanged,
+47776B/45143B), flashed both central and node 55. **Broke sync again
+anyway.** This disproves the stack-overhead theory outright -- the actual
+mechanism is still unknown. Per the user ("Okey, aparently this is the
+thing that breaks it"), stopped investigating further and reverted cleanly
+(`git checkout -- <the 5 files>`, confirmed empty diff against `aba6a56`
+afterward). **Checkpoint + 8dBm alone (no Coded PHY) is the final validated
+state going forward.** User confirmed: "Yes, this works right now."
+**Anyone revisiting Coded PHY in the future: the stack-frame explanation is
+now ruled out, don't waste time re-deriving that -- whatever's actually
+wrong is somewhere else in that refactor (possibly something about the
+`select BT_CTLR_PHY_CODED` Kconfig dependency itself pulling in a
+differently-behaved SoftDevice Controller build even when the runtime path
+is unchanged -- untested guess, not confirmed).**
+
+**4. Flash-log wraparound**, peripheral only (`peripheral/src/main.c`,
+`storage_fcb_append()`). Real capacity was empirically re-derived first:
+the log holds 2040 entries (confirmed via a full boot-time dump earlier in
+the project), not the naive theoretical max of 3276 (raw partition bytes /
+10-byte entry) -- FCB's internal per-sector bookkeeping overhead makes the
+real number ~62% of theoretical, and that's the number worth designing
+around. At 1 reading/10s, 2040 entries = **5.67 hours** before the log
+fills, if nothing ever reclaimed old entries.
+
+Two earlier attempts at wraparound (see 2026-08-09/2026-08-10 entries above)
+both rotated *reactively* -- calling `fcb_rotate()` on the append that
+discovers the log is already full -- and both broke PAST sync, whether
+called inline or deferred to a workqueue (default system workqueue, then
+even a dedicated low-priority one). This time: **rotate proactively**.
+After every successful append, check `fcb_free_sector_cnt()`; if free
+sectors drop to `<= STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD` (2), call
+`fcb_rotate()` immediately, inline, in the same calling context as the
+append -- no workqueue at all. The idea: giving the erase a full spare
+sector of headroom (~400 more writes) before it's ever actually needed
+changes the risk profile completely versus rotating under write pressure.
+
+Tested incrementally on real hardware (node 55): first confirmed normal
+sync/logging was unaffected with the proactive check in place but not yet
+triggering (threshold 2, free sectors sitting at 3, correctly not
+rotating). Then, per the user's request to force it rather than wait
+~30-60 real minutes for the log to naturally approach full, temporarily
+raised the threshold to 7 to make `fcb_rotate()` fire almost immediately.
+**Confirmed two clean rotation cycles with PAwR sync fully intact through
+both**:
+```
+[STORAGE] free sectors: 3
+[STORAGE] rotating (free sectors 3 <= threshold 7)
+[STORAGE] fcb_rotate succeeded, free sectors now: 4
+...
+Disconnected, reason 0x13
+>>> Poll received: subevent 15, responding in slot 0
+[STORAGE] free sectors: 4
+[STORAGE] rotating (free sectors 4 <= threshold 7)
+[STORAGE] fcb_rotate succeeded, free sectors now: 5
+```
+(The one `Disconnected, reason 0x13` immediately after the first rotation
+is the normal onboarding-teardown code already seen elsewhere in this
+project, not something the rotation caused.) **This is the first wraparound
+strategy of the three tried across this project that has actually worked
+on real hardware.**
+
+Per the user's "that's enough, let's move forward," finalized the
+implementation: threshold back down to `2` (the sensible production value
+-- roughly one still-filling sector plus one fully-spare sector of headroom
+before the log could ever actually risk blocking a write with `-ENOSPC`),
+and trimmed the diagnostic logging from firing on every single 10-second
+append down to only firing when a rotation actually happens (or on a real
+error). Rebuilt (RAM unchanged, 45143B) and reflashed node 55 with this
+final version.
+
+**Not yet done / left for next time:** central's own flash log
+(`common/sensor_log.c`, used via `sensor_log_append()`) has the same
+eventually-fills-up problem and has NOT been given the same treatment --
+this session's wraparound work was peripheral-only, matching what was
+asked. Only node 55 has been reflashed with the final checkpoint+8dBm+
+wraparound firmware; the rest of the 17-node Central 2 fleet and all of
+Central 1 (defined in the table, no physical boards yet) still need it.
+
+— Alejandro (session assisted by Claude), 2026-08-11
+
+---
+
+## 2026-08-11 (later same day) — merged working-checkpoint into main, resolved conflicts, stripped the Coded PHY refactor back out
+
+Merging `working-checkpoint` into `main` conflicted on `NOTES.md`,
+`central/prj.conf`, `peripheral/prj.conf`, and `peripheral/src/main.c` --
+expected, since both branches independently touched `+8dBm`/Coded PHY
+history and `working-checkpoint` branched from an older base (`aba6a56`)
+than `main`'s tip. All four were comment/history-only conflicts, resolved
+by keeping both sides' narratives in chronological order.
+
+**More important finding during the merge**: git's auto-merge (the part
+that didn't even report a conflict) silently pulled the Coded PHY refactor
+back into `central/src/main.c` and `peripheral/src/main.c` from `main`'s
+side -- the exact `#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)` code today's
+session re-confirmed breaks PAST sync even in its byte-verified form (see
+the 2026-08-11 entry above). It stayed dormant (`CONFIG_APP_USE_CODED_PHY`
+still defaults to `n`, so no build run today actually exercised it), but
+leaving confirmed-broken code sitting in the tree as if it were still a
+live option was worth catching before this merge landed. Removed both
+`#if`/`#else`/`#endif` blocks entirely (central's `bt_le_ext_adv_create`/
+scan-param branching, peripheral's `conn_adv` extended-advertising-set
+machinery), restoring the plain code paths from the `aba6a56` checkpoint --
+`central`'s advertising/scan calls and `peripheral`'s connectable
+advertising both now match the validated, non-Coded-PHY state exactly, no
+dormant alternate path left behind. `CONFIG_APP_USE_CODED_PHY` and its
+Kconfig entry are still present (central/Kconfig) but now genuinely
+unused/dead until someone deliberately re-implements Coded PHY support
+from scratch -- flagged here so a future session doesn't assume the
+existing Kconfig option still does anything.
+
+— Alejandro (session assisted by Claude), 2026-08-11
 

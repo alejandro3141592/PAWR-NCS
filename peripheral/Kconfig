@@ -60,17 +60,4 @@ config APP_DUMP_ON_BOOT
 	  "dump" command, which hung the board's console (see NOTES.md
 	  2026-08-03).
 
-config APP_USE_CODED_PHY
-	bool "Use LE Coded PHY for the PAwR periodic advertising sync"
-	default n
-	select BT_CTLR_PHY_CODED
-	help
-	  Must match central's CONFIG_APP_USE_CODED_PHY setting exactly -- a
-	  1M-PHY central can't onboard a Coded-PHY peripheral or vice versa.
-	  See central/Kconfig's own APP_USE_CODED_PHY entry for why this is
-	  a single Kconfig option (with a `select`) instead of an
-	  unconditional prj.conf line plus a separate C-level toggle -- that
-	  split caused a real boot-time crash at high subevent counts when
-	  the two drifted out of sync.
-
 source "Kconfig.zephyr"

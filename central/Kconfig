@@ -16,6 +16,18 @@ config APP_CENTRAL_ID
 	  also have CONFIG_APP_CENTRAL_ID=0 (the default, preserves old
 	  single-central behavior with no config changes needed).
 
+config APP_ACCEPT_ANY_NODE
+	bool "Onboard any advertising peripheral, ignoring node_slot_table.h"
+	default n
+	help
+	  Temporary hardware bring-up/triage mode: instead of refusing
+	  peripherals with no node_slot_table.h entry, assign each one the
+	  next free subevent (single slot, no primary/backup redundancy) in
+	  the order they're seen. For testing which physical nodes out of a
+	  larger pool actually power on and report correctly, one at a time,
+	  before they're added to the real table. Not for normal/production
+	  use -- leave off so unlisted nodes are refused as intended.
+
 config APP_DUMP_LOG_ON_BOOT
 	bool "Dump the on-board flash sensor log as CSV over serial at boot"
 	default n
@@ -25,32 +37,5 @@ config APP_DUMP_LOG_ON_BOOT
 	  printk(), then continue normal operation as usual. Same mechanism
 	  as peripheral's CONFIG_APP_DUMP_ON_BOOT -- capture serial output
 	  right after boot to retrieve the CSV.
-
-config APP_USE_CODED_PHY
-	bool "Use LE Coded PHY for the PAwR periodic advertising train"
-	default n
-	select BT_CTLR_PHY_CODED
-	help
-	  Single source of truth for Coded PHY -- common/pawr_protocol.h's
-	  APP_USE_CODED_PHY C macro reads this Kconfig value (see that
-	  file), so flipping this one option controls both the runtime
-	  BT_LE_ADV_OPT_CODED/BT_LE_SCAN_OPT_CODED logic in central/src/
-	  main.c AND the underlying CONFIG_BT_CTLR_PHY_CODED feature via
-	  this option's own `select`.
-
-	  This split existed as two separate, manually-kept-in-sync things
-	  once (a C `#define` here, an unconditional `CONFIG_BT_CTLR_PHY_
-	  CODED=y` line in prj.conf) -- confirmed the hard way that's
-	  dangerous: leaving CONFIG_BT_CTLR_PHY_CODED unconditionally on
-	  makes the SDC controller reserve extra internal resources for
-	  Coded PHY regardless of whether anything actually uses it, and at
-	  a high NUM_SUBEVENTS (34, redundant-slots-experiment) that extra
-	  baseline overhead was enough on its own to cause a boot-time USB
-	  buffer exhaustion crash (immediate "udc: Failed to allocate
-	  net_buf" right after "Scanning successfully started", total
-	  silence after) -- with the runtime toggle left OFF the whole
-	  time. Confirmed by reverting: same build, same 34 subevents, only
-	  CONFIG_BT_CTLR_PHY_CODED unset -- boots clean. See NOTES.md
-	  2026-08-08.
 
 source "Kconfig.zephyr"
