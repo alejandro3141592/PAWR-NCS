@@ -142,6 +142,41 @@ static inline unsigned int pawr_parse_node_id(const char *name)
  */
 #define APP_SCALE_TEST 0
 
+/* 2026-08-07/08: LE Coded PHY (Long Range) support -- ported from
+ * coded-phy-experiment onto this branch, now that a separate single-node
+ * distance test (distance-test-17slot) confirmed Coded PHY's benefit
+ * grows with distance (roughly flat at 1m, +5pp at 2m over +8dBm-power-
+ * only). Goal here: test it once at the real deployment target -- 34
+ * subevents + redundant slots + power, on the real 17-node fleet -- rather
+ * than re-validating it in isolation at every slot count (see NOTES.md
+ * 2026-08-08 for the reasoning against a full factorial sweep).
+ *
+ * Controlled by CONFIG_APP_USE_CODED_PHY (see central/Kconfig,
+ * peripheral/Kconfig -- check with IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+ * at call sites, no separate C-level macro here). Both central and every
+ * peripheral must be built with this set to the same value
+ * (BT_LE_ADV_OPT_CODED/BT_LE_SCAN_OPT_CODED in central/src/main.c,
+ * matching connectable-adv option in peripheral/src/main.c) -- a 1M-PHY
+ * central can't onboard a Coded-PHY peripheral or vice versa, so a
+ * mismatched pair would just never connect, not degrade gracefully.
+ *
+ * 2026-08-08 (real bug, found the hard way): this used to be a plain
+ * `#define APP_USE_CODED_PHY 0/1` here, with CONFIG_BT_CTLR_PHY_CODED set
+ * UNCONDITIONALLY in both apps' prj.conf (reasoning at the time: "the code
+ * paths don't request Coded PHY when the toggle is off, so this has no
+ * effect"). That reasoning was wrong -- CONFIG_BT_CTLR_PHY_CODED makes the
+ * SDC controller reserve extra internal resources for Coded PHY support
+ * regardless of whether any connection actually uses it, and at
+ * NUM_SUBEVENTS=34 that extra baseline overhead alone was enough to cause
+ * a deterministic boot-time crash (immediate "udc: Failed to allocate
+ * net_buf" right after "Scanning successfully started", confirmed
+ * reproducible across a fresh reflash) -- with the runtime toggle left
+ * OFF the whole time. Fixed by making CONFIG_APP_USE_CODED_PHY a real
+ * Kconfig option that `select`s CONFIG_BT_CTLR_PHY_CODED only when
+ * actually enabled -- single source of truth, can't drift out of sync
+ * like the old #define + unconditional prj.conf line could.
+ */
+
 /* One subevent per node, one response slot per subevent. interval_min/max
  * are uint16_t in 1.25 ms units (0x1F40 * 1.25ms = 10.00s exactly).
  * subevent_interval is uint8_t in 1.25ms units, response_slot_delay is
@@ -183,10 +218,39 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 #define NUM_SUBEVENTS             10
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
 #else
-#define NUM_SUBEVENTS             25
+#define NUM_SUBEVENTS             34
 #define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
 #endif
 #define NUM_RSP_SLOTS             1
+
+/* 2026-08-07 (redundant-slots-experiment branch): 17 nodes, each with TWO
+ * dedicated subevents instead of one -- a primary and a backup, both
+ * carrying the same latest_payload/seq each interval (peripheral reads
+ * sensors once per PAWR_INTERVAL_MS regardless of how many subevents it
+ * answers, see peripheral/src/main.c's sensor_read_work -- so both slots
+ * are genuinely redundant delivery attempts of the SAME reading, not two
+ * different readings). Goal: if one attempt is lost (radio contention,
+ * timing, interference), the other is an independent chance to get that
+ * same seq through before the next 10s reading replaces it.
+ *
+ * Backup subevent = primary + NUM_PRIMARY_SLOTS (fixed offset, not an
+ * explicit per-node table column) -- e.g. primary block is subevents
+ * 0-16, backup block is 17-33, node_slot_table.h only lists each node's
+ * primary and central computes the backup from it. Chosen over explicit
+ * per-node backup assignment for simplicity and because it makes
+ * collisions impossible by construction (each node's backup is uniquely
+ * determined by its own primary, which node_slot_table_validate() already
+ * guarantees is unique per central).
+ *
+ * NUM_SUBEVENTS = 34 (17*2) is higher than anything soak-tested with 6/6
+ * buffers so far (20 was the last clean validation) and enters the same
+ * territory as the still-unexplained NUM_SUBEVENTS=25 boot failure found
+ * on the coded-phy-experiment branch (NOTES.md 2026-08-07) -- treat this
+ * as genuinely unvalidated at the subevent-count level, independent of
+ * whether the redundant-slot logic itself works, until proven otherwise
+ * on real hardware.
+ */
+#define NUM_PRIMARY_SLOTS 17
 
 #define PAWR_SUBEVENT_INTERVAL    0x20    /* 40 ms   */
 #define PAWR_RESPONSE_SLOT_DELAY  0x8     /* 10 ms   */
@@ -200,6 +264,12 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 
 /* PAST subscribe timeout on the peripheral: 10ms units, 30s = 3 missed
  * 10s intervals of margin before sync is torn down.
+ *
+ * 2026-08-09: briefly bumped to 6000 (60s) as a diagnostic step while
+ * chasing a sync failure at NUM_SUBEVENTS=34 -- made no difference (same
+ * failure, same timing, regardless of 30s vs 60s), so reverted back to
+ * 3000. See NOTES.md 2026-08-09 -- the timeout value was never the actual
+ * variable.
  */
 #define PAWR_PAST_TIMEOUT_UNITS   3000
 

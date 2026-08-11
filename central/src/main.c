@@ -115,10 +115,25 @@ static uint8_t counter;
 static void node_slot_table_validate(void)
 {
 	for (size_t i = 0; i < ARRAY_SIZE(node_slot_table); i++) {
+		uint32_t backup = (uint32_t)node_slot_table[i].subevent + NUM_PRIMARY_SLOTS;
+
 		if (node_slot_table[i].subevent >= NUM_SUBEVENTS) {
 			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_SUBEVENTS (%d)\n",
 			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
 			       NUM_SUBEVENTS);
+			k_panic();
+		}
+
+		if (node_slot_table[i].subevent >= NUM_PRIMARY_SLOTS) {
+			printk("FATAL: node_slot_table[%d] (node %u) has subevent %u >= NUM_PRIMARY_SLOTS (%d) -- primary slots must stay in the first block, backups are derived by adding NUM_PRIMARY_SLOTS\n",
+			       (int)i, node_slot_table[i].node_id, node_slot_table[i].subevent,
+			       NUM_PRIMARY_SLOTS);
+			k_panic();
+		}
+
+		if (backup >= NUM_SUBEVENTS) {
+			printk("FATAL: node_slot_table[%d] (node %u) has backup subevent %u >= NUM_SUBEVENTS (%d)\n",
+			       (int)i, node_slot_table[i].node_id, backup, NUM_SUBEVENTS);
 			k_panic();
 		}
 
@@ -200,6 +215,18 @@ static int pending_slot;
 static struct bt_le_ext_adv *pawr_adv;
 #endif
 
+/* Redundant-slot dedup (see common/pawr_protocol.h's NUM_PRIMARY_SLOTS
+ * comment): each node answers on two subevents (primary + backup) with the
+ * SAME seq every interval, so both can legitimately succeed -- without this,
+ * every reading would get forwarded to the gateway/DB twice on a good
+ * interval, not just once on a lucky recovery. Indexed directly by
+ * sensor_payload.node_id (uint8_t, so this covers the full possible range
+ * regardless of the current CONFIG_APP_NODE_ID Kconfig limit). -1
+ * (impossible for a uint16_t wire seq) means "nothing forwarded yet for
+ * this node_id".
+ */
+static int32_t last_forwarded_seq[UINT8_MAX + 1];
+
 static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response_info *info,
 		     struct net_buf_simple *buf)
 {
@@ -227,8 +254,20 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 
 	memcpy(&payload, buf->data, sizeof(payload));
 
-	gateway_uart_tx_send(&payload);
-	sensor_log_append(&payload);
+	/* Redundant-slot dedup: this exact seq for this node_id may already
+	 * have been forwarded via its OTHER subevent (primary vs. backup)
+	 * earlier in the same interval -- see last_forwarded_seq's own
+	 * comment. Still counted/printed below so the console/log shows both
+	 * receptions for diagnostics; only the gateway/on-board-flash forward
+	 * is skipped for the duplicate.
+	 */
+	bool is_duplicate = (last_forwarded_seq[payload.node_id] == (int32_t)payload.seq);
+
+	if (!is_duplicate) {
+		last_forwarded_seq[payload.node_id] = (int32_t)payload.seq;
+		gateway_uart_tx_send(&payload);
+		sensor_log_append(&payload);
+	}
 
 	/* Single printk call instead of up to 4 -- this callback fires once
 	 * per received response, per subevent, per interval (up to
@@ -238,12 +277,13 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	 * allocate net_buf" under load -- see NOTES.md 2026-08-03. Fewer,
 	 * larger writes reduce that pressure vs. many small ones.
 	 */
-	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s\n",
+	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s%s\n",
 	       payload.node_id, info->subevent,
 	       payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
 	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq,
 	       (payload.flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID) ? "  [FLAG: TEMP_FAIL]" : "",
-	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "");
+	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "",
+	       is_duplicate ? "  [DUP: backup slot, already forwarded]" : "");
 }
 
 static const struct bt_le_ext_adv_cb adv_cb = {
@@ -451,6 +491,7 @@ void init_bufs(void)
 
 struct pawr_timing {
 	uint8_t subevent;
+	uint8_t backup_subevent;
 	uint8_t response_slot;
 } __packed;
 
@@ -465,6 +506,10 @@ int main(void)
 	struct pawr_timing sync_config;
 
 	init_bufs();
+
+	for (size_t i = 0; i < ARRAY_SIZE(last_forwarded_seq); i++) {
+		last_forwarded_seq[i] = -1;
+	}
 
 	printk("Starting Periodic Advertising Demo (central)\n");
 	printk("Central ID: %u\n", CONFIG_APP_CENTRAL_ID);
@@ -527,8 +572,34 @@ int main(void)
 		}
 	}
 
-	/* Create a non-connectable advertising set */
+	/* Create a non-connectable advertising set. Same as BT_LE_EXT_ADV_NCONN
+	 * but with CONFIG_APP_USE_CODED_PHY able to add BT_LE_ADV_OPT_CODED --
+	 * can't use that macro directly since it's a fixed options value, not
+	 * something this build-time toggle can OR a flag into.
+	 *
+	 * 2026-08-09: this used to be a plain runtime IS_ENABLED() check that
+	 * ALWAYS allocated a local struct bt_le_adv_param and copied
+	 * BT_LE_EXT_ADV_NCONN into it, even when CONFIG_APP_USE_CODED_PHY is
+	 * off -- confirmed the hard way (isolated single-change A/B test) that
+	 * the extra ~32 bytes of stack usage and struct-copy this added at
+	 * this exact call site was enough, on its own, to break PAST sync at
+	 * NUM_SUBEVENTS=34 (peripheral stuck in a permanent "Waiting for
+	 * periodic sync... / Timed out" loop,100% reproducible). Using a
+	 * preprocessor #if instead of runtime IS_ENABLED() so the
+	 * CONFIG_APP_USE_CODED_PHY=n path (the common case today) compiles to
+	 * the exact same direct BT_LE_EXT_ADV_NCONN pointer pass as before
+	 * this option existed -- zero extra stack, zero extra copy. See
+	 * NOTES.md 2026-08-09.
+	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+	struct bt_le_adv_param pawr_adv_param = *BT_LE_EXT_ADV_NCONN;
+
+	pawr_adv_param.options |= BT_LE_ADV_OPT_CODED;
+
+	err = bt_le_ext_adv_create(&pawr_adv_param, &adv_cb, &pawr_adv);
+#else
 	err = bt_le_ext_adv_create(BT_LE_EXT_ADV_NCONN, &adv_cb, &pawr_adv);
+#endif
 	if (err) {
 		printk("Failed to create advertising set (err %d)\n", err);
 		return 0;
@@ -549,6 +620,17 @@ int main(void)
 		return 0;
 	}
 
+	/* 2026-08-09: tried staggering radio startup here (50ms, then 500ms
+	 * delays between per_adv_start/ext_adv_start/scan_start) while chasing
+	 * a PAST sync failure at NUM_SUBEVENTS=34 -- made no measurable
+	 * difference either way, and the eventual finding (see NOTES.md
+	 * 2026-08-09) was that the SAME known-good 0dBm/34-subevent config
+	 * later failed too, meaning none of the config knobs tried that day
+	 * (TX power, PAST timeout, event-length budget, this stagger) were
+	 * ever the actual variable. Reverted to no artificial delay here to
+	 * stop carrying an unproven change forward.
+	 */
+
 	printk("Start Extended Advertising\n");
 	err = bt_le_ext_adv_start(pawr_adv, BT_LE_EXT_ADV_START_DEFAULT);
 	if (err) {
@@ -556,9 +638,31 @@ int main(void)
 		return 0;
 	}
 
+	/* Same as BT_LE_SCAN_PASSIVE_CONTINUOUS but with CONFIG_APP_USE_CODED_PHY
+	 * able to add BT_LE_SCAN_OPT_CODED -- central has to actually scan on Coded
+	 * PHY to ever see a Coded-PHY peripheral's connectable advert; matching
+	 * the advertising-side toggle above without this would mean central's
+	 * own periodic train is on Coded PHY but it can never find/onboard
+	 * anyone in the first place.
+	 *
+	 * Preprocessor #if instead of runtime IS_ENABLED() -- see the matching
+	 * comment above bt_le_ext_adv_create() for why (the always-allocated
+	 * local copy here was the confirmed cause of a real PAST sync failure
+	 * at NUM_SUBEVENTS=34, even with CONFIG_APP_USE_CODED_PHY off).
+	 */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+	struct bt_le_scan_param onboard_scan_param = *BT_LE_SCAN_PASSIVE_CONTINUOUS;
+
+	onboard_scan_param.options |= BT_LE_SCAN_OPT_CODED;
+#endif
+
 	while (true) {
 		/* Enable continuous scanning */
+#if IS_ENABLED(CONFIG_APP_USE_CODED_PHY)
+		err = bt_le_scan_start(&onboard_scan_param, device_found);
+#else
 		err = bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+#endif
 		if (err) {
 			printk("Scanning failed to start (err %d)\n", err);
 			return 0;
@@ -630,8 +734,17 @@ int main(void)
 		 * fixed assignment doesn't need anything learned during
 		 * discovery/connection to pick a slot, unlike the old dynamic
 		 * allocate_slot(bt_conn_get_dst(...)) call this replaced.
+		 *
+		 * backup_subevent = pending_slot + NUM_PRIMARY_SLOTS (see
+		 * common/pawr_protocol.h for why this is a fixed offset, not a
+		 * second node_slot_table.h column): the peripheral answers
+		 * whichever of its two assigned subevents' polls it actually
+		 * receives each interval, so a response lost on one has an
+		 * independent second chance on the other before the next
+		 * sensor reading replaces the payload.
 		 */
 		sync_config.subevent = (uint8_t)pending_slot;
+		sync_config.backup_subevent = (uint8_t)(pending_slot + NUM_PRIMARY_SLOTS);
 		sync_config.response_slot = 0;
 
 		write_params.func = write_func;
@@ -656,7 +769,8 @@ int main(void)
 			goto disconnect;
 		}
 
-		printk("PAwR config written: subevent %d\n", pending_slot);
+		printk("PAwR config written: subevent %d (backup %d)\n", pending_slot,
+		       pending_slot + NUM_PRIMARY_SLOTS);
 
 disconnect:
 		/* Wait slightly longer than one periodic advertising interval
