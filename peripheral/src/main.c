@@ -311,6 +311,34 @@ static void storage_fcb_init(void)
 	APP_LOG("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
 }
 
+/* 2026-08-11: wraparound. Two earlier attempts (see NOTES.md 2026-08-09/10)
+ * both rotated reactively -- on the append that discovers the log is
+ * already full -- and both broke PAST sync on real hardware for reasons
+ * never fully root-caused (the first called fcb_rotate() inline from this
+ * same function; the second deferred it to a k_work item, first the
+ * default system workqueue, then a dedicated one, and even the dedicated-
+ * workqueue version still broke sync). This is a different strategy, not
+ * just a different queue: rotate PROACTIVELY, well before the log is
+ * actually full, so the erase always has a full spare sector of headroom
+ * (~400 more writes at 10 bytes/entry) rather than ever happening under
+ * write pressure. Deliberately kept in the same context as a normal
+ * append (no workqueue at all this time) -- if this turns out to still
+ * disrupt sync, that will show something about the write path itself
+ * mattering more than which thread runs it, which the queue-based
+ * attempts couldn't distinguish. Test incrementally on real hardware
+ * before trusting this, same as every other change today.
+ */
+/* 2026-08-11: confirmed on real hardware -- forced this threshold to 7
+ * (rotating on nearly every write) for an accelerated test instead of
+ * waiting ~30-60 real minutes for the log to naturally approach full.
+ * Rotation fired repeatedly, PAwR sync stayed stable throughout (the one
+ * disconnect seen was reason 0x13, the normal onboarding-teardown code,
+ * unrelated to rotation). Back to 2 for real deployment -- headroom of
+ * one still-being-filled sector plus one fully-spare sector before the
+ * log would ever actually risk -ENOSPC blocking a write.
+ */
+#define STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD 2
+
 /* Appends one payload to the flash log. Failure here is logged but never
  * blocks reporting over the air -- flash logging is a fallback, not a
  * dependency for the primary PAwR data path.
@@ -322,6 +350,15 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 
 	if (!storage_fcb_ok) {
 		return;
+	}
+
+	if (fcb_free_sector_cnt(&storage_fcb) <= STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD) {
+		err = fcb_rotate(&storage_fcb);
+		if (err) {
+			APP_LOG("[STORAGE] fcb_rotate failed (err %d)\n", err);
+		} else {
+			APP_LOG("[STORAGE] fcb_rotate: log wrapped, oldest sector reclaimed\n");
+		}
 	}
 
 	err = fcb_append(&storage_fcb, sizeof(*payload), &loc);
