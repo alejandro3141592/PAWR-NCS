@@ -18,13 +18,15 @@ import json
 import math
 import ssl
 import struct
+import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from PyQt5.QtCore import QPointF, QRectF, Qt, QThread, QTimer, pyqtSignal
+from PyQt5.QtCore import QObject, QPointF, QRectF, Qt, QThread, QTimer, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPalette, QPen, QPixmap, QRadialGradient
 from PyQt5.QtWidgets import (
     QApplication, QComboBox, QFileDialog, QFrame, QGridLayout, QGroupBox, QHBoxLayout,
@@ -33,6 +35,8 @@ from PyQt5.QtWidgets import (
 )
 
 import paho.mqtt.client as mqtt
+import serial
+import serial.tools.list_ports
 import sensor_db
 
 try:
@@ -55,6 +59,7 @@ TOPICS = ["sensors/data"]
 # Replaces the prior per-field JSON publishes (sensors/temperature,
 # sensors/humidity) with one compact binary message per node per interval,
 # see NOTES.md 2026-08-04 for the cellular-data-usage motivation.
+# see NOTES.md 2026-08-04 for the cellular-data-usage motivation.
 _SENSOR_PAYLOAD_STRUCT = struct.Struct("<BBHhH")
 
 TEMP_MIN = 20.0
@@ -65,6 +70,111 @@ RANGES = [("1 h", 1), ("6 h", 6), ("24 h", 24), ("7 d", 168)]
 
 FLAG_TEMP_INVALID = 0x01
 FLAG_HUMIDITY_INVALID = 0x02
+
+# Fallback UART link (2026-08-12, see gateway_9151/src/uart/gui_uart_tx.c):
+# gateway forwards every frame it receives from central out its console
+# UART too, framed identically to common/uart_frame.h -- reused here
+# byte-for-byte so this GUI can ingest sensor data directly over a USB
+# cable with zero dependency on SIM/LTE/MQTT/internet. Frame layout:
+#   [ start(1) ][ sensor_payload(8) ][ crc16 LE(2) ] = 11 bytes total.
+UART_FRAME_START_BYTE = 0xA5
+UART_FRAME_SIZE = 1 + _SENSOR_PAYLOAD_STRUCT.size + 2
+
+# The gateway's console UART (VCOM0) also carries printk debug text on the
+# same wire (see gui_uart_tx.h for why) -- this GUI's serial port must be
+# the nRF9151 DK's onboard J-Link debug probe's VCOM0 specifically, not
+# central's or a peripheral node's own USB-CDC-ACM port (all show up as
+# distinct COM ports simultaneously on a bench with multiple boards
+# connected, confirmed repeatedly during this project's testing) and NOT
+# the J-Link's own VCOM1 (a second, unused virtual COM port every J-Link
+# probe also exposes -- confirmed on real hardware 2026-08-12: matching on
+# "J-Link" alone picked whichever of the two pyserial happened to list
+# first, landing on VCOM1 with zero traffic on it, while VCOM0 carried the
+# actual data). Nordic's own `nrfutil device list --json` explicitly labels
+# each port with which vcom index it is (confirmed present as a "vcom"
+# field per serial port in that output) -- this project has already been
+# burned once trusting a home-grown heuristic for vcom0-vs-vcom1 instead
+# (NOTES.md: "lower-numbered port is typically VCOM0" turned out backwards
+# on at least one machine), so this asks nrfutil directly rather than
+# re-guessing from pyserial's own port metadata (USB interface number,
+# description string, etc.).
+GATEWAY_PORT_DESCRIPTION_HINTS = ("j-link", "jlink")
+
+
+def uart_frame_crc16(data: bytes) -> int:
+    """CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF, no reflect, no xorout) --
+    byte-for-byte port of common/uart_frame.c's uart_frame_crc16(), must stay
+    in sync with that implementation."""
+    crc = 0xFFFF
+    for byte in data:
+        crc ^= byte << 8
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+            else:
+                crc = (crc << 1) & 0xFFFF
+    return crc
+
+
+def _find_gateway_ports_via_nrfutil() -> Optional[List[str]]:
+    """Authoritative path: ask nrfutil (already a hard dependency of this
+    whole project's flashing workflow, confirmed on PATH) which COM ports
+    are vcom0 on each connected J-Link probe -- one entry per physical
+    gateway, so this naturally supports any number of gateways connected at
+    once (2026-08-12: confirmed nrfutil enumerates every attached J-Link
+    independently, each with its own vcom0/vcom1 pair). Returns None (not
+    an empty list) on any failure -- missing nrfutil, unexpected output
+    shape -- so the caller can fall back to the heuristic below rather than
+    silently report "zero gateways" when the real answer is "couldn't
+    check". Returns [] (a real, meaningful empty result) if nrfutil ran
+    fine but nothing is plugged in."""
+    try:
+        result = subprocess.run(
+            ["nrfutil", "device", "list", "--json", "--traits", "jlink,serialPorts"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+    ports = []
+    for line in result.stdout.splitlines():
+        try:
+            msg = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if msg.get("type") != "task_end":
+            continue
+        devices = msg.get("data", {}).get("data", {}).get("devices", [])
+        for device in devices:
+            for port in device.get("serialPorts", []):
+                if port.get("vcom") == 0 and port.get("comName"):
+                    ports.append(port["comName"])
+    return ports
+
+
+def _find_gateway_ports_via_heuristic() -> List[str]:
+    """Fallback only (see find_gateway_ports()) -- matches on the J-Link
+    product string alone, which cannot distinguish VCOM0 from VCOM1, so
+    with multiple gateways connected this can return a mix of correct and
+    wrong ports. Only used if nrfutil itself is unavailable."""
+    ports = []
+    for port in serial.tools.list_ports.comports():
+        haystack = f"{port.description} {port.manufacturer or ''}".lower()
+        if any(hint in haystack for hint in GATEWAY_PORT_DESCRIPTION_HINTS):
+            ports.append(port.device)
+    return ports
+
+
+def find_gateway_ports() -> List[str]:
+    """Finds every currently-connected gateway's console (VCOM0) COM port --
+    supports any number of gateways plugged into this PC at once. Returns an
+    empty list if none are found; callers should retry periodically rather
+    than treating an empty result as permanent, since boards get plugged in
+    after this GUI is already running."""
+    ports = _find_gateway_ports_via_nrfutil()
+    if ports is not None:
+        return ports
+    return _find_gateway_ports_via_heuristic()
 
 
 def load_config() -> dict:
@@ -261,6 +371,158 @@ class MQTTWorker(QThread):
     def stop(self):
         if hasattr(self, "_client"):
             self._client.disconnect()
+
+
+class UARTWorker(QThread):
+    """Fallback ingestion path (2026-08-12, extended for multi-gateway
+    2026-08-12): reads framed sensor_payload bytes off ONE gateway's
+    console UART (see gui_uart_tx.c) and emits the same `received` signal
+    MQTTWorker does, so MainWindow._on_received doesn't care which
+    transport -- or which of possibly several gateways -- a reading arrived
+    over. Works with zero network/broker connectivity -- the whole point of
+    this path.
+
+    Bound to a single, fixed port for its entire life (no internal
+    auto-detect/retry -- that's UARTManager's job, one level up, since it's
+    the thing that knows about every gateway, not just one). If the port
+    disconnects or is unplugged, this thread's run() simply returns (Qt's
+    built-in `finished` signal fires), and UARTManager is responsible for
+    noticing and deciding whether/when to try that port (or a replacement)
+    again.
+    """
+
+    received = pyqtSignal(int, str, float, object, object)
+    status = pyqtSignal(str)
+
+    def __init__(self, port: str, parent=None):
+        super().__init__(parent)
+        self.port = port
+        self._stop_requested = False
+
+    def run(self):
+        try:
+            self._read_loop(self.port)
+        except (serial.SerialException, OSError) as e:
+            self.status.emit(f"{self.port}: disconnected ({e})")
+
+    def _read_loop(self, port: str):
+        # Baud must match the gateway's console UART -- confirmed 115200
+        # (0x1c200) via current-speed in the board's own common devicetree
+        # (nrf9151dk_nrf9151_common.dtsi), which this project doesn't
+        # override anywhere.
+        with serial.Serial(port, baudrate=115200, timeout=1.0) as ser:
+            self.status.emit(f"{port}: connected")
+
+            state_waiting = True
+            buf = bytearray()
+
+            while not self._stop_requested:
+                chunk = ser.read(max(1, ser.in_waiting or 1))
+                if not chunk:
+                    continue
+
+                for byte in chunk:
+                    if state_waiting:
+                        if byte == UART_FRAME_START_BYTE:
+                            buf = bytearray([byte])
+                            state_waiting = False
+                        continue
+
+                    buf.append(byte)
+                    if len(buf) == UART_FRAME_SIZE:
+                        self._handle_frame(bytes(buf))
+                        buf = bytearray()
+                        state_waiting = True
+
+    def _handle_frame(self, frame: bytes):
+        payload = frame[1:1 + _SENSOR_PAYLOAD_STRUCT.size]
+        crc_received = int.from_bytes(frame[1 + _SENSOR_PAYLOAD_STRUCT.size:], "little")
+        crc_computed = uart_frame_crc16(payload)
+
+        if crc_received != crc_computed:
+            # Expected occasionally -- this UART also carries printk debug
+            # text (see gui_uart_tx.h), so a text byte can coincidentally
+            # equal the start byte and trigger a bogus frame attempt. Drop
+            # and resync silently, exactly like the firmware's own
+            # uart_receiver.c does on the gateway-central link.
+            return
+
+        try:
+            node_id, flags, seq, temp_cdeg, humidity_pct10 = \
+                _SENSOR_PAYLOAD_STRUCT.unpack(payload)
+        except struct.error:
+            return
+
+        if not (flags & FLAG_TEMP_INVALID):
+            self.received.emit(node_id, "temperature", temp_cdeg / 100.0, seq, flags)
+        if not (flags & FLAG_HUMIDITY_INVALID):
+            self.received.emit(node_id, "humidity", humidity_pct10 / 10.0, seq, flags)
+
+    def stop(self):
+        self._stop_requested = True
+
+
+class UARTManager(QObject):
+    """Owns one UARTWorker per currently-connected gateway (2026-08-12,
+    multi-gateway support). A QTimer re-scans find_gateway_ports() every
+    _SCAN_INTERVAL_S: any port not already backed by a live worker gets a
+    new one started; any worker whose thread has already finished (its port
+    disconnected/unplugged, or a read error ended run()) is dropped so a
+    reconnected or replacement board on the same or a different port gets
+    picked up on the next scan. This centralizes the "keep looking for
+    gateways" logic in one place instead of duplicating a retry loop per
+    worker, since this is the one component that actually knows the full
+    set of gateways, not just one.
+    """
+
+    received = pyqtSignal(int, str, float, object, object)
+    status = pyqtSignal(str)
+
+    _SCAN_INTERVAL_S = 5000
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._workers: Dict[str, UARTWorker] = {}
+        self._timer = QTimer(self)
+        self._timer.timeout.connect(self._scan)
+
+    def start(self):
+        self._scan()
+        self._timer.start(self._SCAN_INTERVAL_S)
+
+    def _scan(self):
+        # Drop workers whose thread already ended (port gone or errored) --
+        # done before adding new ones so a just-replugged port (same COM
+        # name reused by Windows) is free to get a fresh worker rather than
+        # being blocked by a stale dict entry.
+        for port in [p for p, w in self._workers.items() if w.isFinished()]:
+            del self._workers[port]
+
+        ports = find_gateway_ports()
+
+        if not ports and not self._workers:
+            self.status.emit("No gateway found, retrying...")
+
+        for port in ports:
+            if port in self._workers:
+                continue
+            worker = UARTWorker(port)
+            worker.received.connect(self.received)
+            worker.status.connect(self.status)
+            self._workers[port] = worker
+            worker.start()
+
+        if self._workers:
+            connected = ", ".join(sorted(self._workers.keys()))
+            self.status.emit(f"{len(self._workers)} connected ({connected})")
+
+    def stop(self):
+        self._timer.stop()
+        for worker in self._workers.values():
+            worker.stop()
+        for worker in self._workers.values():
+            worker.wait(2000)
+        self._workers.clear()
 
 
 _RANGE_BTN_STYLE = (
@@ -1010,6 +1272,7 @@ class MainWindow(QMainWindow):
         self._db = sensor_db.open_db()
         self._build_ui()
         self._start_mqtt()
+        self._start_uart_fallback()
 
         self._health_timer = QTimer(self)
         self._health_timer.timeout.connect(self._on_timer_tick)
@@ -1114,13 +1377,22 @@ class MainWindow(QMainWindow):
         slay = QHBoxLayout(sbar)
         slay.setContentsMargins(12, 0, 12, 0)
         slay.setSpacing(20)
-        self._conn_lbl = QLabel("Connecting...")
+        # Two independent status labels (2026-08-12): MQTT/LTE and the
+        # fallback UART link (see UARTWorker) are both live, unconditional
+        # ingestion paths now, not a primary/backup pair -- showing both
+        # separately makes it visible which transport(s) are actually
+        # delivering data, which matters for diagnosing a no-SIM/no-LTE
+        # deployment (MQTT will show disconnected forever in that case,
+        # by design, while UART should still show connected).
+        self._mqtt_conn_lbl = QLabel("MQTT: Connecting...")
+        self._uart_conn_lbl = QLabel("UART: Connecting...")
         self._health_lbl = QLabel("🟢 Active: 0  🟡 Idle: 0  🔴 Offline: 0")
         self._mean_t_lbl = QLabel("Mean Temp: -")
         self._mean_h_lbl = QLabel("Mean Hum: -")
         self._db_lbl = QLabel(f"DB: {sensor_db.DB_PATH.name}")
 
-        for lbl in [self._conn_lbl, self._health_lbl, self._mean_t_lbl, self._mean_h_lbl, self._db_lbl]:
+        for lbl in [self._mqtt_conn_lbl, self._uart_conn_lbl, self._health_lbl,
+                    self._mean_t_lbl, self._mean_h_lbl, self._db_lbl]:
             lbl.setStyleSheet("color:#94a3b8;font-size:10px;font-weight:bold;")
             slay.addWidget(lbl)
         slay.addStretch()
@@ -1129,8 +1401,14 @@ class MainWindow(QMainWindow):
     def _start_mqtt(self):
         self._mqtt = MQTTWorker(self._config)
         self._mqtt.received.connect(self._on_received)
-        self._mqtt.status.connect(self._conn_lbl.setText)
+        self._mqtt.status.connect(lambda s: self._mqtt_conn_lbl.setText(f"MQTT: {s}"))
         self._mqtt.start()
+
+    def _start_uart_fallback(self):
+        self._uart = UARTManager(self)
+        self._uart.received.connect(self._on_received)
+        self._uart.status.connect(lambda s: self._uart_conn_lbl.setText(f"UART: {s}"))
+        self._uart.start()
 
     def _on_received(self, node_id: int, field: str, val: float, seq, flags):
         if node_id not in self._nodes:
@@ -1271,6 +1549,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self._mqtt.stop()
         self._mqtt.wait(2000)
+        self._uart.stop()
         self._db.close()
         super().closeEvent(event)
 

@@ -9,6 +9,7 @@ target_sources(app PRIVATE
     ../common/uart_frame.c
     ../common/sensor_log.c
     src/uart/uart_receiver.c
+    src/uart/gui_uart_tx.c
     src/mqtt/mqtt_publisher.c
 )
 target_sources_ifdef(CONFIG_APP_MQTT_USE_TLS app PRIVATE src/mqtt/tls_provision.c)
