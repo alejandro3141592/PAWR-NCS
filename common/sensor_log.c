@@ -74,6 +74,21 @@ void sensor_log_init(void)
 	printk("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
 }
 
+/* Proactive rotation: check/rotate BEFORE the log is actually full, so the
+ * erase always has a full spare sector of headroom rather than ever
+ * happening under write pressure. Proven on real hardware 2026-08-11 in
+ * peripheral/src/main.c's identical storage_fcb_append() (see that file's
+ * comment for the two earlier reactive-rotation attempts that caused
+ * problems for reasons never fully root-caused) -- ported here 2026-08-14
+ * after this file's own lack of any rotation logic let central's flash log
+ * fill up permanently during real-hardware download testing: every
+ * sensor_log_append() call failed with -ENOSPC from that point on, with no
+ * way to recover short of a reflash. This file was never given the same
+ * fix peripheral got, despite being explicitly flagged as a known gap
+ * earlier in this project's history.
+ */
+#define STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD 2
+
 void sensor_log_append(const struct sensor_payload *payload)
 {
 	struct fcb_entry loc;
@@ -81,6 +96,15 @@ void sensor_log_append(const struct sensor_payload *payload)
 
 	if (!storage_fcb_ok) {
 		return;
+	}
+
+	if (fcb_free_sector_cnt(&storage_fcb) <= STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD) {
+		err = fcb_rotate(&storage_fcb);
+		if (err) {
+			printk("[STORAGE] fcb_rotate failed (err %d)\n", err);
+		} else {
+			printk("[STORAGE] fcb_rotate: log wrapped, oldest sector reclaimed\n");
+		}
 	}
 
 	err = fcb_append(&storage_fcb, sizeof(*payload), &loc);
@@ -123,9 +147,10 @@ static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 		return 0;
 	}
 
-	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u\n", payload.node_id, payload.seq, payload.flags,
+	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u,%u\n", payload.node_id, payload.seq, payload.flags,
 	       ctx->count, payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
-	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10);
+	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10,
+	       payload.millis_since_init);
 
 	ctx->count++;
 
@@ -142,7 +167,7 @@ void sensor_log_dump_all(void)
 		return;
 	}
 
-	printk("node_id,seq,flags,row,temp_c,humidity_pct\n");
+	printk("node_id,seq,flags,row,temp_c,humidity_pct,millis_since_init\n");
 
 	err = fcb_walk(&storage_fcb, NULL, storage_dump_walk_cb, &ctx);
 	if (err) {

@@ -6,6 +6,7 @@ project(pawr_central)
 
 target_sources(app PRIVATE
     src/main.c
+    src/console_trigger.c
     src/gateway_uart_tx.c
     ../common/uart_frame.c
     ../common/sensor_log.c

@@ -1,19 +1,21 @@
 /*
- * Copyright (c) 2023 Nordic Semiconductor ASA
  * Copyright (c) 2026
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * PAwR peripheral / sync+responder: skin sensor node.
- * Adapted from NCS sample: samples/bluetooth/periodic_sync_rsp
+ * BLE GATT peripheral: skin sensor node (2026-08-13, replaces the earlier
+ * PAwR-based design -- see common/pawr_protocol.h's file header for why).
  *
- * Flow: connectable-advertise as "PAwR sync sample" -> central connects and
- * transfers periodic sync info (PAST) -> this device syncs to the central's
- * periodic advertising -> central writes our subevent/response-slot
- * assignment over GATT (kept as the extension point for future dynamic
- * slot-shifting) -> every 10 seconds we read skin temperature + humidity,
- * and answer every subevent poll for our assigned slot with the latest
- * reading.
+ * Flow: connectable-advertise as "PAwR sync sample" (legacy name, kept for
+ * continuity) -> central connects once during the INIT phase and writes the
+ * "start measuring" characteristic (no payload, the write itself is the
+ * signal) -> this node records k_uptime_get() as its own t0 and starts a
+ * 10s periodic sensor-read timer, appending every reading to its on-board
+ * flash log -> node keeps measuring/storing/advertising indefinitely,
+ * completely independent of whether a connection exists -> whenever central
+ * reconnects later (DOWNLOAD phase) and writes the "download" characteristic,
+ * this node streams its entire flash log back as a sequence of GATT
+ * indications.
  */
 
 #include <zephyr/bluetooth/bluetooth.h>
@@ -34,13 +36,12 @@
 #include "pawr_protocol.h"
 
 /* Diagnostic output toggle: CONFIG_APP_SERIAL_LOGGING defaults to y for
- * development, but should be set to n for real deployment (50 unattended
+ * development, but should be set to n for real deployment (many unattended
  * field nodes) to avoid any chance of the serial console -- a USB-CDC
- * transport already shown this session to be fragile under load (see the
- * earlier "udc: Failed to allocate net_buf" hang, and the CONFIG_SHELL boot
- * hang) -- being a source of problems at all. IS_ENABLED() makes the
- * disabled branch dead code eliminated at compile time, not a runtime
- * check, so this has zero cost when off. See NOTES.md 2026-08-03.
+ * transport already shown fragile under load (see NOTES.md 2026-08-03) --
+ * being a source of problems at all. IS_ENABLED() makes the disabled
+ * branch dead code eliminated at compile time, not a runtime check, so
+ * this has zero cost when off.
  */
 #define APP_LOG(fmt, ...)                                                                        \
 	do {                                                                                       \
@@ -51,43 +52,22 @@
 
 #define NAME_LEN 30
 
-static K_SEM_DEFINE(sem_per_adv, 0, 1);
-static K_SEM_DEFINE(sem_per_sync, 0, 1);
-static K_SEM_DEFINE(sem_per_sync_lost, 0, 1);
+/* Sensor read cadence -- was PAWR_INTERVAL_MS (tied to the now-removed PAwR
+ * periodic advertising interval); kept as the same 10s value since that's
+ * an independently sensible sampling rate for this use case, just no
+ * longer coupled to any BLE timing at all.
+ */
+#define SENSOR_READ_INTERVAL_MS 10000
+
 static K_SEM_DEFINE(sem_disconnected, 0, 1);
 
 static struct bt_conn *default_conn;
-static struct bt_le_per_adv_sync *default_sync;
-/* Must match central/src/main.c's identical struct pawr_timing exactly --
- * see that struct's comment for why subevents is a fixed-size array.
- */
-static struct __packed {
-	uint8_t subevents[NUM_REDUNDANT_COPIES];
-	uint8_t response_slot;
 
-} pawr_timing;
-
-/* Status LED: off = not synced, steady on = synced (idle), brief off-blip =
- * a response was just sent for a subevent poll. The blip is scheduled as
- * delayed work rather than a blocking sleep since recv_cb runs in BT RX
- * context and must return promptly.
+/* Status LED: off = not yet init'd (not measuring), steady on = measuring.
+ * Distinct from the old PAwR-sync meaning, same physical LED/purpose
+ * (visible at-a-glance node state).
  */
 static const struct gpio_dt_spec status_led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
-
-static void status_led_blip_end(struct k_work *work)
-{
-	if (default_sync) {
-		gpio_pin_set_dt(&status_led, 1);
-	}
-}
-
-static K_WORK_DELAYABLE_DEFINE(status_led_blip_work, status_led_blip_end);
-
-static void status_led_blip(void)
-{
-	gpio_pin_set_dt(&status_led, 0);
-	k_work_reschedule(&status_led_blip_work, K_MSEC(100));
-}
 
 static void status_led_init(void)
 {
@@ -101,10 +81,8 @@ static void status_led_init(void)
 
 /* Power-on indicator: a single blink of the (unused otherwise) green LED
  * right at boot, so a board is visibly alive the moment it's powered --
- * distinct from status_led (red, led0) above, which tracks PAwR sync state
- * throughout the rest of run time. Blocking sleep is fine here: this runs
- * once in main(), before Bluetooth/sensors start, not in a latency-sensitive
- * callback like status_led_blip().
+ * distinct from status_led (red, led0) above. Blocking sleep is fine here:
+ * this runs once in main(), before Bluetooth/sensors start.
  */
 static const struct gpio_dt_spec power_on_led = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 
@@ -177,6 +155,14 @@ static int max30205_read_temp_cdeg(int16_t *out_cdeg)
 static uint16_t s_seq;
 static struct sensor_payload latest_payload;
 
+/* Set once, at the init-phase GATT write (see write_start_measuring()) --
+ * every subsequent reading's millis_since_init is k_uptime_get() - t0_ms.
+ * Until init happens, the node is not measuring at all (see main()'s
+ * comment on why sensor_read_work is not scheduled until then).
+ */
+static int64_t t0_ms;
+static bool measuring;
+
 static void sensors_init(void)
 {
 	if (IS_ENABLED(CONFIG_APP_SIMULATE_SENSORS)) {
@@ -210,7 +196,7 @@ static void sensors_read(struct sensor_payload *out)
 
 	if (IS_ENABLED(CONFIG_APP_SIMULATE_SENSORS)) {
 		/* Slowly drifting plausible fake values, purely for exercising
-		 * the PAwR data path without any I2C hardware attached.
+		 * the data path without any I2C hardware attached.
 		 */
 		temp_cdeg = 3600 + (s_seq % 20);
 		humidity_pct10 = 400 + (s_seq % 50);
@@ -234,22 +220,21 @@ static void sensors_read(struct sensor_payload *out)
 	out->seq = s_seq++;
 	out->temp_cdeg = temp_cdeg;
 	out->humidity_pct10 = humidity_pct10;
+	out->millis_since_init = (uint32_t)(k_uptime_get() - t0_ms);
 }
 
 /* ======================================================
- * ON-BOARD FLASH LOG (fallback storage for long unattended runs)
+ * ON-BOARD FLASH LOG (the node's complete, authoritative record -- not a
+ * fallback anymore, the ONLY way data leaves a node until the download
+ * phase; see file header)
  *
  * The board's internal "Storage" devicetree partition (32KB, separate from
  * application code -- see nrf52840_partition_uf2_sdv7.dtsi) is used as a
- * Flash Circular Buffer: every sensor_payload produced is appended here as
- * well as sent over the air, so a multi-hour run has a complete local
- * record even if central misses some over-the-air responses (PAwR gives
- * the peripheral no delivery acknowledgment, so there's no way to log only
- * the ones that failed -- see NOTES.md 2026-08-03). At the current 10s
- * interval, a full 4-hour run is ~1440 records * 8 bytes = ~11.2KB, well
- * under the 32KB partition -- no wraparound expected in normal use, but if
- * the buffer does fill, FCB's circular behavior means oldest records are
- * overwritten first, not that appends start failing.
+ * Flash Circular Buffer: every sensor_payload produced is appended here.
+ * At the current 10s interval, a full 4-hour run is ~1440 records * 12
+ * bytes = ~16.9KB, well under the 32KB partition -- no wraparound expected
+ * in normal use, but if the buffer does fill, FCB's circular behavior means
+ * oldest records are overwritten first, not that appends start failing.
  * ====================================================== */
 
 #define STORAGE_FCB_SECTOR_MAX 8 /* 32KB partition / 4KB pages, see devicetree */
@@ -281,9 +266,7 @@ static void storage_fcb_init(void)
 		/* -ENOMSG means a sector's on-flash header magic matched
 		 * neither "erased" nor our own magic -- i.e. this partition
 		 * holds leftover data from something else, not a truly blank
-		 * area (confirmed on real hardware 2026-08-03: this is the
-		 * first time this partition has ever been written by this
-		 * project). Standard FCB recovery: erase the whole partition
+		 * area. Standard FCB recovery: erase the whole partition
 		 * once and retry fcb_init(), same as formatting a blank area.
 		 */
 		const struct flash_area *fap;
@@ -313,37 +296,18 @@ static void storage_fcb_init(void)
 	APP_LOG("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
 }
 
-/* 2026-08-11: wraparound. Two earlier attempts (see NOTES.md 2026-08-09/10)
- * both rotated reactively -- on the append that discovers the log is
- * already full -- and both broke PAST sync on real hardware for reasons
- * never fully root-caused (the first called fcb_rotate() inline from this
- * same function; the second deferred it to a k_work item, first the
- * default system workqueue, then a dedicated one, and even the dedicated-
- * workqueue version still broke sync). This is a different strategy, not
- * just a different queue: rotate PROACTIVELY, well before the log is
- * actually full, so the erase always has a full spare sector of headroom
- * (~400 more writes at 10 bytes/entry) rather than ever happening under
- * write pressure. Deliberately kept in the same context as a normal
- * append (no workqueue at all this time) -- if this turns out to still
- * disrupt sync, that will show something about the write path itself
- * mattering more than which thread runs it, which the queue-based
- * attempts couldn't distinguish. Test incrementally on real hardware
- * before trusting this, same as every other change today.
- */
-/* 2026-08-11: confirmed on real hardware -- forced this threshold to 7
- * (rotating on nearly every write) for an accelerated test instead of
- * waiting ~30-60 real minutes for the log to naturally approach full.
- * Rotation fired repeatedly, PAwR sync stayed stable throughout (the one
- * disconnect seen was reason 0x13, the normal onboarding-teardown code,
- * unrelated to rotation). Back to 2 for real deployment -- headroom of
- * one still-being-filled sector plus one fully-spare sector before the
- * log would ever actually risk -ENOSPC blocking a write.
+/* Proactive rotation: check/rotate BEFORE the log is actually full, so the
+ * erase always has a full spare sector of headroom rather than ever
+ * happening under write pressure. Proven on real hardware 2026-08-11 (see
+ * NOTES.md) -- two earlier reactive-rotation attempts both caused problems
+ * for reasons never fully root-caused; this strategy held up cleanly.
  */
 #define STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD 2
 
-/* Appends one payload to the flash log. Failure here is logged but never
- * blocks reporting over the air -- flash logging is a fallback, not a
- * dependency for the primary PAwR data path.
+/* Appends one payload to the flash log. This is now the primary/only data
+ * path (see file header) -- failure here is still just logged, not fatal
+ * to the node's own operation, but there is no other copy of this reading
+ * anywhere once it's gone.
  */
 static void storage_fcb_append(const struct sensor_payload *payload)
 {
@@ -382,18 +346,12 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 	}
 }
 
-/* Retrieval mechanism (replaces the earlier shell-based "dump" command,
- * dropped 2026-08-03 after CONFIG_SHELL hung the board's console completely
- * -- see NOTES.md). Prints the whole flash log as CSV over the plain
- * printk() console instead, which is the same path already proven reliable
- * all session, no extra subsystem needed. Gated by CONFIG_APP_DUMP_ON_BOOT:
- * build with that set, flash the specific board whose log you want, and
- * capture its serial output right after boot (tools/Watch-SerialLog.ps1) --
- * the CSV is between the header row and the trailing "# N rows" line.
- * Deliberately unconditional on CONFIG_APP_SERIAL_LOGGING (the "quiet
- * production" toggle just below): a dump-mode build is a distinct,
- * intentional retrieval session, not something that should go silent
- * because the quiet flag happened to be left on from a production build.
+/* Bench-debugging fallback, independent of the BLE download path: prints
+ * the whole flash log as CSV over the plain printk() console. Gated by
+ * CONFIG_APP_DUMP_ON_BOOT: build with that set, flash the specific board
+ * whose log you want, and capture its serial output right after boot
+ * (tools/capture_flash_dump.py -- Watch-SerialLog.ps1's line-based reader
+ * drops rows under a large burst, see BUILD_AND_FLASH.md).
  */
 struct storage_dump_ctx {
 	uint32_t count;
@@ -420,26 +378,14 @@ static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 		return 0;
 	}
 
-	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u\n", payload.node_id, payload.seq, payload.flags,
+	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u,%u\n", payload.node_id, payload.seq, payload.flags,
 	       ctx->count, payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
-	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10);
+	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10,
+	       payload.millis_since_init);
 
 	/* Throttle: printing a large log (thousands of rows) back-to-back
 	 * outpaces the console's internal buffer, which silently drops
-	 * messages ("--- N messages dropped ---") -- confirmed on real
-	 * hardware 2026-08-07 retrieving node 49's ~2040-row log, where the
-	 * vast majority of rows never reached the capture tool no matter how
-	 * fast/early it attached (this is the firmware's own console losing
-	 * them before they ever reach USB, not a capture-timing race).
-	 *
-	 * First attempt at this fix batched the delay (2ms every 8 rows) and
-	 * it was nowhere near enough -- still ~2047 of 2040 rows dropped,
-	 * confirmed against a second real capture. Whatever's backing the
-	 * console (log deferred-message ring buffer, most likely) is small
-	 * enough, and/or drains slowly enough per scheduling opportunity,
-	 * that even 7 rapid-fire prints between pauses overflows it. Sleeping
-	 * after every single row instead, not batched -- 2040 rows * 5ms =
-	 * ~10s added to the dump, acceptable for a one-shot diagnostic.
+	 * messages. Sleeping after every single row keeps every row intact.
 	 */
 	ctx->count++;
 	k_sleep(K_MSEC(10));
@@ -458,19 +404,14 @@ static void storage_dump_all(void)
 	}
 
 	/* Grace period before any dump output starts, so there's a reliable
-	 * window to get a capture tool attached after a reset/flash --
-	 * confirmed on real hardware 2026-08-07 that racing the very first
-	 * instant of USB re-enumeration against firmware output is unreliable
-	 * (tried multiple times, inconsistent drop counts each attempt).
-	 * Printed itself, so both console and capture tool have a visible
-	 * countdown to confirm the connection is live before data starts.
+	 * window to get a capture tool attached after a reset/flash.
 	 */
 	for (int s = 5; s > 0; s--) {
 		printk("# dump starting in %ds...\n", s);
 		k_sleep(K_MSEC(1000));
 	}
 
-	printk("node_id,seq,flags,row,temp_c,humidity_pct\n");
+	printk("node_id,seq,flags,row,temp_c,humidity_pct,millis_since_init\n");
 
 	err = fcb_walk(&storage_fcb, NULL, storage_dump_walk_cb, &ctx);
 	if (err) {
@@ -481,6 +422,15 @@ static void storage_dump_all(void)
 	printk("# %u rows\n", ctx.count);
 }
 
+/* ======================================================
+ * MEASUREMENT PHASE: periodic sensor read + flash append. Completely
+ * independent of BLE connection state -- once started (see
+ * write_start_measuring() below), this keeps running via its own
+ * self-reschedule forever, whether or not a central is anywhere nearby.
+ * This independence is the entire point of the pivot away from PAwR (see
+ * file header).
+ * ====================================================== */
+
 static void sensor_read_work_handler(struct k_work *work);
 static K_WORK_DELAYABLE_DEFINE(sensor_read_work, sensor_read_work_handler);
 
@@ -489,159 +439,355 @@ static void sensor_read_work_handler(struct k_work *work)
 	sensors_read(&latest_payload);
 	storage_fcb_append(&latest_payload);
 
-	APP_LOG("[SENSORS] node %u seq %u temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
-	       latest_payload.node_id, latest_payload.seq,
+	APP_LOG("[SENSORS] node %u seq %u t+%ums temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
+	       latest_payload.node_id, latest_payload.seq, latest_payload.millis_since_init,
 	       latest_payload.temp_cdeg / 100, abs(latest_payload.temp_cdeg % 100),
 	       latest_payload.humidity_pct10 / 10, latest_payload.humidity_pct10 % 10,
 	       latest_payload.flags);
 
-	k_work_schedule(&sensor_read_work, K_MSEC(PAWR_INTERVAL_MS));
+	k_work_schedule(&sensor_read_work, K_MSEC(SENSOR_READ_INTERVAL_MS));
 }
 
 /* ======================================================
- * PAwR sync + response
+ * DOWNLOAD PHASE: streams the entire flash log back to central as a
+ * sequence of GATT indications, adapted from the backfill-ble-retrieval
+ * branch's already-proven request/header/data/done design (that design's
+ * blocker -- GATT indicate colliding with concurrent PAwR subevent polling
+ * on the radio -- no longer applies, since there is no more PAwR at all).
+ * Unlike that branch, there's no since-timestamp filtering: every download
+ * sends the whole log (see struct download_req's comment in
+ * pawr_protocol.h for why).
  * ====================================================== */
 
-static void sync_cb(struct bt_le_per_adv_sync *sync, struct bt_le_per_adv_sync_synced_info *info)
+/* Declared here (rather than down by BT_GATT_SERVICE_DEFINE, where
+ * pawr_svc_uuid/pawr_start_char_uuid live) since download_indicate_blocking()
+ * below needs pawr_download_char_uuid to identify which characteristic's
+ * value to indicate on.
+ */
+static const struct bt_uuid_128 pawr_download_char_uuid =
+	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x12345678, 0x1234, 0x5678, 0x1234, 0x56789abcdef2));
+
+static K_SEM_DEFINE(sem_download_indicate_confirmed, 0, 1);
+static struct bt_gatt_indicate_params download_indicate_params;
+static uint8_t download_indicate_buf[247]; /* sized for the largest MTU this
+					     * project negotiates for -- a
+					     * header, data, or done message
+					     * always fits well inside this.
+					     */
+
+static void download_indicate_cb(struct bt_conn *conn, struct bt_gatt_indicate_params *params,
+				  uint8_t err)
 {
-	struct bt_le_per_adv_sync_subevent_params params;
-	/* NUM_REDUNDANT_COPIES entries (see pawr_timing.subevents /
-	 * common/pawr_protocol.h's NUM_PRIMARY_SLOTS comment) -- this node
-	 * answers whichever of its assigned subevents' polls it actually
-	 * receives each interval, all carrying the same latest_payload/seq.
-	 */
-	char le_addr[BT_ADDR_LE_STR_LEN];
-	int err;
-
-	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
-	APP_LOG("Synced to %s with %d subevents\n", le_addr, info->num_subevents);
-
-	default_sync = sync;
-
-	params.properties = 0;
-	params.num_subevents = NUM_REDUNDANT_COPIES;
-	params.subevents = pawr_timing.subevents;
-
-	err = bt_le_per_adv_sync_subevent(sync, &params);
 	if (err) {
-		APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
-	} else {
-		APP_LOG("Changed sync to subevents %d, %d, %d\n", pawr_timing.subevents[0],
-		       pawr_timing.subevents[1], pawr_timing.subevents[2]);
+		APP_LOG("[DOWNLOAD] indicate failed/not confirmed (att err %d)\n", err);
 	}
 
-	gpio_pin_set_dt(&status_led, 1);
-
-	k_sem_give(&sem_per_sync);
+	k_sem_give(&sem_download_indicate_confirmed);
 }
 
-static void term_cb(struct bt_le_per_adv_sync *sync,
-		    const struct bt_le_per_adv_sync_term_info *info)
-{
-	char le_addr[BT_ADDR_LE_STR_LEN];
-
-	bt_addr_le_to_str(info->addr, le_addr, sizeof(le_addr));
-
-	APP_LOG("Sync terminated (reason %d)\n", info->reason);
-
-	default_sync = NULL;
-
-	gpio_pin_set_dt(&status_led, 0);
-
-	k_sem_give(&sem_per_sync_lost);
-}
-
-static struct bt_le_per_adv_response_params rsp_params;
-
-NET_BUF_SIMPLE_DEFINE_STATIC(rsp_buf, 247);
-
-static void recv_cb(struct bt_le_per_adv_sync *sync,
-		    const struct bt_le_per_adv_sync_recv_info *info, struct net_buf_simple *buf)
+/* Sends one indication and blocks (this runs on the system work queue via
+ * download_work, never on the BT RX callback context) until the peer
+ * confirms it or a timeout elapses. Returns 0 on confirmed delivery,
+ * negative errno otherwise.
+ */
+static int download_indicate_blocking(struct bt_conn *conn, const void *data, uint16_t len)
 {
 	int err;
 
-	if (buf) {
-		static const uint16_t company_id = 0xFFFF;
+	k_sem_reset(&sem_download_indicate_confirmed);
 
-		APP_LOG(">>> Poll received: subevent %d, responding in slot %d\n", info->subevent,
-		       pawr_timing.response_slot);
+	memset(&download_indicate_params, 0, sizeof(download_indicate_params));
+	download_indicate_params.attr = NULL;
+	download_indicate_params.uuid = &pawr_download_char_uuid.uuid;
+	download_indicate_params.func = download_indicate_cb;
+	download_indicate_params.data = data;
+	download_indicate_params.len = len;
 
-		net_buf_simple_reset(&rsp_buf);
-		net_buf_simple_add_u8(&rsp_buf, 1 + 2 + sizeof(latest_payload));
-		net_buf_simple_add_u8(&rsp_buf, BT_DATA_MANUFACTURER_DATA);
-		net_buf_simple_add_le16(&rsp_buf, company_id);
-		net_buf_simple_add_mem(&rsp_buf, &latest_payload, sizeof(latest_payload));
-
-		rsp_params.request_event = info->periodic_event_counter;
-		rsp_params.request_subevent = info->subevent;
-		/* Respond in current subevent and assigned response slot */
-		rsp_params.response_subevent = info->subevent;
-		rsp_params.response_slot = pawr_timing.response_slot;
-
-		err = bt_le_per_adv_set_response_data(sync, &rsp_params, &rsp_buf);
-		if (err) {
-			APP_LOG("Failed to send response (err %d)\n", err);
-		} else {
-			status_led_blip();
-		}
-	} else {
-		APP_LOG("Failed to receive indication: subevent %d\n", info->subevent);
+	err = bt_gatt_indicate(conn, &download_indicate_params);
+	if (err) {
+		return err;
 	}
+
+	/* Generous per-PDU timeout -- no concurrent PAwR radio activity to
+	 * contend with anymore (that was the backfill branch's actual
+	 * blocker), so a confirm should land within a handful of connection
+	 * events under any normal condition; 5s gives headroom without
+	 * risking the whole transfer hanging forever on one stuck PDU.
+	 */
+	if (k_sem_take(&sem_download_indicate_confirmed, K_SECONDS(5))) {
+		APP_LOG("[DOWNLOAD] indicate confirm timed out\n");
+		return -ETIMEDOUT;
+	}
+
+	return 0;
 }
 
-static struct bt_le_per_adv_sync_cb sync_callbacks = {
-	.synced = sync_cb,
-	.term = term_cb,
-	.recv = recv_cb,
+struct download_count_ctx {
+	uint32_t count;
 };
 
-static const struct bt_uuid_128 pawr_svc_uuid =
-	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x12345678, 0x1234, 0x5678, 0x1234, 0x56789abcdef0));
-static const struct bt_uuid_128 pawr_char_uuid =
-	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x12345678, 0x1234, 0x5678, 0x1234, 0x56789abcdef1));
+static int download_count_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
+{
+	struct download_count_ctx *ctx = arg;
 
-static ssize_t write_timing(struct bt_conn *conn, const struct bt_gatt_attr *attr, const void *buf,
-			    uint16_t len, uint16_t offset, uint8_t flags)
+	if (loc_ctx->loc.fe_data_len == sizeof(struct sensor_payload)) {
+		ctx->count++;
+	}
+
+	return 0;
+}
+
+struct download_send_ctx {
+	struct bt_conn        *conn;
+	uint16_t                mtu_payload; /* usable bytes/indication, ATT
+					       * header already subtracted
+					       */
+	uint8_t                 entries_per_pdu;
+	struct sensor_payload   pending[20]; /* holds up to one PDU's worth
+					       * before flushing
+					       */
+	uint8_t                 pending_count;
+	uint16_t                total_sent;
+	bool                    failed;
+};
+
+static bool download_flush_pending(struct download_send_ctx *ctx)
+{
+	struct download_data_pdu *pdu = (struct download_data_pdu *)download_indicate_buf;
+	size_t pdu_len;
+
+	if (ctx->pending_count == 0) {
+		return true;
+	}
+
+	pdu->msg_type = DOWNLOAD_MSG_DATA;
+	pdu->count = ctx->pending_count;
+	memcpy(pdu->entries, ctx->pending, ctx->pending_count * sizeof(struct sensor_payload));
+	pdu_len = offsetof(struct download_data_pdu, entries) +
+		  ctx->pending_count * sizeof(struct sensor_payload);
+
+	if (download_indicate_blocking(ctx->conn, download_indicate_buf, pdu_len)) {
+		ctx->failed = true;
+		return false;
+	}
+
+	ctx->total_sent += ctx->pending_count;
+	ctx->pending_count = 0;
+
+	return true;
+}
+
+static int download_send_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
+{
+	struct download_send_ctx *ctx = arg;
+	struct sensor_payload payload;
+
+	if (ctx->failed) {
+		return 1; /* stop walking, a previous indicate already failed */
+	}
+
+	if (loc_ctx->loc.fe_data_len != sizeof(payload)) {
+		return 0;
+	}
+
+	if (flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
+			     sizeof(payload))) {
+		return 0;
+	}
+
+	ctx->pending[ctx->pending_count++] = payload;
+
+	if (ctx->pending_count >= ctx->entries_per_pdu) {
+		if (!download_flush_pending(ctx)) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+/* 2026-08-13, found while root-causing a download-phase stall on real
+ * hardware: Zephyr's BT subsystem requires the system workqueue to run at
+ * a cooperative priority (see subsys/bluetooth/Kconfig's own comment on
+ * SYSTEM_WORKQUEUE_PRIORITY), and download_work previously ran ON that
+ * same system workqueue via the plain K_WORK_DEFINE below. A multi-second
+ * transfer blocking there (waiting on indicate confirms) is exactly the
+ * kind of long-running work Zephyr's own docs warn against parking on the
+ * system workqueue, since it can delay other things that need that same
+ * queue -- including, plausibly, the Bluetooth host's own processing.
+ * Moved to a small dedicated work queue/thread instead, so this transfer's
+ * blocking waits can never contend with the system workqueue or anything
+ * else running on it.
+ */
+#define DOWNLOAD_WORKQ_STACK_SIZE 2048
+#define DOWNLOAD_WORKQ_PRIORITY   K_LOWEST_APPLICATION_THREAD_PRIO
+
+static K_THREAD_STACK_DEFINE(download_workq_stack, DOWNLOAD_WORKQ_STACK_SIZE);
+static struct k_work_q download_workq;
+
+static void download_work_handler(struct k_work *work);
+static K_WORK_DEFINE(download_work, download_work_handler);
+
+static void download_work_handler(struct k_work *work)
+{
+	/* Takes its own reference rather than trusting default_conn to stay
+	 * valid for this work item's whole (potentially multi-second)
+	 * lifetime -- disconnected() drops its own reference and can run
+	 * concurrently with this deferred work, and without this the
+	 * underlying bt_conn could be freed mid-transfer.
+	 */
+	struct bt_conn *conn = default_conn ? bt_conn_ref(default_conn) : NULL;
+	struct download_count_ctx count_ctx = { 0 };
+	struct download_send_ctx send_ctx = { 0 };
+	struct download_header header;
+	struct download_done done;
+	uint16_t mtu;
+
+	if (!conn) {
+		APP_LOG("[DOWNLOAD] no active connection, dropping request\n");
+		return;
+	}
+
+	if (!storage_fcb_ok) {
+		APP_LOG("[DOWNLOAD] flash log unavailable, nothing to send\n");
+		goto out;
+	}
+
+	fcb_walk(&storage_fcb, NULL, download_count_walk_cb, &count_ctx);
+
+	mtu = bt_gatt_get_mtu(conn);
+
+	header.msg_type = DOWNLOAD_MSG_HEADER;
+	header.total_entries = (uint16_t)count_ctx.count;
+
+	APP_LOG("[DOWNLOAD] sending %u entries\n", header.total_entries);
+
+	if (download_indicate_blocking(conn, &header, sizeof(header))) {
+		APP_LOG("[DOWNLOAD] header indicate failed, aborting transfer\n");
+		goto out;
+	}
+
+	if (count_ctx.count == 0) {
+		done.msg_type = DOWNLOAD_MSG_DONE;
+		done.entries_sent = 0;
+		download_indicate_blocking(conn, &done, sizeof(done));
+		goto out;
+	}
+
+	/* mtu is the full negotiated ATT MTU; ATT itself reserves 3 bytes
+	 * (opcode + handle) of any PDU, so usable payload is mtu - 3. Cap
+	 * defensively at the fixed download_indicate_buf/pending[] sizing in
+	 * case MTU somehow negotiated higher than expected.
+	 */
+	send_ctx.conn = conn;
+	send_ctx.mtu_payload = MIN(mtu, sizeof(download_indicate_buf)) - 3;
+	send_ctx.entries_per_pdu = MIN(
+		(send_ctx.mtu_payload - offsetof(struct download_data_pdu, entries)) /
+			sizeof(struct sensor_payload),
+		ARRAY_SIZE(send_ctx.pending));
+
+	if (send_ctx.entries_per_pdu == 0) {
+		APP_LOG("[DOWNLOAD] negotiated MTU too small to carry even one entry, aborting\n");
+		goto out;
+	}
+
+	fcb_walk(&storage_fcb, NULL, download_send_walk_cb, &send_ctx);
+
+	if (!send_ctx.failed) {
+		download_flush_pending(&send_ctx);
+	}
+
+	if (send_ctx.failed) {
+		APP_LOG("[DOWNLOAD] transfer aborted after %u/%u entries (indicate failure)\n",
+		       send_ctx.total_sent, header.total_entries);
+		goto out;
+	}
+
+	done.msg_type = DOWNLOAD_MSG_DONE;
+	done.entries_sent = send_ctx.total_sent;
+	download_indicate_blocking(conn, &done, sizeof(done));
+
+	APP_LOG("[DOWNLOAD] transfer complete: %u entries sent\n", send_ctx.total_sent);
+
+out:
+	bt_conn_unref(conn);
+}
+
+static ssize_t write_download_req(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+				   const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
 {
 	if (offset) {
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
 	}
 
-	if (len != sizeof(pawr_timing)) {
+	if (len != sizeof(struct download_req)) {
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
 	}
 
-	memcpy(&pawr_timing, buf, len);
+	APP_LOG("[DOWNLOAD] request received, submitting work item\n");
 
-	APP_LOG("New timing: subevents %d, %d, %d, response slot %d\n", pawr_timing.subevents[0],
-	       pawr_timing.subevents[1], pawr_timing.subevents[2], pawr_timing.response_slot);
-
-	struct bt_le_per_adv_sync_subevent_params params;
-	int err;
-
-	params.properties = 0;
-	params.num_subevents = NUM_REDUNDANT_COPIES;
-	params.subevents = pawr_timing.subevents;
-
-	if (default_sync) {
-		err = bt_le_per_adv_sync_subevent(default_sync, &params);
-		if (err) {
-			APP_LOG("Failed to set subevents to sync to (err %d)\n", err);
-		} else {
-			APP_LOG("Changed sync to subevents %d, %d, %d\n", pawr_timing.subevents[0],
-			       pawr_timing.subevents[1], pawr_timing.subevents[2]);
-		}
-	} else {
-		APP_LOG("Not synced yet\n");
-	}
+	/* Deferred to a dedicated work item, not handled inline here -- this
+	 * callback runs in BT RX context, and a download transfer can take
+	 * several seconds (many indicate-confirm round trips).
+	 */
+	k_work_submit_to_queue(&download_workq, &download_work);
 
 	return len;
 }
 
+static void download_ccc_changed(const struct bt_gatt_attr *attr, uint16_t value)
+{
+	APP_LOG("[DOWNLOAD] indications %s\n", value == BT_GATT_CCC_INDICATE ? "enabled" : "disabled");
+}
+
+/* ======================================================
+ * INIT PHASE: central writes this characteristic (empty payload) once, at
+ * experiment start, to tell this node "you are synced, start measuring
+ * now." See file header.
+ * ====================================================== */
+
+static ssize_t write_start_measuring(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+				      const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
+{
+	if (offset) {
+		return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
+	}
+
+	if (measuring) {
+		/* Idempotent, not an error -- a retried/duplicate init write
+		 * (e.g. central retrying after a dropped ack) must not reset
+		 * t0 and silently discard everything measured so far.
+		 */
+		APP_LOG("[INIT] already measuring, ignoring repeat start-measuring write\n");
+		return len;
+	}
+
+	t0_ms = k_uptime_get();
+	measuring = true;
+	gpio_pin_set_dt(&status_led, 1);
+
+	APP_LOG("[INIT] synced, starting measurement (t0=%lld)\n", t0_ms);
+
+	k_work_schedule(&sensor_read_work, K_NO_WAIT);
+
+	return len;
+}
+
+static const struct bt_uuid_128 pawr_svc_uuid =
+	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x12345678, 0x1234, 0x5678, 0x1234, 0x56789abcdef0));
+static const struct bt_uuid_128 pawr_start_char_uuid =
+	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x12345678, 0x1234, 0x5678, 0x1234, 0x56789abcdef1));
+
 BT_GATT_SERVICE_DEFINE(pawr_svc, BT_GATT_PRIMARY_SERVICE(&pawr_svc_uuid.uuid),
-		       BT_GATT_CHARACTERISTIC(&pawr_char_uuid.uuid, BT_GATT_CHRC_WRITE,
-					      BT_GATT_PERM_WRITE, NULL, write_timing,
-					      &pawr_timing));
+		       BT_GATT_CHARACTERISTIC(&pawr_start_char_uuid.uuid, BT_GATT_CHRC_WRITE,
+					      BT_GATT_PERM_WRITE, NULL, write_start_measuring,
+					      NULL),
+		       BT_GATT_CHARACTERISTIC(&pawr_download_char_uuid.uuid,
+					      BT_GATT_CHRC_WRITE | BT_GATT_CHRC_INDICATE,
+					      BT_GATT_PERM_WRITE, NULL, write_download_req,
+					      NULL),
+		       BT_GATT_CCC(download_ccc_changed,
+				   BT_GATT_PERM_READ | BT_GATT_PERM_WRITE));
 
 void connected(struct bt_conn *conn, uint8_t err)
 {
@@ -682,10 +828,9 @@ static struct bt_data ad[] = {
 
 int main(void)
 {
-	struct bt_le_per_adv_sync_transfer_param past_param;
 	int err;
 
-	APP_LOG("Starting Periodic Advertising with Responses Synchronization Demo (peripheral)\n");
+	APP_LOG("Starting BLE GATT sensor node\n");
 	APP_LOG("Node ID: %u, Central ID: %u\n", CONFIG_APP_NODE_ID, CONFIG_APP_CENTRAL_ID);
 
 	pawr_format_adv_name(adv_name, sizeof(adv_name), CONFIG_APP_CENTRAL_ID, CONFIG_APP_NODE_ID);
@@ -700,6 +845,11 @@ int main(void)
 		storage_dump_all();
 	}
 
+	k_work_queue_init(&download_workq);
+	k_work_queue_start(&download_workq, download_workq_stack,
+			   K_THREAD_STACK_SIZEOF(download_workq_stack), DOWNLOAD_WORKQ_PRIORITY,
+			   NULL);
+
 	err = bt_enable(NULL);
 	if (err) {
 		APP_LOG("Bluetooth init failed (err %d)\n", err);
@@ -707,82 +857,41 @@ int main(void)
 		return 0;
 	}
 
-	bt_le_per_adv_sync_cb_register(&sync_callbacks);
-
-	/* skip=0: with a 10s periodic interval, skipping even one event
-	 * before the first sync attempt adds a full extra interval of
-	 * latency to onboarding for no benefit (the demo's skip=1 made
-	 * sense at its much shorter interval, not here).
+	/* Advertise continuously, not just during a brief onboarding window
+	 * -- this node needs to be connectable both for the init handshake
+	 * and, much later, for the download phase, with an arbitrary amount
+	 * of pure-measurement time in between where central isn't listening
+	 * at all. sensor_read_work is deliberately NOT scheduled here (unlike
+	 * the old PAwR design's "seed a first reading immediately") -- it
+	 * only starts once write_start_measuring() actually runs, so a node
+	 * that hasn't been through its init phase yet doesn't measure/store
+	 * anything with a meaningless t0.
+	 *
+	 * Connectable advertising stops the instant a connection forms (it
+	 * preallocates the single connection object this board has room for,
+	 * see CONFIG_BT_MAX_CONN=1) and must be explicitly restarted after
+	 * every disconnect -- this loop does that, forever, so the node stays
+	 * reachable for however many connect/disconnect cycles happen over
+	 * the node's whole lifetime (init once, then zero or more download
+	 * attempts, with arbitrary measurement time in between). Sensor
+	 * measurement itself (once started) never depends on this loop or on
+	 * a connection existing -- it runs entirely on its own via
+	 * sensor_read_work's self-reschedule, this is purely about staying
+	 * connectable.
 	 */
-	past_param.skip = 0;
-	past_param.timeout = PAWR_PAST_TIMEOUT_UNITS;
-	past_param.options = BT_LE_PER_ADV_SYNC_TRANSFER_OPT_NONE;
-	err = bt_le_per_adv_sync_transfer_subscribe(NULL, &past_param);
-	if (err) {
-		APP_LOG("PAST subscribe failed (err %d)\n", err);
-
-		return 0;
-	}
-
-	/* Seed a first reading immediately so the earliest subevent polls
-	 * (before the first 10s tick) have something valid to respond with.
-	 */
-	sensors_read(&latest_payload);
-	k_work_schedule(&sensor_read_work, K_MSEC(PAWR_INTERVAL_MS));
-
-	do {
-		/* If central is still connected from a previous attempt (e.g.
-		 * the previous sync wait timed out while central was still
-		 * mid-onboarding), wait for it to actually disconnect first --
-		 * retrying connectable advertising while a connection is
-		 * still live fails with -ENOMEM (CONFIG_BT_MAX_CONN=1 leaves
-		 * no headroom for a second connection object). Drain any
-		 * stale "already disconnected" signal first so a disconnect
-		 * that happened earlier (while we were still waiting on
-		 * sem_per_sync) can't leave the semaphore's count sitting at
-		 * 1 and cause a *future* wait here to return instantly
-		 * without an actual disconnect having happened yet.
-		 */
-		k_sem_take(&sem_disconnected, K_NO_WAIT);
-		if (default_conn) {
-			k_sem_take(&sem_disconnected, K_FOREVER);
-		}
-
+	while (true) {
 		err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
-		if (err && err != -EALREADY) {
+		if (err) {
 			APP_LOG("Advertising failed to start (err %d)\n", err);
 
 			return 0;
 		}
 
-		APP_LOG("Waiting for periodic sync...\n");
-		/* Central connects, sends PAST, discovers, writes the
-		 * assignment, then deliberately holds the connection open a
-		 * bit past one full periodic advertising interval before
-		 * disconnecting (see central's post-write delay) so sync has
-		 * time to land. That alone can take close to
-		 * PAWR_INTERVAL_MS; add real margin here too so this wait
-		 * doesn't expire first and race a retry against the still-live
-		 * connection.
-		 */
-		err = k_sem_take(&sem_per_sync, K_MSEC(PAWR_INTERVAL_MS * 2));
-		if (err) {
-			APP_LOG("Timed out while synchronizing\n");
+		APP_LOG("Advertising...\n");
 
-			continue;
-		}
-
-		APP_LOG("Periodic sync established.\n");
-
-		err = k_sem_take(&sem_per_sync_lost, K_FOREVER);
-		if (err) {
-			APP_LOG("failed (err %d)\n", err);
-
-			return 0;
-		}
-
-		APP_LOG("Periodic sync lost.\n");
-	} while (true);
+		k_sem_take(&sem_disconnected, K_FOREVER);
+		APP_LOG("Central disconnected -- still measuring/storing in the background, re-advertising\n");
+	}
 
 	return 0;
 }

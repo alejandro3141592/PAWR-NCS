@@ -3,9 +3,27 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shared PAwR timing/payload definitions for the central (advertiser) and
- * peripheral (sync/responder) apps. Single source of truth so the two
- * binaries can't drift apart on subevent/slot layout or wire format.
+ * Shared BLE GATT protocol definitions for the central (hub) and peripheral
+ * (wearable sensor node) apps. Single source of truth so the two binaries
+ * can't drift apart on wire format.
+ *
+ * 2026-08-13: full pivot away from PAwR (Periodic Advertising with
+ * Responses) to plain BLE GATT connections -- real-world testing (a person
+ * wearing sensor nodes and walking around) showed PAwR sync drops
+ * constantly and doesn't recover well, which is unacceptable for the actual
+ * use case. New model, three phases:
+ *   1. Init: central connects to each node once, writes the "start
+ *      measuring" characteristic -- the node records its own t=0
+ *      (k_uptime_get()) and starts its periodic sensor-read timer.
+ *   2. Measurement: each node reads sensors every 10s and appends to its
+ *      own on-board flash log, completely independent of any BLE
+ *      connection -- no radio activity required while measuring, which is
+ *      the whole point (a node walking out of range never loses anything).
+ *   3. Download: after the experiment, central (operator-triggered, see
+ *      central/src/main.c) connects to each node in turn and pulls its
+ *      entire stored log over an indicate-based bulk-transfer
+ *      characteristic.
+ * See NOTES.md 2026-08-13 for the full history of what this replaces.
  */
 
 #ifndef PAWR_PROTOCOL_H_
@@ -34,12 +52,10 @@
  * preserves old single-central-rig behavior with no config changes needed
  * for the common case of "just one central, no need to scope anything."
  *
- * 2026-08-07: also appends "#<node_id>", e.g. "PAwR sync sample 2 #47" --
- * see pawr_format_adv_name()'s own comment for why (fixed/table-driven
- * subevent assignment needs central to know node_id before connecting).
- * Central's match check changed from an exact strcmp to a prefix check
- * accordingly (matching "PAwR sync sample 2", ignoring the "#47" that
- * varies per peripheral) -- see central's device_found().
+ * Name kept as "PAwR sync sample" (not renamed for the GATT pivot) so any
+ * already-flashed/labeled hardware, and every existing tool/doc reference to
+ * this string, keeps working -- purely a legacy string at this point, not a
+ * statement about the transport.
  */
 #define PAWR_ADV_NAME "PAwR sync sample"
 
@@ -55,19 +71,8 @@
 /* Formats "<PAWR_ADV_NAME>[ <central_id>][ #<node_id>]" into buf (must be
  * >= PAWR_ADV_NAME_MAX_LEN bytes). Shared by both central (what it scans
  * for/parses) and peripheral (what it advertises as) so the two can never
- * drift apart on the exact suffix format.
- *
- * node_id is embedded here (rather than fetched via a GATT read after
- * connecting) specifically so central can learn which physical node it's
- * about to onboard BEFORE connecting -- needed for fixed/table-driven
- * subevent assignment (see pawr_fixed_slot_lookup() below and NOTES.md
- * 2026-08-07): central has to pick the right slot as part of the very
- * first GATT write, and by then it's too late to still be guessing the
- * node's identity from an extra round trip. node_id == 0 omits the "#..."
- * suffix entirely, for any future caller that doesn't need per-node
- * identification at scan time (kept optional, not required, so this
- * doesn't force every use of the name-formatting helper to have a node_id
- * on hand).
+ * drift apart on the exact suffix format. node_id == 0 omits the "#..."
+ * suffix entirely.
  */
 static inline void pawr_format_adv_name(char *buf, size_t buf_size, unsigned int central_id,
 					 unsigned int node_id)
@@ -98,174 +103,21 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 	return (unsigned int)strtoul(hash + 1, NULL, 10);
 }
 
-/* Minimal-repro test mode (2026-07-31, see NOTES.md): both sides' HCI logs
- * came back clean (central's PAST command completes status 0x00, but the
- * peripheral's controller never sees a Sync Transfer Received event at
- * all -- not even a failure), which rules out connection timing/GATT
- * ordering as the cause. This flag shrinks the timing back to the
- * original NCS periodic_adv_rsp sample's values and, in each app's main(),
- * skips the dynamic GATT slot-assignment dance (peripheral's pawr_timing
- * struct is already zero-initialized, i.e. subevent 0 / response slot 0,
- * so no peripheral code change is needed for that part). Goal: isolate
- * whether the bug is structural (present even in a near-stock config) or
- * tied to this project's larger interval/subevent count. Flip to 0 to
- * restore full dynamic-assignment production behavior -- do not leave
- * this at 1 once the experiment is done.
- */
-#define APP_MINIMAL_REPRO 0
-
-/* Scale isolation test (2026-07-31, see NOTES.md): flipping
- * APP_MINIMAL_REPRO back to 0 hit a NEW bug (unrelated to the SENDER fix) --
- * central hangs a moment after "Scanning successfully started" with
- * repeating "udc: Failed to allocate net_buf 4095, ep 0x80" and then total
- * silence. Every previously-working test today (APP_MINIMAL_REPRO=1, and the
- * literal stock sample) only ever ran at the stock sample's own light
- * defaults (5 subevents, ~319ms interval) -- full scale (20 subevents, 10s)
- * has never actually been verified to work on this hardware/SDK. This knob
- * separates the two variables stock+production conflates, to find out which
- * one (subevent count, or interval length) actually triggers the hang:
- *   0 = full production (20 subevents, 10s)      -- known broken
- *   1 = stock defaults (5 subevents, ~319ms)      -- known working
- *   2 = REMOVED, was invalid: 20 subevents needs a subevent train of
- *       20 * 40ms = 800ms, which doesn't fit inside a ~319ms periodic
- *       interval at all -- produced zero console output, but that's most
- *       likely just malformed HCI params getting rejected/hanging very
- *       early, not a real signal about subevent count alone. Don't reuse.
- *   3 = 5 subevents, 10s interval                 -- isolates INTERVAL
- *       (valid: 5 * 40ms = 200ms subevent train fits easily in either
- *       interval, so this is a clean single-variable change from mode 1)
- *       CONFIRMED WORKING over a full 30-min run both sides, 2026-08-01.
- *   4 = 10 subevents, 10s interval                 -- binary search step
- *       (valid: 10 * 40ms = 400ms subevent train, fits easily in 10s)
- * Remove this whole knob once the trigger is found and the real fix (buffer
- * pool sizing, most likely) is identified and applied instead.
- */
-#define APP_SCALE_TEST 0
-
-/* LE Coded PHY (Long Range) support was attempted 2026-08-07/09 (see
- * NOTES.md for the full history) and removed 2026-08-11: even a
- * byte-verified, stack-frame-identical build of the refactor still broke
- * PAST sync on real hardware, for reasons never root-caused -- an earlier
- * theory (CONFIG_BT_CTLR_PHY_CODED reserving extra SDC controller
- * resources at boot regardless of runtime use, causing a USB buffer
- * exhaustion crash at high NUM_SUBEVENTS) was disproved along the way. No
- * Coded PHY code or Kconfig option remains in either app. Anyone
- * re-attempting this: start from NOTES.md's 2026-08-07 through 2026-08-11
- * entries, the stack-frame explanation is already ruled out.
- */
-
-/* One subevent per node, one response slot per subevent. interval_min/max
- * are uint16_t in 1.25 ms units (0x1F40 * 1.25ms = 10.00s exactly).
- * subevent_interval is uint8_t in 1.25ms units, response_slot_delay is
- * uint8_t in 1.25ms units, response_slot_spacing is uint8_t in 0.125ms
- * units.
+/* Sensor payload: the one universal data unit, used for BLE GATT transfer
+ * (download phase), UART framing to the gateway, and both on-board flash
+ * logs (peripheral's storage_fcb_*, common/sensor_log.c). Fixed-point wire
+ * format avoids float transport.
  *
- * 2026-08-07: reverted 55 -> 20 (back to a 17-node-at-once deployment
- * target). Buffer counts (central/prj.conf) reverted to 6/6 alongside this
- * -- soak-tested at 20 subevents (NOTES.md 2026-08-03, both a 30-min
- * single-node run and a 1-hour 5-node run).
- *
- * 2026-08-07 (later same day): raised 20 -> 25. Reason is capacity, not
- * concurrency -- with the new fixed/table-driven subevent assignment (see
- * central/node_slot_table.h, NOTES.md 2026-08-07), EVERY distinct node_id
- * ever assigned to a central reserves its own permanent subevent, whether
- * or not that physical board is currently powered on -- unlike the old
- * dynamic allocation, where only currently-connected peripherals consumed a
- * slot. User's real roster has up to 25 distinct node IDs on one central
- * rig (even though only ~17 run concurrently), so 20 wasn't enough table
- * capacity even though 17-concurrent would have fit fine under the old
- * model. +5 is a small, deliberate step (not the kind of large jump that
- * caused problems going 20->55 previously) -- subevent train span is still
- * comfortable (25 * 40ms = 1000ms, 10x headroom inside the 10s interval).
- * NOT yet re-validated: 6/6 buffers were only soak-tested at exactly 20
- * subevents, not 25 -- treat as the best available starting point, not a
- * proven-safe value, until a fresh soak confirms it (or finds a different
- * buffer count is needed) at 25.
- */
-#if APP_MINIMAL_REPRO
-#define NUM_SUBEVENTS             5
-#define PAWR_INTERVAL_UNITS       0xFF    /* ~318.75 ms, the original NCS sample's interval */
-#elif APP_SCALE_TEST == 2
-#define NUM_SUBEVENTS             20
-#define PAWR_INTERVAL_UNITS       0xFF    /* ~318.75 ms -- count isolation */
-#elif APP_SCALE_TEST == 3
-#define NUM_SUBEVENTS             5
-#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- interval isolation */
-#elif APP_SCALE_TEST == 4
-#define NUM_SUBEVENTS             10
-#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s -- binary search step */
-#else
-#define NUM_SUBEVENTS             33
-#define PAWR_INTERVAL_UNITS       0x1F40  /* 10.00 s */
-#endif
-#define NUM_RSP_SLOTS             1
-
-/* 2026-08-07 (redundant-slots-experiment branch), extended 2026-08-11: each
- * node gets NUM_REDUNDANT_COPIES dedicated subevents instead of one, all
- * carrying the same latest_payload/seq each interval (peripheral reads
- * sensors once per PAWR_INTERVAL_MS regardless of how many subevents it
- * answers, see peripheral/src/main.c's sensor_read_work -- so every copy is
- * a genuinely redundant delivery attempt of the SAME reading, not a
- * different one). Goal: if an attempt is lost (radio contention, timing,
- * interference), the others are independent chances to get that same seq
- * through before the next 10s reading replaces it.
- *
- * Copy k's subevent = primary + k * NUM_PRIMARY_SLOTS, for k = 0 ..
- * NUM_REDUNDANT_COPIES - 1 (fixed offsets, not explicit per-node table
- * columns) -- e.g. with NUM_PRIMARY_SLOTS = 11, the primary block is
- * subevents 0-10, 2nd copy is 11-21, 3rd copy is 22-32; node_slot_table.h
- * only lists each node's primary, central computes the rest. Chosen over
- * explicit per-node assignment for simplicity and because it makes
- * collisions impossible by construction (each node's redundant subevents
- * are uniquely determined by its own primary, which
- * node_slot_table_validate() already guarantees is unique per central).
- *
- * 2026-08-11: dropped from 17 primary/2 copies (34 subevents) to 11
- * primary/3 copies (33 subevents) to match the real deployment split of 4
- * central rigs x 11 nodes each (see NOTES.md). Still in the same
- * unvalidated-at-this-subevent-count territory flagged before (20 was the
- * last clean 6/6-buffer soak validation, and NUM_SUBEVENTS=25 hit a still-
- * unexplained boot failure on the coded-phy-experiment branch, NOTES.md
- * 2026-08-07) -- treat as unvalidated at the subevent-count level,
- * independent of whether the redundant-slot logic itself works, until
- * proven otherwise on real hardware. NUM_REDUNDANT_COPIES going 2 -> 3 is
- * also new and itself unvalidated -- test incrementally, same as
- * everything else in this project.
- */
-#define NUM_PRIMARY_SLOTS 11
-#define NUM_REDUNDANT_COPIES 3
-
-BUILD_ASSERT(NUM_PRIMARY_SLOTS * NUM_REDUNDANT_COPIES == NUM_SUBEVENTS,
-	     "NUM_SUBEVENTS must equal NUM_PRIMARY_SLOTS * NUM_REDUNDANT_COPIES");
-
-#define PAWR_SUBEVENT_INTERVAL    0x20    /* 40 ms   */
-#define PAWR_RESPONSE_SLOT_DELAY  0x8     /* 10 ms   */
-#define PAWR_RESPONSE_SLOT_SPACING 0x50   /* 10 ms   */
-
-/* PAWR_INTERVAL_UNITS converted to real milliseconds (units are 1.25ms
- * each): 8000 * 1.25 = 10000ms = 10.00s. Both apps use this directly instead
- * of repeating the unit conversion inline.
- */
-#define PAWR_INTERVAL_MS          (PAWR_INTERVAL_UNITS * 5 / 4)
-
-/* PAST subscribe timeout on the peripheral: 10ms units, 30s = 3 missed
- * 10s intervals of margin before sync is torn down.
- *
- * 2026-08-09: briefly bumped to 6000 (60s) as a diagnostic step while
- * chasing a sync failure at NUM_SUBEVENTS=34 -- made no difference (same
- * failure, same timing, regardless of 30s vs 60s), so reverted back to
- * 3000. See NOTES.md 2026-08-09 -- the timeout value was never the actual
- * variable.
- */
-#define PAWR_PAST_TIMEOUT_UNITS   3000
-
-/* A subevent with no response seen for this many missed intervals is
- * considered abandoned and eligible for reassignment by central.
- */
-#define PAWR_SLOT_STALE_INTERVALS 3
-
-/* Sensor response payload (peripheral -> central), sent as
- * BT_DATA_MANUFACTURER_DATA. Fixed-point wire format avoids float transport.
+ * 2026-08-13: added millis_since_init for the GATT pivot -- a rolling `seq`
+ * alone was enough when data arrived live (a gap just meant "missed one"),
+ * but downloaded data is a node's own complete local log with no gaps by
+ * construction, so what matters now is *when* each reading happened
+ * relative to that node's init-phase t=0 (see file header). No board in
+ * this project has any real-time-clock/NTP source (confirmed via research
+ * before this pivot), so this is deliberately relative-to-init, not wall-
+ * clock time -- comparable across nodes sharing the same init moment,
+ * without requiring new RTC hardware anywhere. uint32_t covers ~49 days at
+ * 1ms resolution, comfortably beyond any single experiment.
  */
 #define SENSOR_PAYLOAD_FLAG_TEMP_INVALID     BIT(0)
 #define SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID BIT(1)
@@ -276,8 +128,78 @@ struct sensor_payload {
 	uint16_t seq;              /* peripheral-local rolling counter */
 	int16_t  temp_cdeg;        /* skin temp, centi-degrees C (3612 = 36.12C) */
 	uint16_t humidity_pct10;   /* relative humidity, tenths of a percent */
+	uint32_t millis_since_init; /* ms since this node's init-phase t=0 */
 } __packed;
 
-BUILD_ASSERT(sizeof(struct sensor_payload) == 8, "sensor_payload size mismatch");
+BUILD_ASSERT(sizeof(struct sensor_payload) == 12, "sensor_payload size mismatch");
+
+/* ======================================================
+ * GATT protocol (2026-08-13, replaces the PAwR timing characteristic)
+ *
+ * One service, two characteristics, both under central/peripheral's
+ * existing pawr_svc_uuid (kept as-is, still a private 128-bit UUID, no
+ * reason to change it):
+ *
+ *   - "start measuring" (write-only): central writes this once per node,
+ *     during the init phase. No payload needed (empty write) -- the write
+ *     itself IS the signal; the peripheral's own write handler records
+ *     k_uptime_get() as t0 and starts its sensor-read timer. Reuses the
+ *     UUID central/peripheral already had wired up for the old timing
+ *     characteristic (pawr_char_uuid) -- same characteristic slot,
+ *     completely different meaning now.
+ *
+ *   - "download" (write request + indicate response): central writes a
+ *     struct download_req to start a transfer, peripheral streams its
+ *     whole flash log back as a sequence of indications framed with
+ *     download_header/download_data/download_done (see below), paced by
+ *     central confirming each indication before the next is sent (standard
+ *     GATT indicate flow control) -- adapted from the backfill-ble-
+ *     retrieval branch's already-proven request/header/data/done design,
+ *     with the same-radio-collision risk that blocked it there gone
+ *     entirely (there is no more concurrent PAwR subevent polling to
+ *     collide with).
+ * ====================================================== */
+
+#define DOWNLOAD_MSG_HEADER 0x01
+#define DOWNLOAD_MSG_DATA   0x02
+#define DOWNLOAD_MSG_DONE   0x03
+
+/* Central writes this to the download characteristic to start a transfer.
+ * No parameters needed today (peripheral always sends its whole log --
+ * there's no "since_seq" high-water-mark concept anymore now that live
+ * reception doesn't exist, see NOTES.md 2026-08-13) -- kept as a distinct,
+ * empty-bodied struct rather than an empty write so the wire protocol has
+ * an explicit, self-documenting "this is a download request" moment, and
+ * so a future resume/since-timestamp parameter (see NOTES.md open
+ * question) has an obvious place to go without changing the write's shape.
+ */
+struct download_req {
+	uint8_t reserved;
+} __packed;
+
+/* Every indication on the download characteristic starts with this msg_type
+ * byte so central can tell header/data/done apart without a separate
+ * out-of-band state machine.
+ */
+struct download_header {
+	uint8_t  msg_type;       /* DOWNLOAD_MSG_HEADER */
+	uint16_t total_entries;
+} __packed;
+
+/* Flexible-array payload, one or more sensor_payload entries per
+ * indication -- central computes how many fit per PDU from the negotiated
+ * ATT MTU (see bt_gatt_get_mtu()), same approach already proven on the
+ * backfill-ble-retrieval branch.
+ */
+struct download_data_pdu {
+	uint8_t msg_type;                  /* DOWNLOAD_MSG_DATA */
+	uint8_t count;
+	struct sensor_payload entries[];
+} __packed;
+
+struct download_done {
+	uint8_t  msg_type;      /* DOWNLOAD_MSG_DONE */
+	uint16_t entries_sent;
+} __packed;
 
 #endif /* PAWR_PROTOCOL_H_ */

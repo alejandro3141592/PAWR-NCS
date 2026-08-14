@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  *
- * Wire framing for the UART link between the PAwR central board and this
+ * Wire framing for the UART link between the central board and this
  * nRF9151 gateway. Carries a struct sensor_payload (see
  * ../../../common/pawr_protocol.h) as its body. BLE PDUs are CRC-checked at
  * the link layer, but a plain UART byte stream isn't, so this frame adds its
@@ -11,11 +11,12 @@
  * project's AdvChannelPayload framing.
  *
  * Frame layout, all bytes on the wire in this order:
- *   [[ START_BYTE ][ struct sensor_payload, 8 bytes ][ crc16, 2 bytes LE ]]
- * Total: 11 bytes/frame. No length byte needed since the payload is a fixed
- * 8 bytes -- if pawr_protocol.h's sensor_payload ever changes size, this
- * frame format changes with it (the BUILD_ASSERT in that header will catch
- * an accidental mismatch at compile time, not here).
+ *   [[ START_BYTE ][ struct sensor_payload ][ crc16, 2 bytes LE ]]
+ * No length byte needed since the payload is a fixed size -- if
+ * pawr_protocol.h's sensor_payload ever changes size, this frame format
+ * changes with it automatically (UART_FRAME_SIZE is sizeof(struct
+ * uart_frame), and the BUILD_ASSERT in that header will catch an
+ * accidental sensor_payload-size mismatch at compile time).
  */
 
 #ifndef UART_FRAME_H_

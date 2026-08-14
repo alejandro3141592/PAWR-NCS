@@ -55,12 +55,18 @@ TOPICS = ["sensors/data"]
 
 # Wire format for sensors/data: raw bytes of the firmware's struct
 # sensor_payload (see ../common/pawr_protocol.h), little-endian --
-# node_id(u8), flags(u8), seq(u16), temp_cdeg(i16), humidity_pct10(u16).
+# node_id(u8), flags(u8), seq(u16), temp_cdeg(i16), humidity_pct10(u16),
+# millis_since_init(u32). The trailing u32 was added 2026-08-13 as part of
+# the PAwR-to-plain-BLE-GATT pivot -- readings are now downloaded in bulk
+# after an experiment instead of arriving live, so seq's rolling counter
+# alone isn't enough to place a reading in time; this is milliseconds since
+# that node's own init-phase t0 (no board in this project has a real-time
+# clock, see pawr_protocol.h's file header for why this is relative, not
+# wall-clock, time).
 # Replaces the prior per-field JSON publishes (sensors/temperature,
 # sensors/humidity) with one compact binary message per node per interval,
 # see NOTES.md 2026-08-04 for the cellular-data-usage motivation.
-# see NOTES.md 2026-08-04 for the cellular-data-usage motivation.
-_SENSOR_PAYLOAD_STRUCT = struct.Struct("<BBHhH")
+_SENSOR_PAYLOAD_STRUCT = struct.Struct("<BBHhHI")
 
 TEMP_MIN = 20.0
 TEMP_MAX = 42.0
@@ -344,7 +350,7 @@ class MQTTWorker(QThread):
             if msg.topic != "sensors/data":
                 return
             try:
-                node_id, flags, seq, temp_cdeg, humidity_pct10 = \
+                node_id, flags, seq, temp_cdeg, humidity_pct10, millis_since_init = \
                     _SENSOR_PAYLOAD_STRUCT.unpack(msg.payload)
             except struct.error:
                 return
@@ -448,7 +454,7 @@ class UARTWorker(QThread):
             return
 
         try:
-            node_id, flags, seq, temp_cdeg, humidity_pct10 = \
+            node_id, flags, seq, temp_cdeg, humidity_pct10, millis_since_init = \
                 _SENSOR_PAYLOAD_STRUCT.unpack(payload)
         except struct.error:
             return
