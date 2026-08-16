@@ -63,9 +63,14 @@ static K_SEM_DEFINE(sem_disconnected, 0, 1);
 
 static struct bt_conn *default_conn;
 
-/* Status LED: off = not yet init'd (not measuring), steady on = measuring.
- * Distinct from the old PAwR-sync meaning, same physical LED/purpose
- * (visible at-a-glance node state).
+/* Status LED (red, led0): on only while a central is actively connected,
+ * off otherwise -- a live "central is here right now" indicator, not a
+ * one-time init flag. Driven from connected()/disconnected() below, not
+ * from write_start_measuring() -- INIT completing gets its own blink (see
+ * measurement_led_blink() reuse in write_start_measuring()) rather than
+ * changing this LED's steady state, since INIT and "currently connected"
+ * are different facts (a node can disconnect right after INIT and still
+ * have been successfully inited).
  */
 static const struct gpio_dt_spec status_led = GPIO_DT_SPEC_GET(DT_ALIAS(led0), gpios);
 
@@ -79,14 +84,44 @@ static void status_led_init(void)
 	gpio_pin_configure_dt(&status_led, GPIO_OUTPUT_INACTIVE);
 }
 
-/* Power-on indicator: a single blink of the (unused otherwise) green LED
- * right at boot, so a board is visibly alive the moment it's powered --
- * distinct from status_led (red, led0) above. Blocking sleep is fine here:
- * this runs once in main(), before Bluetooth/sensors start.
+/* One blink on INIT complete (write_start_measuring()), layered on top of
+ * status_led's normal connected/disconnected steady state -- runs while a
+ * connection is already active (status_led is already on), so this briefly
+ * pulses off then back on rather than needing a separate off-timer/state
+ * machine. Scheduled via its own delayable work (not a blocking k_sleep())
+ * for the same reason measurement_led_blink() is: this runs on the BT
+ * connection's callback/GATT-write context, and blocking there is exactly
+ * the kind of thing that caused the download-stall bug on central (see
+ * that file's DOWNLOAD_WORKQ comment) -- not worth risking here too.
+ */
+static void status_led_restore_work_handler(struct k_work *work);
+static K_WORK_DELAYABLE_DEFINE(status_led_restore_work, status_led_restore_work_handler);
+
+static void status_led_restore_work_handler(struct k_work *work)
+{
+	/* Restore to "on" -- this blink only ever happens while connected
+	 * (write_start_measuring() is a GATT write, which requires an active
+	 * connection), so the steady state to return to is always on.
+	 */
+	gpio_pin_set_dt(&status_led, 1);
+}
+
+static void status_led_blink(void)
+{
+	gpio_pin_set_dt(&status_led, 0);
+	k_work_schedule(&status_led_restore_work, K_MSEC(150));
+}
+
+/* Green LED (led1): one blink at power-on so a board is visibly alive the
+ * moment it's powered, and one blink after every completed sensor read
+ * (see sensor_read_work_handler below) as a heartbeat -- confirms at a
+ * glance that a worn/out-of-sight node is still actually measuring every
+ * 10s, not just that it was inited once (that's status_led/red's job).
+ * Distinct from status_led (red, led0) above.
  */
 static const struct gpio_dt_spec power_on_led = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 
-static void power_on_led_blink(void)
+static void power_on_led_init(void)
 {
 	if (!gpio_is_ready_dt(&power_on_led)) {
 		APP_LOG("Power-on LED device not ready\n");
@@ -94,9 +129,35 @@ static void power_on_led_blink(void)
 	}
 
 	gpio_pin_configure_dt(&power_on_led, GPIO_OUTPUT_INACTIVE);
+}
+
+/* Blocking sleep is fine for the power-on call (runs once in main(),
+ * before Bluetooth/sensors start) but NOT for the per-measurement call --
+ * sensor_read_work_handler runs on the system workqueue, and blocking it
+ * for 150ms every 10s is wasteful/risky alongside BT host processing (see
+ * the dedicated-workqueue lesson learned for downloads in central's code).
+ * Scheduled off via its own delayable work item instead so the blink's
+ * "off" edge doesn't block anything.
+ */
+static void measurement_led_off_work_handler(struct k_work *work);
+static K_WORK_DELAYABLE_DEFINE(measurement_led_off_work, measurement_led_off_work_handler);
+
+static void measurement_led_off_work_handler(struct k_work *work)
+{
+	gpio_pin_set_dt(&power_on_led, 0);
+}
+
+static void power_on_led_blink(void)
+{
 	gpio_pin_set_dt(&power_on_led, 1);
 	k_sleep(K_MSEC(150));
 	gpio_pin_set_dt(&power_on_led, 0);
+}
+
+static void measurement_led_blink(void)
+{
+	gpio_pin_set_dt(&power_on_led, 1);
+	k_work_schedule(&measurement_led_off_work, K_MSEC(150));
 }
 
 /* ======================================================
@@ -163,6 +224,17 @@ static struct sensor_payload latest_payload;
 static int64_t t0_ms;
 static bool measuring;
 
+/* Incremented once per boot, the first time write_start_measuring() takes
+ * effect (see that function) -- distinguishes readings taken under
+ * different t0 references so a download_req's since_ms high-water mark is
+ * never compared against readings from a different (and therefore
+ * incomparable) epoch. Initialized from the flash log's own existing
+ * highest epoch at boot (see storage_fcb_init()'s epoch-scan pass), not
+ * always 0, so epoch numbers stay globally increasing across reboots
+ * instead of colliding with old on-flash entries.
+ */
+static uint8_t s_init_epoch;
+
 static void sensors_init(void)
 {
 	if (IS_ENABLED(CONFIG_APP_SIMULATE_SENSORS)) {
@@ -221,6 +293,7 @@ static void sensors_read(struct sensor_payload *out)
 	out->temp_cdeg = temp_cdeg;
 	out->humidity_pct10 = humidity_pct10;
 	out->millis_since_init = (uint32_t)(k_uptime_get() - t0_ms);
+	out->init_epoch = s_init_epoch;
 }
 
 /* ======================================================
@@ -242,6 +315,41 @@ static void sensors_read(struct sensor_payload *out)
 static struct flash_sector storage_fcb_sectors[STORAGE_FCB_SECTOR_MAX];
 static struct fcb storage_fcb;
 static bool storage_fcb_ok;
+
+/* Scans the existing flash log (if any) for the highest init_epoch already
+ * present, so s_init_epoch can start one past it -- keeps epoch numbers
+ * globally increasing across reboots instead of a fresh boot always
+ * restarting at 0 and potentially colliding with old on-flash entries that
+ * happen to share the same epoch number but a different (no longer valid)
+ * t0 reference. Run once at boot, before any new entries are appended this
+ * boot -- see storage_fcb_init()'s call site.
+ */
+struct storage_epoch_scan_ctx {
+	uint8_t max_epoch_seen;
+	bool any_entries;
+};
+
+static int storage_epoch_scan_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
+{
+	struct storage_epoch_scan_ctx *ctx = arg;
+	struct sensor_payload payload;
+
+	if (loc_ctx->loc.fe_data_len != sizeof(payload)) {
+		return 0;
+	}
+
+	if (flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
+			     sizeof(payload))) {
+		return 0;
+	}
+
+	if (!ctx->any_entries || payload.init_epoch > ctx->max_epoch_seen) {
+		ctx->max_epoch_seen = payload.init_epoch;
+	}
+	ctx->any_entries = true;
+
+	return 0;
+}
 
 static void storage_fcb_init(void)
 {
@@ -294,6 +402,13 @@ static void storage_fcb_init(void)
 
 	storage_fcb_ok = true;
 	APP_LOG("[STORAGE] Flash log ready (%u sectors)\n", sector_cnt);
+
+	struct storage_epoch_scan_ctx epoch_ctx = { 0 };
+
+	fcb_walk(&storage_fcb, NULL, storage_epoch_scan_walk_cb, &epoch_ctx);
+	s_init_epoch = epoch_ctx.any_entries ? (uint8_t)(epoch_ctx.max_epoch_seen + 1) : 0;
+	APP_LOG("[STORAGE] Next init_epoch will be %u (%s)\n", s_init_epoch,
+	       epoch_ctx.any_entries ? "found existing entries" : "empty log");
 }
 
 /* Proactive rotation: check/rotate BEFORE the log is actually full, so the
@@ -438,6 +553,7 @@ static void sensor_read_work_handler(struct k_work *work)
 {
 	sensors_read(&latest_payload);
 	storage_fcb_append(&latest_payload);
+	measurement_led_blink();
 
 	APP_LOG("[SENSORS] node %u seq %u t+%ums temp=%d.%02uC humidity=%u.%u%% flags=0x%02x\n",
 	       latest_payload.node_id, latest_payload.seq, latest_payload.millis_since_init,
@@ -522,15 +638,46 @@ static int download_indicate_blocking(struct bt_conn *conn, const void *data, ui
 	return 0;
 }
 
+/* Shared by both the counting and sending walk passes below: is this entry
+ * "new" relative to the requested (since_epoch, since_ms) high-water mark?
+ * Any strictly newer epoch is unconditionally new (a reboot happened since
+ * that mark was recorded, so ms values aren't comparable at all -- see
+ * sensor_payload.init_epoch's comment); within the same epoch, only ms
+ * strictly greater than since_ms is new. since_epoch=0/since_ms=0 (the
+ * struct's zero value) matches every real entry, preserving "send
+ * everything" as the default/first-download behavior.
+ */
+static bool download_entry_is_new(const struct sensor_payload *payload, uint8_t since_epoch,
+				   uint32_t since_ms)
+{
+	if (payload->init_epoch != since_epoch) {
+		return payload->init_epoch > since_epoch;
+	}
+
+	return payload->millis_since_init > since_ms;
+}
+
 struct download_count_ctx {
 	uint32_t count;
+	uint8_t  since_epoch;
+	uint32_t since_ms;
 };
 
 static int download_count_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 {
 	struct download_count_ctx *ctx = arg;
+	struct sensor_payload payload;
 
-	if (loc_ctx->loc.fe_data_len == sizeof(struct sensor_payload)) {
+	if (loc_ctx->loc.fe_data_len != sizeof(payload)) {
+		return 0;
+	}
+
+	if (flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
+			     sizeof(payload))) {
+		return 0;
+	}
+
+	if (download_entry_is_new(&payload, ctx->since_epoch, ctx->since_ms)) {
 		ctx->count++;
 	}
 
@@ -549,6 +696,13 @@ struct download_send_ctx {
 	uint8_t                 pending_count;
 	uint16_t                total_sent;
 	bool                    failed;
+	uint8_t                 since_epoch;
+	uint32_t                since_ms;
+	/* Running max (epoch, ms) among entries actually sent this transfer --
+	 * becomes download_done's newest_epoch/newest_ms.
+	 */
+	uint8_t                 newest_epoch;
+	uint32_t                newest_ms;
 };
 
 static bool download_flush_pending(struct download_send_ctx *ctx)
@@ -595,6 +749,16 @@ static int download_send_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 		return 0;
 	}
 
+	if (!download_entry_is_new(&payload, ctx->since_epoch, ctx->since_ms)) {
+		return 0;
+	}
+
+	if (payload.init_epoch > ctx->newest_epoch ||
+	    (payload.init_epoch == ctx->newest_epoch && payload.millis_since_init > ctx->newest_ms)) {
+		ctx->newest_epoch = payload.init_epoch;
+		ctx->newest_ms = payload.millis_since_init;
+	}
+
 	ctx->pending[ctx->pending_count++] = payload;
 
 	if (ctx->pending_count >= ctx->entries_per_pdu) {
@@ -625,6 +789,14 @@ static int download_send_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 static K_THREAD_STACK_DEFINE(download_workq_stack, DOWNLOAD_WORKQ_STACK_SIZE);
 static struct k_work_q download_workq;
 
+/* Parsed from the download_req GATT write (see write_download_req()) and
+ * read back here once download_work runs -- stashed rather than passed as a
+ * work-item argument since k_work carries no payload of its own, same
+ * pattern already used for conn via default_conn.
+ */
+static uint8_t requested_since_epoch;
+static uint32_t requested_since_ms;
+
 static void download_work_handler(struct k_work *work);
 static K_WORK_DEFINE(download_work, download_work_handler);
 
@@ -637,8 +809,14 @@ static void download_work_handler(struct k_work *work)
 	 * underlying bt_conn could be freed mid-transfer.
 	 */
 	struct bt_conn *conn = default_conn ? bt_conn_ref(default_conn) : NULL;
-	struct download_count_ctx count_ctx = { 0 };
-	struct download_send_ctx send_ctx = { 0 };
+	struct download_count_ctx count_ctx = {
+		.since_epoch = requested_since_epoch,
+		.since_ms = requested_since_ms,
+	};
+	struct download_send_ctx send_ctx = {
+		.since_epoch = requested_since_epoch,
+		.since_ms = requested_since_ms,
+	};
 	struct download_header header;
 	struct download_done done;
 	uint16_t mtu;
@@ -652,6 +830,9 @@ static void download_work_handler(struct k_work *work)
 		APP_LOG("[DOWNLOAD] flash log unavailable, nothing to send\n");
 		goto out;
 	}
+
+	APP_LOG("[DOWNLOAD] requested since epoch=%u ms=%u\n", requested_since_epoch,
+	       requested_since_ms);
 
 	fcb_walk(&storage_fcb, NULL, download_count_walk_cb, &count_ctx);
 
@@ -668,8 +849,16 @@ static void download_work_handler(struct k_work *work)
 	}
 
 	if (count_ctx.count == 0) {
+		/* Nothing new since the requested high-water mark -- echo it
+		 * back unchanged rather than 0/0, so central/the GUI don't
+		 * mistake "caught up, nothing new" for "this node has never
+		 * been downloaded," which would silently regress to
+		 * re-requesting everything next time.
+		 */
 		done.msg_type = DOWNLOAD_MSG_DONE;
 		done.entries_sent = 0;
+		done.newest_epoch = requested_since_epoch;
+		done.newest_ms = requested_since_ms;
 		download_indicate_blocking(conn, &done, sizeof(done));
 		goto out;
 	}
@@ -705,6 +894,8 @@ static void download_work_handler(struct k_work *work)
 
 	done.msg_type = DOWNLOAD_MSG_DONE;
 	done.entries_sent = send_ctx.total_sent;
+	done.newest_epoch = send_ctx.newest_epoch;
+	done.newest_ms = send_ctx.newest_ms;
 	download_indicate_blocking(conn, &done, sizeof(done));
 
 	APP_LOG("[DOWNLOAD] transfer complete: %u entries sent\n", send_ctx.total_sent);
@@ -716,6 +907,8 @@ out:
 static ssize_t write_download_req(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 				   const void *buf, uint16_t len, uint16_t offset, uint8_t flags)
 {
+	struct download_req req;
+
 	if (offset) {
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_OFFSET);
 	}
@@ -724,7 +917,16 @@ static ssize_t write_download_req(struct bt_conn *conn, const struct bt_gatt_att
 		return BT_GATT_ERR(BT_ATT_ERR_INVALID_ATTRIBUTE_LEN);
 	}
 
-	APP_LOG("[DOWNLOAD] request received, submitting work item\n");
+	/* memcpy into a local, not a direct pointer cast -- download_req is
+	 * __packed so its wire layout doesn't guarantee natural alignment for
+	 * the uint32_t field on every architecture.
+	 */
+	memcpy(&req, buf, sizeof(req));
+	requested_since_epoch = req.since_epoch;
+	requested_since_ms = req.since_ms;
+
+	APP_LOG("[DOWNLOAD] request received (since epoch=%u ms=%u), submitting work item\n",
+	       requested_since_epoch, requested_since_ms);
 
 	/* Deferred to a dedicated work item, not handled inline here -- this
 	 * callback runs in BT RX context, and a download transfer can take
@@ -764,7 +966,7 @@ static ssize_t write_start_measuring(struct bt_conn *conn, const struct bt_gatt_
 
 	t0_ms = k_uptime_get();
 	measuring = true;
-	gpio_pin_set_dt(&status_led, 1);
+	status_led_blink();
 
 	APP_LOG("[INIT] synced, starting measurement (t0=%lld)\n", t0_ms);
 
@@ -800,12 +1002,14 @@ void connected(struct bt_conn *conn, uint8_t err)
 	}
 
 	default_conn = bt_conn_ref(conn);
+	gpio_pin_set_dt(&status_led, 1);
 }
 
 void disconnected(struct bt_conn *conn, uint8_t reason)
 {
 	bt_conn_unref(default_conn);
 	default_conn = NULL;
+	gpio_pin_set_dt(&status_led, 0);
 
 	APP_LOG("Disconnected, reason 0x%02X %s\n", reason, bt_hci_err_to_str(reason));
 
@@ -837,6 +1041,7 @@ int main(void)
 	ad[0].data_len = strlen(adv_name);
 
 	status_led_init();
+	power_on_led_init();
 	power_on_led_blink();
 	sensors_init();
 	storage_fcb_init();

@@ -125,13 +125,45 @@ static inline unsigned int pawr_parse_node_id(const char *name)
 struct sensor_payload {
 	uint8_t  node_id;         /* human-readable label, not used for assignment */
 	uint8_t  flags;
-	uint16_t seq;              /* peripheral-local rolling counter */
+	uint16_t seq;              /* peripheral-local rolling counter, resets to 0
+				    * on every reboot -- NOT globally unique, see
+				    * init_epoch below */
 	int16_t  temp_cdeg;        /* skin temp, centi-degrees C (3612 = 36.12C) */
 	uint16_t humidity_pct10;   /* relative humidity, tenths of a percent */
 	uint32_t millis_since_init; /* ms since this node's init-phase t=0 */
+	/* Added 2026-08-14 for incremental (since-last-download) downloads:
+	 * millis_since_init resets to a new baseline every time a node gets a
+	 * fresh init-phase write after a reboot (a fresh k_uptime_get() t0),
+	 * but old flash entries from before that reboot are still on flash,
+	 * stamped with ms values computed against the PREVIOUS t0 -- so ms
+	 * values are only comparable WITHIN one epoch, never across one.
+	 * init_epoch increments once per boot the first time the init-phase
+	 * write actually takes effect (see write_start_measuring() in
+	 * peripheral/src/main.c), and is itself persisted across reboots by
+	 * scanning the existing flash log for the highest epoch already
+	 * present at boot (see storage_fcb_init()) -- no separate flash
+	 * partition/format needed for this. A download_req's (since_epoch,
+	 * since_ms) pair is only meaningful when compared against this field:
+	 * entries from a strictly newer epoch than since_epoch are always
+	 * "new" regardless of their own ms value.
+	 */
+	uint8_t  init_epoch;
+	/* Padding, not a real field -- the nRF52840's internal flash controller
+	 * requires word-aligned (4-byte) writes (write-block-size = 4 in its
+	 * devicetree; confirmed on real hardware 2026-08-14: the unpadded
+	 * 13-byte struct made every single flash_area_write() in
+	 * storage_fcb_append() fail with "not word-aligned" / err -22, so
+	 * nothing was ever actually stored after adding init_epoch). 12 bytes
+	 * was a multiple of 4 by luck; this pads back up to 16 (the next
+	 * multiple of 4 above 13) explicitly, with headroom for one more
+	 * uint8_t-sized field later without needing to revisit alignment
+	 * again. Value is always 0 and never read/interpreted, only exists so
+	 * sizeof(struct sensor_payload) stays a multiple of 4.
+	 */
+	uint8_t  _pad[3];
 } __packed;
 
-BUILD_ASSERT(sizeof(struct sensor_payload) == 12, "sensor_payload size mismatch");
+BUILD_ASSERT(sizeof(struct sensor_payload) == 16, "sensor_payload size mismatch");
 
 /* ======================================================
  * GATT protocol (2026-08-13, replaces the PAwR timing characteristic)
@@ -165,16 +197,19 @@ BUILD_ASSERT(sizeof(struct sensor_payload) == 12, "sensor_payload size mismatch"
 #define DOWNLOAD_MSG_DONE   0x03
 
 /* Central writes this to the download characteristic to start a transfer.
- * No parameters needed today (peripheral always sends its whole log --
- * there's no "since_seq" high-water-mark concept anymore now that live
- * reception doesn't exist, see NOTES.md 2026-08-13) -- kept as a distinct,
- * empty-bodied struct rather than an empty write so the wire protocol has
- * an explicit, self-documenting "this is a download request" moment, and
- * so a future resume/since-timestamp parameter (see NOTES.md open
- * question) has an obvious place to go without changing the write's shape.
+ * (since_epoch, since_ms) is the high-water mark of what the operator has
+ * already successfully downloaded (see sensor_payload.init_epoch's comment
+ * for why both fields, not just ms, are needed): the peripheral sends every
+ * stored entry with either a strictly newer init_epoch, or the same epoch
+ * with millis_since_init > since_ms. All-zero (the original meaning of this
+ * struct before 2026-08-14) naturally means "send everything" -- there is
+ * no valid epoch 0 with a real entry at ms <= 0, so the filter is a no-op,
+ * preserving the original full-download behavior for a node's first-ever
+ * download.
  */
 struct download_req {
-	uint8_t reserved;
+	uint8_t  since_epoch;
+	uint32_t since_ms;
 } __packed;
 
 /* Every indication on the download characteristic starts with this msg_type
@@ -200,6 +235,17 @@ struct download_data_pdu {
 struct download_done {
 	uint8_t  msg_type;      /* DOWNLOAD_MSG_DONE */
 	uint16_t entries_sent;
+	/* High-water mark of what was actually sent THIS transfer (the max
+	 * (init_epoch, millis_since_init) among sent entries, not just an
+	 * echo of what was requested) -- added 2026-08-14 alongside
+	 * download_req's since_epoch/since_ms, so central/the GUI know
+	 * exactly what to request next time without having to infer it from
+	 * the last DOWNLOAD_DATA entry received (fragile if a transfer
+	 * partially fails). Unchanged from since_epoch/since_ms (i.e. nothing
+	 * new was sent) if entries_sent == 0.
+	 */
+	uint8_t  newest_epoch;
+	uint32_t newest_ms;
 } __packed;
 
 #endif /* PAWR_PROTOCOL_H_ */

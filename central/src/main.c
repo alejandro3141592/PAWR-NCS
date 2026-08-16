@@ -50,12 +50,19 @@
 
 #define NAME_LEN 30
 
-/* This central only onboards/downloads peripherals advertising this exact
- * prefix -- see pawr_format_adv_name() in common/pawr_protocol.h and
- * CONFIG_APP_CENTRAL_ID in Kconfig for why/format. Built once at startup,
- * not per scan callback.
+/* 2026-08-15: central now matches on the bare PAWR_ADV_NAME prefix only,
+ * ignoring whatever CONFIG_APP_CENTRAL_ID a peripheral happens to have
+ * been built with -- see pawr_format_adv_name()/its central_id comment in
+ * common/pawr_protocol.h for the original multi-rig-scoping purpose of
+ * that suffix. With this project now centered on a single GUI-driven
+ * central operating over its whole node fleet (not multiple independent
+ * central+peripheral rigs sharing BLE range), that scoping stopped
+ * matching the actual deployment and only added a way for a node to go
+ * invisible to the one central actually in use. Peripherals still embed
+ * their central_id in the advertised name (harmless, no peripheral
+ * rebuild required) -- central just no longer looks at it.
  */
-static char target_adv_name[PAWR_ADV_NAME_MAX_LEN];
+#define TARGET_ADV_NAME_PREFIX PAWR_ADV_NAME
 
 static const struct gpio_dt_spec tx_led = GPIO_DT_SPEC_GET(DT_ALIAS(led1), gpios);
 
@@ -92,6 +99,14 @@ enum central_op {
 
 static enum central_op current_op = OP_IDLE;
 static unsigned int target_node_id;
+
+/* Parsed from an optional DOWNLOAD <node_id> <since_epoch> <since_ms>
+ * command (see console_process_line()) -- read by do_download_flow() when
+ * building the download_req to send. Both 0 (the default) means "send
+ * everything," matching this struct's original all-zero meaning.
+ */
+static uint8_t download_target_since_epoch;
+static uint32_t download_target_since_ms;
 
 #define CONSOLE_LINE_MAX 32
 static char console_line_buf[CONSOLE_LINE_MAX];
@@ -146,6 +161,27 @@ static void console_process_line(char *line)
 
 		target_node_id = (unsigned int)node_id;
 		current_op = !strcmp(cmd, "INIT") ? OP_INIT : OP_DOWNLOAD;
+
+		/* DOWNLOAD <node_id> [<since_epoch> <since_ms>] -- both optional,
+		 * default to 0/0 (= "send everything"), same meaning as an
+		 * all-zero download_req always had. Lets the GUI request only
+		 * what's new since the last successful download (see
+		 * common/pawr_protocol.h's download_req comment) while keeping
+		 * the bare bench-test form (DOWNLOAD <node_id> alone, full
+		 * re-download) working unchanged.
+		 */
+		download_target_since_epoch = 0;
+		download_target_since_ms = 0;
+		if (current_op == OP_DOWNLOAD) {
+			char *epoch_arg = strtok(NULL, " \t");
+			char *ms_arg = strtok(NULL, " \t");
+
+			if (epoch_arg && ms_arg) {
+				download_target_since_epoch = (uint8_t)strtoul(epoch_arg, NULL, 10);
+				download_target_since_ms = strtoul(ms_arg, NULL, 10);
+			}
+		}
+
 		printk("\n[CMD] %s NODE %u\n", cmd, target_node_id);
 		return;
 	}
@@ -265,11 +301,12 @@ static void scan_device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t typ
 	(void)memset(name, 0, sizeof(name));
 	bt_data_parse(ad, data_cb, name);
 
-	/* Prefix check, not exact match: target_adv_name is built with
-	 * node_id=0 (no "#..." suffix), but a real peripheral's name always
-	 * has one (e.g. "PAwR sync sample 2 #47").
+	/* Prefix check, not exact match, and deliberately central_id-agnostic
+	 * (see TARGET_ADV_NAME_PREFIX's comment) -- matches "PAwR sync sample"
+	 * regardless of what follows (e.g. "PAwR sync sample 2 #47" or
+	 * "PAwR sync sample 0 #47" both match here).
 	 */
-	if (strncmp(name, target_adv_name, strlen(target_adv_name)) != 0) {
+	if (strncmp(name, TARGET_ADV_NAME_PREFIX, strlen(TARGET_ADV_NAME_PREFIX)) != 0) {
 		return;
 	}
 
@@ -486,6 +523,14 @@ static uint16_t download_entries_sent; /* from the DONE message itself --
 					 * download_received_count.
 					 */
 static bool download_failed;
+/* High-water mark of what the peripheral actually sent this transfer, from
+ * download_done's newest_epoch/newest_ms (see common/pawr_protocol.h) --
+ * printed in an EVT line so the GUI can persist it and pass it back as the
+ * since_epoch/since_ms of the NEXT download, making downloads incremental.
+ * Unchanged from what was requested if entries_sent == 0 (nothing new).
+ */
+static uint8_t download_newest_epoch;
+static uint32_t download_newest_ms;
 
 static uint8_t discover_download_func(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 				      struct bt_gatt_discover_params *params)
@@ -572,9 +617,20 @@ static uint8_t download_notify_func(struct bt_conn *conn, struct bt_gatt_subscri
 			       payload.millis_since_init, payload.temp_cdeg / 100,
 			       abs(payload.temp_cdeg % 100), payload.humidity_pct10 / 10,
 			       payload.humidity_pct10 % 10);
-			printk("EVT DOWNLOAD_DATA NODE %u SEQ %u TEMP %d HUM %u MS %u\n",
+			/* EPOCH added 2026-08-14 alongside incremental downloads --
+			 * without it, the GUI has no way to tell which boot/init
+			 * cycle a stored reading belongs to, and millis_since_init
+			 * values from different epochs are not comparable on the
+			 * same timeline (see sensor_payload.init_epoch's comment
+			 * in common/pawr_protocol.h). Confirmed on real hardware:
+			 * omitting this let the GUI's graph anchor to a
+			 * wrong-epoch row and show wall-clock times ~15 minutes
+			 * off.
+			 */
+			printk("EVT DOWNLOAD_DATA NODE %u SEQ %u TEMP %d HUM %u MS %u EPOCH %u\n",
 			       payload.node_id, payload.seq, payload.temp_cdeg,
-			       payload.humidity_pct10, payload.millis_since_init);
+			       payload.humidity_pct10, payload.millis_since_init,
+			       payload.init_epoch);
 
 			download_received_count++;
 		}
@@ -586,13 +642,21 @@ static uint8_t download_notify_func(struct bt_conn *conn, struct bt_gatt_subscri
 
 			memcpy(&done, data, sizeof(done));
 			download_entries_sent = done.entries_sent;
+			download_newest_epoch = done.newest_epoch;
+			download_newest_ms = done.newest_ms;
 		} else {
 			/* Malformed/truncated DONE -- fall back to the
 			 * (possibly stale) header count rather than treat this
 			 * as "sent 0", which would fail a transfer that
-			 * otherwise genuinely succeeded.
+			 * otherwise genuinely succeeded. No newest_epoch/ms to
+			 * recover in this case; leave whatever was requested
+			 * (download_target_since_*) as the best-effort fallback
+			 * so a truncated DONE doesn't regress future downloads
+			 * back to since_epoch=0/since_ms=0.
 			 */
 			download_entries_sent = download_total_entries;
+			download_newest_epoch = download_target_since_epoch;
+			download_newest_ms = download_target_since_ms;
 		}
 
 		printk("Download done: %u entries received, peripheral confirms sending %u (header originally estimated %u)\n",
@@ -627,7 +691,16 @@ static int do_download_flow(void)
 {
 	struct bt_gatt_discover_params discover_params;
 	struct bt_gatt_write_params write_params;
-	struct download_req req = { 0 };
+	/* Requests only entries newer than what the operator/GUI already has
+	 * (see console_process_line()'s DOWNLOAD <node_id> <since_epoch>
+	 * <since_ms> parsing) -- both default to 0 for a bare "DOWNLOAD
+	 * <node_id>", which the peripheral treats as "send everything," same
+	 * as this struct's original always-zero meaning.
+	 */
+	struct download_req req = {
+		.since_epoch = download_target_since_epoch,
+		.since_ms = download_target_since_ms,
+	};
 	int err;
 
 	download_total_entries = 0;
@@ -745,14 +818,13 @@ int main(void)
 	int err;
 
 	printk("Starting BLE GATT sensor hub (central)\n");
-	printk("Central ID: %u\n", CONFIG_APP_CENTRAL_ID);
 
 	for (size_t i = 0; i < ARRAY_SIZE(node_states); i++) {
 		node_states[i] = NODE_UNKNOWN;
 	}
 
-	pawr_format_adv_name(target_adv_name, sizeof(target_adv_name), CONFIG_APP_CENTRAL_ID, 0);
-	printk("Looking for peripherals advertising as \"%s ...\"\n", target_adv_name);
+	printk("Looking for peripherals advertising as \"%s ...\" (any central_id)\n",
+	       TARGET_ADV_NAME_PREFIX);
 
 	if (!gpio_is_ready_dt(&tx_led)) {
 		printk("TX LED device not ready\n");
@@ -821,8 +893,9 @@ int main(void)
 			if (op_at_connect_time == OP_INIT) {
 				printk("EVT INIT_OK NODE %u\n", pending_node_id);
 			} else {
-				printk("EVT DOWNLOAD_OK NODE %u ENTRIES %u\n", pending_node_id,
-				       download_received_count);
+				printk("EVT DOWNLOAD_OK NODE %u ENTRIES %u EPOCH %u MS %u\n",
+				       pending_node_id, download_received_count,
+				       download_newest_epoch, download_newest_ms);
 			}
 		} else {
 			printk("Node %u: %s failed (err %d)\n", pending_node_id,
