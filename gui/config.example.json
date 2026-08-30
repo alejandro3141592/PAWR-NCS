@@ -3,5 +3,6 @@
   "port": 8883,
   "username": "test_username",
   "password": "REPLACE_WITH_REAL_PASSWORD",
-  "use_tls": true
+  "use_tls": true,
+  "extra_uart_ports": []
 }

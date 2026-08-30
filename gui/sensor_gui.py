@@ -543,11 +543,21 @@ class UARTManager(QObject):
 
     _SCAN_INTERVAL_S = 5000
 
-    def __init__(self, parent=None):
+    def __init__(self, extra_ports: Optional[List[str]] = None, parent=None):
         super().__init__(parent)
         self._workers: Dict[str, UARTWorker] = {}
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._scan)
+        # Manually-specified ports (config.json's "extra_uart_ports") that
+        # find_gateway_ports()'s nrfutil/J-Link-only detection can never see
+        # on its own -- added 2026-08-30 for a central board read directly
+        # (its own USB-CDC-ACM console, see central/src/gui_uart_tx.c) when
+        # that rig's gateway_9151 board's USB port had failed. Central
+        # doesn't show up under `nrfutil device list --traits jlink` at all
+        # (it's not a J-Link probe), so there's no way to auto-detect it --
+        # this is deliberately a fixed, explicit list, not another
+        # heuristic to get wrong.
+        self._extra_ports: List[str] = list(extra_ports or [])
 
     def start(self):
         self._scan()
@@ -561,7 +571,8 @@ class UARTManager(QObject):
         for port in [p for p, w in self._workers.items() if w.isFinished()]:
             del self._workers[port]
 
-        ports = find_gateway_ports()
+        detected = find_gateway_ports()
+        ports = detected + [p for p in self._extra_ports if p not in detected]
 
         if not ports and not self._workers:
             self.status.emit("No gateway found, retrying...")
@@ -1489,7 +1500,8 @@ class MainWindow(QMainWindow):
         self._mqtt.start()
 
     def _start_uart_fallback(self):
-        self._uart = UARTManager(self)
+        extra_ports = self._config.get("extra_uart_ports", [])
+        self._uart = UARTManager(extra_ports=extra_ports, parent=self)
         self._uart.received.connect(self._on_received)
         self._uart.status.connect(lambda s: self._uart_conn_lbl.setText(f"UART: {s}"))
         self._uart.start()

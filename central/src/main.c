@@ -33,6 +33,7 @@
 
 #include "pawr_protocol.h"
 #include "gateway_uart_tx.h"
+#include "gui_uart_tx.h"
 #include "sensor_log.h"
 #include "node_slot_table.h"
 
@@ -270,6 +271,7 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	if (!is_duplicate) {
 		last_forwarded_seq[payload.node_id] = (int32_t)payload.seq;
 		gateway_uart_tx_send(&payload);
+		gui_uart_tx_send(&payload);
 		sensor_log_append(&payload);
 	}
 
@@ -558,6 +560,13 @@ int main(void)
 	 * gateway_uart_tx_send() just no-ops in that case. See gateway_uart_tx.h.
 	 */
 	gateway_uart_tx_init();
+
+	/* Direct-to-PC fallback (2026-08-30, see gui_uart_tx.h) -- shares this
+	 * board's own USB console with gateway_uart_tx_init() above's uart1
+	 * link; both are independent, either one working is enough to get data
+	 * somewhere. Also non-fatal if it fails.
+	 */
+	gui_uart_tx_init();
 
 	/* Fallback local record of every payload received over PAwR, in case
 	 * the UART link to the gateway board (or the gateway's own MQTT/LTE
