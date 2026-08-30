@@ -50,6 +50,44 @@ except ImportError:
 CONFIG_PATH = Path(__file__).resolve().parent / "config.json"
 CONFIG_EXAMPLE_PATH = Path(__file__).resolve().parent / "config.example.json"
 BODY_MAPPING_PATH = Path(__file__).resolve().parent / "body_mapping.json"
+NODE_ROSTER_PATH = Path(__file__).resolve().parent.parent / "tools" / "node_roster_4rigs.csv"
+
+# A node stuck failing to sync (never onboarded, or onboarded once and then
+# dropped) both retry forever on their own (see peripheral/src/main.c's main
+# loop and central's device_found() -- no backoff, no give-up condition), so
+# nothing on the firmware side will ever surface a "this node needs
+# attention" signal. This threshold is what turns "still offline" into
+# "stuck" in the GUI -- long enough that a normal ~20s onboarding retry cycle
+# doesn't false-positive, short enough to catch a real problem well before
+# the on-board flash log's ~8hr capacity could wrap and lose data.
+STUCK_SYNC_THRESHOLD_S = 120.0
+
+
+def load_expected_roster() -> Dict[int, int]:
+    """Loads {node_id: central_id} from tools/node_roster_4rigs.csv so the
+    GUI can flag nodes that have NEVER synced (not just ones that synced once
+    and dropped) -- see Reading.health()'s own comment for why last_seen
+    alone can't detect that case. Missing file / bad row => empty roster
+    (never-synced tracking silently disabled, dropped-node tracking still
+    works via last_seen), not a hard failure -- this is a diagnostic aid,
+    not something that should stop the dashboard from starting.
+    """
+    roster: Dict[int, int] = {}
+
+    if not NODE_ROSTER_PATH.exists():
+        return roster
+
+    with open(NODE_ROSTER_PATH, "r", encoding="utf-8", newline="") as f:
+        for row in csv.reader(f):
+            if len(row) != 2:
+                continue
+            try:
+                central_id, node_id = int(row[0]), int(row[1])
+            except ValueError:
+                continue
+            roster[node_id] = central_id
+
+    return roster
 
 TOPICS = ["sensors/data"]
 
@@ -196,6 +234,14 @@ class Reading:
     humidity: Optional[float] = None
     last_seen: Optional[datetime] = None
     logged_seq: Optional[int] = None
+    # When this node was first expected (roster loaded / GUI started) --
+    # only meaningful while last_seen is still None, i.e. this node has
+    # NEVER synced. Both peripheral and central retry onboarding forever
+    # with no backoff (see NODE_ROSTER_PATH's own comment), so nothing in
+    # the firmware itself will ever flag "this one's been trying for a
+    # while" -- this field plus sync_failure_seconds() below is what makes
+    # that visible in the GUI instead.
+    expected_since: Optional[datetime] = None
 
     def health(self) -> str:
         if not self.last_seen:
@@ -207,6 +253,23 @@ class Reading:
             return "IDLE"
         else:
             return "OFFLINE"
+
+    def sync_failure_seconds(self) -> Optional[float]:
+        """Seconds this node has been failing to sync -- since last_seen for
+        a node that dropped after onboarding at least once, or since
+        expected_since for one that has NEVER onboarded. None if the node is
+        currently ACTIVE/IDLE (healthy) or has neither timestamp (unexpected
+        node with no roster entry, seen zero times -- shouldn't normally
+        happen since a Reading is only created on first contact).
+        """
+        if self.health() != "OFFLINE":
+            return None
+
+        anchor = self.last_seen or self.expected_since
+        if anchor is None:
+            return None
+
+        return (datetime.now() - anchor).total_seconds()
 
 
 @dataclass
@@ -1269,6 +1332,14 @@ class MainWindow(QMainWindow):
         self._row_for_node: Dict[int, int] = {}
         self._selected_node: Optional[int] = None
 
+        # Pre-populate every roster node as "never seen yet" (expected_since
+        # = now) so a node that never onboards at all still shows up as
+        # OFFLINE and eventually STUCK, instead of being invisible until its
+        # first successful sync (see Reading.expected_since's own comment).
+        startup = datetime.now()
+        for node_id in load_expected_roster():
+            self._nodes[node_id] = Reading(node_id=node_id, expected_since=startup)
+
         self._db = sensor_db.open_db()
         self._build_ui()
         self._start_mqtt()
@@ -1368,6 +1439,19 @@ class MainWindow(QMainWindow):
         self._body_tab = BodyMapTab()
         self._tabs.addTab(self._body_tab, "👥 Multi-Person Body Maps")
 
+        # Stuck-sync alert bar (hidden when no node is stuck) -- see
+        # Reading.sync_failure_seconds()/_update_stuck_alert(). Sits above
+        # the tabs so it's impossible to miss during a real deployment, not
+        # just an extra column someone has to scroll the table to notice.
+        self._stuck_alert_lbl = QLabel("")
+        self._stuck_alert_lbl.setStyleSheet(
+            "background:#3a1414;color:#fca5a5;font-weight:bold;font-size:11px;"
+            "padding:6px 12px;border-bottom:1px solid #7f1d1d;"
+        )
+        self._stuck_alert_lbl.setWordWrap(True)
+        self._stuck_alert_lbl.hide()
+        vlay.addWidget(self._stuck_alert_lbl)
+
         vlay.addWidget(self._tabs, stretch=1)
 
         # Status Bar Styling
@@ -1430,12 +1514,14 @@ class MainWindow(QMainWindow):
 
         self._refresh_table()
         self._update_stats()
+        self._update_stuck_alert()
         self._chart.refresh_if_active(node_id)
         self._body_tab.update_readings(self._nodes)
 
     def _on_timer_tick(self):
         self._refresh_table()
         self._update_stats()
+        self._update_stuck_alert()
         self._body_tab.update_readings(self._nodes)
 
     def _maybe_log(self, reading: Reading):
@@ -1456,7 +1542,16 @@ class MainWindow(QMainWindow):
             health = r.health()
 
             node_item = QTableWidgetItem(str(node_id))
-            status_item = QTableWidgetItem(f"🟢 Active" if health == "ACTIVE" else (f"🟡 Idle" if health == "IDLE" else f"🔴 Offline"))
+            stuck_secs = r.sync_failure_seconds()
+            if stuck_secs is not None and stuck_secs >= STUCK_SYNC_THRESHOLD_S:
+                status_text = f"🔴 Stuck ({int(stuck_secs // 60)}m)"
+            elif health == "ACTIVE":
+                status_text = "🟢 Active"
+            elif health == "IDLE":
+                status_text = "🟡 Idle"
+            else:
+                status_text = "🔴 Offline"
+            status_item = QTableWidgetItem(status_text)
             temp_item = QTableWidgetItem(f"{r.temperature:.2f}" if r.temperature is not None else "-")
             hum_item = QTableWidgetItem(f"{r.humidity:.1f}" if r.humidity is not None else "-")
             seq_item = QTableWidgetItem(str(r.seq) if r.seq is not None else "-")
@@ -1513,6 +1608,32 @@ class MainWindow(QMainWindow):
         self._mean_h_lbl.setText(
             f"Mean Hum: {sum(hums)/len(hums):.1f} %" if hums else "Mean Hum: -"
         )
+
+    def _update_stuck_alert(self):
+        """Surfaces nodes stuck failing to sync past STUCK_SYNC_THRESHOLD_S
+        -- both peripheral and central retry onboarding forever with no
+        backoff or give-up condition (see NODE_ROSTER_PATH's own comment),
+        so a struggling node otherwise just sits quietly OFFLINE in the
+        table, easy to miss during a real multi-hour deployment. Hidden
+        entirely when nothing is stuck, so it doesn't compete for attention
+        during normal operation.
+        """
+        stuck = []
+        for r in self._nodes.values():
+            secs = r.sync_failure_seconds()
+            if secs is not None and secs >= STUCK_SYNC_THRESHOLD_S:
+                stuck.append((r.node_id, secs))
+
+        if not stuck:
+            self._stuck_alert_lbl.hide()
+            return
+
+        stuck.sort(key=lambda t: t[1], reverse=True)
+        parts = [f"node {node_id} ({int(secs // 60)}m)" for node_id, secs in stuck]
+        self._stuck_alert_lbl.setText(
+            "⚠ Failing to sync: " + ", ".join(parts)
+        )
+        self._stuck_alert_lbl.show()
 
     def _save_map_image(self):
         default_name = f"multi_person_thermals_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
