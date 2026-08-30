@@ -281,10 +281,10 @@ static void response_cb(struct bt_le_ext_adv *adv, struct bt_le_per_adv_response
 	 * allocate net_buf" under load -- see NOTES.md 2026-08-03. Fewer,
 	 * larger writes reduce that pressure vs. many small ones.
 	 */
-	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u%s%s%s\n",
+	printk(">>> Node %02u (subevent %d): skin_temp=%d.%02uC humidity=%u.%u%% seq=%u rssi=%ddBm%s%s%s\n",
 	       payload.node_id, info->subevent,
 	       payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
-	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq,
+	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10, payload.seq, info->rssi,
 	       (payload.flags & SENSOR_PAYLOAD_FLAG_TEMP_INVALID) ? "  [FLAG: TEMP_FAIL]" : "",
 	       (payload.flags & SENSOR_PAYLOAD_FLAG_HUMIDITY_INVALID) ? "  [FLAG: HUMIDITY_FAIL]" : "",
 	       is_duplicate ? "  [DUP: backup slot, already forwarded]" : "");

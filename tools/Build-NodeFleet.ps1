@@ -67,7 +67,8 @@ Write-Output "Setting up NCS toolchain environment..."
 $tc = 'C:\ncs\toolchains\936afb6332'
 $env:PATH = "$tc\opt\bin;$tc\opt\bin\Scripts;$tc\mingw64\bin;$tc\bin;$tc\cmd;$tc\usr\bin;" +
             "$tc\opt\nanopb\generator-bin;$tc\nrfutil\bin;" +
-            "$tc\opt\zephyr-sdk\arm-zephyr-eabi\bin;$tc\opt\zephyr-sdk\riscv64-zephyr-elf\bin"
+            "$tc\opt\zephyr-sdk\arm-zephyr-eabi\bin;$tc\opt\zephyr-sdk\riscv64-zephyr-elf\bin;" +
+            "C:\Strawberry\c\bin"
 $env:ZEPHYR_TOOLCHAIN_VARIANT = 'zephyr'
 $env:ZEPHYR_SDK_INSTALL_DIR = "$tc\opt\zephyr-sdk"
 $env:ZEPHYR_BASE = 'C:\ncs\v3.3.0\zephyr'
