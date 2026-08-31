@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "pawr_protocol.h"
+#include "watchdog.h"
 
 /* Diagnostic output toggle: CONFIG_APP_SERIAL_LOGGING defaults to y for
  * development, but should be set to n for real deployment (50 unattended
@@ -241,18 +242,43 @@ static void sensors_read(struct sensor_payload *out)
  *
  * The board's internal "Storage" devicetree partition (32KB, separate from
  * application code -- see nrf52840_partition_uf2_sdv7.dtsi) is used as a
- * Flash Circular Buffer: every sensor_payload produced is appended here as
- * well as sent over the air, so a multi-hour run has a complete local
- * record even if central misses some over-the-air responses (PAwR gives
- * the peripheral no delivery acknowledgment, so there's no way to log only
- * the ones that failed -- see NOTES.md 2026-08-03). At the current 10s
- * interval, a full 4-hour run is ~1440 records * 8 bytes = ~11.2KB, well
- * under the 32KB partition -- no wraparound expected in normal use, but if
- * the buffer does fill, FCB's circular behavior means oldest records are
- * overwritten first, not that appends start failing.
+ * Flash Circular Buffer, one struct stored_sensor_block (RECORDS_PER_BLOCK
+ * records, see common/pawr_protocol.h) per FCB entry, NOT one record per
+ * entry -- confirmed 2026-08-31 (node 3, a real ~10h cooling-experiment
+ * session) that at one-sensor_payload-per-entry storage, the log filled
+ * and started wrapping after only ~3.3 hours despite room-for-~6.8h back
+ * of-envelope math, because nRF52840's 4-byte flash write-block-size pads
+ * both the FCB length byte and the CRC byte up to 4 bytes each, not 1 --
+ * real per-entry overhead is 8 bytes, not 2. Batching amortizes that
+ * padded overhead across the whole block instead of paying it per
+ * reading, the same fix already proven on the ble-gatt-store-forward
+ * branch (2026-08-22, ~3.3x capacity gain there).
+ *
+ * Every sensor_payload produced is still appended here as well as sent
+ * over the air, so a multi-hour run has a complete local record even if
+ * central misses some over-the-air responses (PAwR gives the peripheral
+ * no delivery acknowledgment, so there's no way to log only the ones that
+ * failed -- see NOTES.md 2026-08-03). Accepted trade-off from batching:
+ * up to RECORDS_PER_BLOCK-1 readings live only in RAM (s_pending_block
+ * below) between one block flush and the next, lost only on an unplanned
+ * reset in that window -- this node has no auto-resume/epoch concept to
+ * soften that the way store-and-forward does, but PAwR's live
+ * over-the-air reporting is unaffected either way (storage is a fallback,
+ * not the primary data path), and losing at most ~RECORDS_PER_BLOCK-1
+ * flash-log rows to a reset is a small price for roughly 3x more log
+ * capacity before wraparound.
  * ====================================================== */
 
 #define STORAGE_FCB_SECTOR_MAX 8 /* 32KB partition / 4KB pages, see devicetree */
+
+/* In-RAM accumulator for the block currently being filled -- see
+ * storage_fcb_append()'s comment for the buffering/durability trade-off
+ * this implies. Zero-initialized (count=0, all-zero records[]) is the
+ * correct starting state on every boot: any not-yet-flushed records from
+ * a previous boot's partial block only ever existed in that previous
+ * boot's RAM, never on flash, so there's nothing to recover here.
+ */
+static struct stored_sensor_block s_pending_block;
 
 static struct flash_sector storage_fcb_sectors[STORAGE_FCB_SECTOR_MAX];
 static struct fcb storage_fcb;
@@ -341,11 +367,13 @@ static void storage_fcb_init(void)
  */
 #define STORAGE_FCB_ROTATE_FREE_SECTOR_THRESHOLD 2
 
-/* Appends one payload to the flash log. Failure here is logged but never
- * blocks reporting over the air -- flash logging is a fallback, not a
- * dependency for the primary PAwR data path.
+/* Writes one full block to the flash log. Only called once s_pending_block
+ * actually has RECORDS_PER_BLOCK records in it (see storage_fcb_append()
+ * below) -- a partially-filled block is never written on its own, see this
+ * file's earlier comment on struct stored_sensor_block for the RAM-
+ * buffering trade-off that implies.
  */
-static void storage_fcb_append(const struct sensor_payload *payload)
+static void storage_fcb_write_block(const struct stored_sensor_block *block)
 {
 	struct fcb_entry loc;
 	int err;
@@ -363,14 +391,13 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 		}
 	}
 
-	err = fcb_append(&storage_fcb, sizeof(*payload), &loc);
+	err = fcb_append(&storage_fcb, sizeof(*block), &loc);
 	if (err) {
 		APP_LOG("[STORAGE] fcb_append failed (err %d)\n", err);
 		return;
 	}
 
-	err = flash_area_write(storage_fcb.fap, FCB_ENTRY_FA_DATA_OFF(loc), payload,
-				sizeof(*payload));
+	err = flash_area_write(storage_fcb.fap, FCB_ENTRY_FA_DATA_OFF(loc), block, sizeof(*block));
 	if (err) {
 		APP_LOG("[STORAGE] flash_area_write failed (err %d)\n", err);
 		return;
@@ -379,6 +406,29 @@ static void storage_fcb_append(const struct sensor_payload *payload)
 	err = fcb_append_finish(&storage_fcb, &loc);
 	if (err) {
 		APP_LOG("[STORAGE] fcb_append_finish failed (err %d)\n", err);
+	}
+}
+
+/* Appends one reading to the in-RAM block being accumulated, flushing it
+ * to flash once full. Failure to flush is logged but never blocks
+ * reporting over the air -- flash logging is a fallback, not a dependency
+ * for the primary PAwR data path. See struct stored_sensor_block's comment
+ * for the accepted trade-off: up to RECORDS_PER_BLOCK-1 readings live only
+ * in RAM (this function's s_pending_block) between one flush and the next.
+ */
+static void storage_fcb_append(const struct sensor_payload *payload)
+{
+	struct stored_sensor_record *rec = &s_pending_block.records[s_pending_block.count];
+
+	rec->seq = payload->seq;
+	rec->flags = payload->flags;
+	rec->temp_cdeg = payload->temp_cdeg;
+	rec->humidity_pct10 = payload->humidity_pct10;
+	s_pending_block.count++;
+
+	if (s_pending_block.count >= RECORDS_PER_BLOCK) {
+		storage_fcb_write_block(&s_pending_block);
+		s_pending_block.count = 0;
 	}
 }
 
@@ -399,13 +449,20 @@ struct storage_dump_ctx {
 	uint32_t count;
 };
 
+/* Walks one struct stored_sensor_block per FCB entry (see this file's
+ * on-flash format comment above storage_fcb_append()) and prints each of
+ * its records as one CSV row -- same wire format as before the block-
+ * batching change (node_id substituted back in from CONFIG_APP_NODE_ID,
+ * since it's no longer stored per-record), so tools/capture_flash_dump.py
+ * and every downstream parser need no changes.
+ */
 static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 {
 	struct storage_dump_ctx *ctx = arg;
-	struct sensor_payload payload;
+	struct stored_sensor_block block;
 	int err;
 
-	if (loc_ctx->loc.fe_data_len != sizeof(payload)) {
+	if (loc_ctx->loc.fe_data_len != sizeof(block)) {
 		/* Skip anything that isn't one of our own fixed-size
 		 * records (shouldn't normally happen, but fcb_walk() just
 		 * walks whatever is on flash).
@@ -413,36 +470,43 @@ static int storage_dump_walk_cb(struct fcb_entry_ctx *loc_ctx, void *arg)
 		return 0;
 	}
 
-	err = flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &payload,
-			       sizeof(payload));
+	err = flash_area_read(loc_ctx->fap, FCB_ENTRY_FA_DATA_OFF(loc_ctx->loc), &block,
+			       sizeof(block));
 	if (err) {
 		printk("# read error at entry %u (err %d)\n", ctx->count, err);
 		return 0;
 	}
 
-	printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u\n", payload.node_id, payload.seq, payload.flags,
-	       ctx->count, payload.temp_cdeg / 100, abs(payload.temp_cdeg % 100),
-	       payload.humidity_pct10 / 10, payload.humidity_pct10 % 10);
+	for (uint8_t i = 0; i < block.count && i < RECORDS_PER_BLOCK; i++) {
+		const struct stored_sensor_record *rec = &block.records[i];
 
-	/* Throttle: printing a large log (thousands of rows) back-to-back
-	 * outpaces the console's internal buffer, which silently drops
-	 * messages ("--- N messages dropped ---") -- confirmed on real
-	 * hardware 2026-08-07 retrieving node 49's ~2040-row log, where the
-	 * vast majority of rows never reached the capture tool no matter how
-	 * fast/early it attached (this is the firmware's own console losing
-	 * them before they ever reach USB, not a capture-timing race).
-	 *
-	 * First attempt at this fix batched the delay (2ms every 8 rows) and
-	 * it was nowhere near enough -- still ~2047 of 2040 rows dropped,
-	 * confirmed against a second real capture. Whatever's backing the
-	 * console (log deferred-message ring buffer, most likely) is small
-	 * enough, and/or drains slowly enough per scheduling opportunity,
-	 * that even 7 rapid-fire prints between pauses overflows it. Sleeping
-	 * after every single row instead, not batched -- 2040 rows * 5ms =
-	 * ~10s added to the dump, acceptable for a one-shot diagnostic.
-	 */
-	ctx->count++;
-	k_sleep(K_MSEC(10));
+		printk("%u,%u,0x%02x,%u,%d.%02u,%u.%u\n", CONFIG_APP_NODE_ID, rec->seq,
+		       rec->flags, ctx->count, rec->temp_cdeg / 100, abs(rec->temp_cdeg % 100),
+		       rec->humidity_pct10 / 10, rec->humidity_pct10 % 10);
+
+		/* Throttle: printing a large log (thousands of rows) back-
+		 * to-back outpaces the console's internal buffer, which
+		 * silently drops messages ("--- N messages dropped ---") --
+		 * confirmed on real hardware 2026-08-07 retrieving node 49's
+		 * ~2040-row log, where the vast majority of rows never
+		 * reached the capture tool no matter how fast/early it
+		 * attached (this is the firmware's own console losing them
+		 * before they ever reach USB, not a capture-timing race).
+		 *
+		 * First attempt at this fix batched the delay (2ms every 8
+		 * rows) and it was nowhere near enough -- still ~2047 of
+		 * 2040 rows dropped, confirmed against a second real
+		 * capture. Whatever's backing the console (log deferred-
+		 * message ring buffer, most likely) is small enough, and/or
+		 * drains slowly enough per scheduling opportunity, that even
+		 * 7 rapid-fire prints between pauses overflows it. Sleeping
+		 * after every single row instead, not batched -- 2040 rows *
+		 * 5ms = ~10s added to the dump, acceptable for a one-shot
+		 * diagnostic.
+		 */
+		ctx->count++;
+		k_sleep(K_MSEC(10));
+	}
 
 	return 0;
 }
@@ -478,6 +542,18 @@ static void storage_dump_all(void)
 		return;
 	}
 
+	/* Not dumping s_pending_block here: a dump-mode build is flashed
+	 * fresh specifically for retrieval (see this function's header
+	 * comment), so this boot's s_pending_block is always zero-
+	 * initialized RAM that has never accumulated any readings of its
+	 * own -- storage_dump_all() runs before bt_enable(), before this
+	 * boot's first sensor read. Up to RECORDS_PER_BLOCK-1 readings from
+	 * whatever normal (non-dump) firmware was running right before this
+	 * flash are the real, accepted trade-off of block batching (see this
+	 * file's on-flash format comment above storage_fcb_append()) -- they
+	 * were only ever in that previous boot's RAM, never written to
+	 * flash, so there's nothing here to recover them from.
+	 */
 	printk("# %u rows\n", ctx.count);
 }
 
@@ -696,6 +772,12 @@ int main(void)
 	sensors_init();
 	storage_fcb_init();
 
+	/* Hardware watchdog (2026-08-30, see watchdog.h) -- last-resort
+	 * recovery if the onboarding loop ever gets wedged. Non-fatal if it
+	 * fails to arm.
+	 */
+	watchdog_init();
+
 	if (IS_ENABLED(CONFIG_APP_DUMP_ON_BOOT)) {
 		storage_dump_all();
 	}
@@ -745,7 +827,19 @@ int main(void)
 		 */
 		k_sem_take(&sem_disconnected, K_NO_WAIT);
 		if (default_conn) {
-			k_sem_take(&sem_disconnected, K_FOREVER);
+			/* Not K_FOREVER: a wearer stepping out of BLE range
+			 * (e.g. a scheduled rest break) leaves this connection
+			 * stale for however long they're away, legitimately
+			 * well past the watchdog's timeout -- confirmed on real
+			 * hardware 2026-08-31 (node crash-looping every ~3min
+			 * for the rest of a session after the wearer left the
+			 * chamber). Poll in short slices instead so each timeout
+			 * tick can feed the watchdog: still genuinely waiting
+			 * for the disconnect, not stuck.
+			 */
+			while (k_sem_take(&sem_disconnected, K_MSEC(30000)) != 0) {
+				watchdog_feed();
+			}
 		}
 
 		err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), NULL, 0);
@@ -754,6 +848,15 @@ int main(void)
 
 			return 0;
 		}
+
+		/* Proves this loop iteration made real forward progress (see
+		 * common/watchdog.h/.c) -- every retry cycle reaches here
+		 * whether this attempt goes on to sync or time out, so this
+		 * is the one feed point that would stop firing if this node
+		 * ever gets truly stuck (main() returning above, or any
+		 * future bug of the same shape).
+		 */
+		watchdog_feed();
 
 		APP_LOG("Waiting for periodic sync...\n");
 		/* Central connects, sends PAST, discovers, writes the
@@ -774,11 +877,13 @@ int main(void)
 
 		APP_LOG("Periodic sync established.\n");
 
-		err = k_sem_take(&sem_per_sync_lost, K_FOREVER);
-		if (err) {
-			APP_LOG("failed (err %d)\n", err);
-
-			return 0;
+		/* Not K_FOREVER: a healthy sync can legitimately run for the
+		 * node's whole session (an hour or more), which must not
+		 * starve the watchdog -- poll in short slices so each timeout
+		 * tick (sync still up, nothing lost) can feed it.
+		 */
+		while (k_sem_take(&sem_per_sync_lost, K_MSEC(30000)) != 0) {
+			watchdog_feed();
 		}
 
 		APP_LOG("Periodic sync lost.\n");

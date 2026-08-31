@@ -36,6 +36,7 @@
 #include "gui_uart_tx.h"
 #include "sensor_log.h"
 #include "node_slot_table.h"
+#include "watchdog.h"
 
 /* Retired experiment (2026-08-03, see NOTES.md): stopping periodic
  * advertising during the onboarding connect step did eliminate the 0x08
@@ -207,6 +208,25 @@ static void request_cb(struct bt_le_ext_adv *adv, const struct bt_le_per_adv_dat
 }
 
 static struct bt_conn *default_conn;
+/* True only while a bt_conn_le_create() call in device_found() has actually
+ * succeeded and the resulting connection hasn't been resolved yet (either
+ * connected_cb/disconnected_cb fired, or the connect_wait_timeout_ms wait
+ * below gave up on it). main()'s loop must only enter its post-connect
+ * k_poll() wait while this is true -- that wait is meaningless, and
+ * default_conn may be NULL, on every iteration where scanning simply found
+ * no matching peripheral (the normal steady state once all nodes are synced,
+ * or whenever every peripheral is briefly out of range) or where
+ * connected_cb's own error path (e.g. the controller's 3s
+ * CONFIG_BT_CREATE_CONN_TIMEOUT firing before this loop's own much longer
+ * bound) already cleared default_conn out from under it. Confirmed on real
+ * hardware 2026-08-31: without this gate, the unconditional k_poll() call
+ * waits out its own full timeout for a connection that was never attempted
+ * this iteration, then dereferences a NULL default_conn inside
+ * bt_conn_disconnect() when it gives up -- a hard fault, not just a stall,
+ * and one that fires on essentially every idle scan cycle since "no
+ * peripheral found this iteration" is the common case, not the exception.
+ */
+static bool connect_pending;
 /* Fixed subevent for whichever peripheral device_found() just decided to
  * connect to -- resolved from node_slot_table.h before the connection is
  * created, carried across to the GATT write later in the onboarding
@@ -306,6 +326,20 @@ void connected_cb(struct bt_conn *conn, uint8_t err)
 	if (err) {
 		bt_conn_unref(default_conn);
 		default_conn = NULL;
+
+		/* Without this, main()'s k_poll() has nothing to wake it until
+		 * its own connect_wait_timeout_ms (25s) bound expires, even
+		 * though the real failure (most commonly the controller's own
+		 * CONFIG_BT_CREATE_CONN_TIMEOUT, 3s by default and unoverridden
+		 * in this build) is already known right here, ~22s earlier.
+		 * connect_pending intentionally stays true across this call --
+		 * it still tracks "an attempt was made and isn't resolved yet"
+		 * correctly, since this give() is what resolves it, mirroring
+		 * disconnected_cb below; main()'s own K_NO_WAIT sem_connected
+		 * check right after k_poll() returns already handles telling
+		 * this apart from a real successful connection.
+		 */
+		k_sem_give(&sem_disconnected);
 	}
 }
 
@@ -377,6 +411,22 @@ static bool data_cb(struct bt_data *data, void *user_data)
 static struct bt_le_conn_param onboard_conn_param_storage =
 	BT_LE_CONN_PARAM_INIT(0x20, 0x20, 0, BT_GAP_MS_TO_CONN_TIMEOUT(18000));
 static const struct bt_le_conn_param *onboard_conn_param = &onboard_conn_param_storage;
+
+/* Bound on the main loop's post-bt_conn_le_create() wait (see its k_poll()
+ * call below), longer than onboard_conn_param's own 18s supervision timeout
+ * so a connection that's slowly-but-actually-establishing isn't punished.
+ * A K_FOREVER wait here is a real deadlock, not just a slow path: if the
+ * peripheral walks out of range in the window between bt_conn_le_create()
+ * succeeding and the link-layer connection actually completing, neither
+ * connected_cb nor disconnected_cb ever fires (there's no established
+ * connection for either to fire about), scanning is already stopped (see
+ * device_found()), and nothing else in this loop can wake it -- the central
+ * hangs for every node, not just the one that walked away, previously only
+ * recovered via the watchdog's full-board reset (3 min, drops every
+ * already-synced node too). 25s gives real margin over the 18s supervision
+ * timeout while still recovering in seconds compared to that.
+ */
+#define connect_wait_timeout_ms 25000
 
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 			 struct net_buf_simple *ad)
@@ -459,7 +509,30 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 				&default_conn);
 	if (err) {
 		printk("Create conn to %s failed (%u)\n", addr_str, err);
+
+		/* connect_pending deliberately left false here: bt_conn_le_create()
+		 * doesn't touch its out-param on failure, so default_conn is still
+		 * whatever it was before this call (NULL, since device_found()'s
+		 * own guard at the top of this function already requires that) --
+		 * there is no pending connection for main()'s loop to wait on.
+		 * Restarting scanning here lets this node (or any other) be found
+		 * and retried on the next advertisement, same as every other
+		 * failure path in this onboarding flow already does. err
+		 * intentionally not checked here: if THIS also fails, the main
+		 * loop's own bt_le_scan_start() retry on its next iteration is the
+		 * backstop -- not worth a second failure log for what's already a
+		 * rare, already-being-reported error case.
+		 */
+		(void)bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+
+		return;
 	}
+
+	/* Tells main()'s loop it's now safe (and necessary) to wait on this
+	 * attempt -- see connect_pending's own comment for why the loop must
+	 * not enter that wait when this is false.
+	 */
+	connect_pending = true;
 }
 
 static uint8_t discover_func(struct bt_conn *conn, const struct bt_gatt_attr *attr,
@@ -568,6 +641,12 @@ int main(void)
 	 */
 	gui_uart_tx_init();
 
+	/* Hardware watchdog (2026-08-30, see watchdog.h) -- last-resort
+	 * recovery if the onboarding loop ever gets wedged again. Also
+	 * non-fatal if it fails to arm.
+	 */
+	watchdog_init();
+
 	/* Fallback local record of every payload received over PAwR, in case
 	 * the UART link to the gateway board (or the gateway's own MQTT/LTE
 	 * hop) is down -- same rationale/mechanism as peripheral's on-board
@@ -646,17 +725,151 @@ int main(void)
 	}
 
 	while (true) {
-		/* Enable continuous scanning */
-		err = bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+		/* Enable continuous scanning. Retried rather than fatal on
+		 * failure (2026-08-31, real hardware): observed err -EALREADY
+		 * here immediately after the new connect-timeout path below
+		 * canceled a stalled connection attempt via
+		 * bt_conn_disconnect() -- the controller can still be mid
+		 * teardown of that cancel (radio resource still "in use" from
+		 * its point of view) on the very next loop iteration, so the
+		 * very first bt_le_scan_start() retry can transiently fail
+		 * even though scanning really was stopped (device_found()
+		 * calls bt_le_scan_stop() before ever creating a connection).
+		 * The old `return 0` here for ANY failure was worse than the
+		 * K_FOREVER deadlock this file's other fixes address: it
+		 * silently ends main() and stops feeding the watchdog too, so
+		 * not even the watchdog's full-reset backstop would recover
+		 * it -- the board just goes idle forever. A short retry loop
+		 * gives the controller time to settle instead.
+		 */
+		for (int attempt = 0; attempt < 5; attempt++) {
+			err = bt_le_scan_start(BT_LE_SCAN_PASSIVE_CONTINUOUS, device_found);
+			if (!err) {
+				break;
+			}
+
+			printk("Scanning failed to start (err %d), retrying (%d/5)...\n", err,
+			       attempt + 1);
+			k_sleep(K_MSEC(200));
+		}
+
 		if (err) {
-			printk("Scanning failed to start (err %d)\n", err);
-			return 0;
+			/* Still failing after retries -- likely a real
+			 * controller problem, not transient settle time.
+			 * Deliberately do NOT feed the watchdog here (contrast
+			 * with the retry loop above, which is healthy forward
+			 * progress): this state needs the watchdog's full
+			 * board reset to recover, since nothing left in this
+			 * function can. Sleeping instead of returning keeps
+			 * this failure mode visibly "stuck" on the console
+			 * during that wait rather than silently exiting main().
+			 */
+			printk("Scanning still failing to start after retries (err %d) -- waiting for watchdog reset\n",
+			       err);
+			k_sleep(K_FOREVER);
 		}
 
 		printk("Scanning successfully started\n");
 
-		/* Wait for either remote info available or involuntary disconnect */
-		k_poll(events, ARRAY_SIZE(events), K_FOREVER);
+		/* Proves the main loop just made real forward progress (see
+		 * watchdog.h/.c) -- every iteration reaches here whether this
+		 * attempt goes on to succeed or fail, so this is the one feed
+		 * point that would stop firing if this loop ever wedges
+		 * again the way device_found()'s bt_conn_le_create() failure
+		 * path used to (see that function's own comment).
+		 */
+		watchdog_feed();
+
+		/* Poll for connect_pending becoming true instead of looping back
+		 * to the top of the outer while(true) when nothing was found --
+		 * the ordinary case once every known node is synced, or whenever
+		 * every peripheral is briefly out of range. `continue`-ing back
+		 * up there (first cut of this fix, 2026-08-31) re-runs
+		 * bt_le_scan_start() on top of scanning that's already active
+		 * (device_found() only stops it once it actually finds a
+		 * peripheral to connect to), which itself returns -EALREADY --
+		 * confirmed on real hardware, immediately after boot, well
+		 * before any connection had even been attempted, so this wasn't
+		 * the transient "controller still tearing down a cancel" case
+		 * the retry loop above's own comment describes. Looping in place
+		 * here instead never touches the scanner. Polls on a short sleep
+		 * rather than blocking on a semaphore, since connect_pending is a
+		 * plain bool flipped from device_found() on the BT RX thread, not
+		 * something this loop can k_poll()/k_sem_take() on directly; the
+		 * per-iteration watchdog_feed() re-proves forward progress so an
+		 * extended idle period here can't starve the watchdog the way the
+		 * old unconditional k_poll() bug could.
+		 */
+		while (!connect_pending) {
+			k_sleep(K_MSEC(200));
+			watchdog_feed();
+		}
+
+		/* Wait for either remote info available or involuntary disconnect,
+		 * bounded rather than K_FOREVER -- see connect_wait_timeout_ms's
+		 * own comment for why an unbounded wait here is a real deadlock,
+		 * not just a slow path.
+		 */
+		err = k_poll(events, ARRAY_SIZE(events), K_MSEC(connect_wait_timeout_ms));
+		if (err == -EAGAIN) {
+			/* Neither sem fired in time -- most likely a peripheral
+			 * that walked out of range mid-connection-attempt:
+			 * bt_conn_le_create() above already succeeded (this
+			 * central accepted the attempt), but the link-layer
+			 * connection never actually completed, so neither
+			 * connected_cb nor disconnected_cb has anything to fire
+			 * for. Scanning is already stopped (device_found()),
+			 * so without this, the central is wedged for every
+			 * node, not just this one -- previously only recovered
+			 * via the watchdog's full-board reset (3 min, drops
+			 * every already-synced node too). Cancel the stalled
+			 * attempt explicitly and fall through the same cleanup
+			 * every other early-exit path already uses.
+			 */
+			printk("Timed out waiting for connection to complete (%d ms) -- canceling stalled attempt\n",
+			       connect_wait_timeout_ms);
+
+			err = bt_conn_disconnect(default_conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);
+			if (err != 0 && err != -ENOTCONN) {
+				printk("Failed to cancel stalled connection attempt (err %d)\n", err);
+			}
+
+			/* bt_conn_disconnect() on a still-connecting conn (Zephyr
+			 * host state BT_CONN_INITIATING) sends an HCI LE Create
+			 * Connection Cancel command and returns immediately --
+			 * that only requests the cancel, it doesn't wait for the
+			 * controller to confirm it. The actual confirmation
+			 * arrives later as an LE Connection Complete event
+			 * (cancelled status), which the host's own
+			 * le_conn_complete_cancel() turns into the normal
+			 * disconnected_cb callback -- so sem_disconnected DOES
+			 * fire here, just not synchronously with this call
+			 * returning. Originally assumed (2026-08-31, first cut of
+			 * this fix) that it wouldn't fire and skipped straight to
+			 * clearing default_conn + retrying bt_le_scan_start() --
+			 * that raced ahead of the controller actually finishing
+			 * the cancel and hit err -EALREADY on real hardware,
+			 * every time, not just transiently (confirmed: a 5x200ms
+			 * blind retry loop still failed every attempt). Waiting
+			 * for the real completion signal instead of guessing at a
+			 * settle delay is the actual fix. Bounded rather than
+			 * K_FOREVER as a backstop in case some other cancel path
+			 * genuinely never fires it -- if this also times out, the
+			 * scan-start retry loop below plus the watchdog remain as
+			 * further backstops.
+			 */
+			err = k_sem_take(&sem_disconnected, K_SECONDS(5));
+			if (err) {
+				printk("Cancel confirmation timed out -- proceeding anyway\n");
+			}
+
+			bt_conn_unref(default_conn);
+			default_conn = NULL;
+			connect_pending = false;
+
+			continue;
+		}
+
 		err = k_sem_take(&sem_connected, K_NO_WAIT);
 		if (err) {
 			printk("Disconnected before remote info available\n");
@@ -799,8 +1012,22 @@ disconnected:
 #endif
 		k_sem_take(&sem_disconnected, K_FOREVER);
 
-		bt_conn_unref(default_conn);
-		default_conn = NULL;
+		/* default_conn can already be NULL reaching this label: the
+		 * "Disconnected before remote info available" path above jumps
+		 * here directly after connected_cb's own error branch already
+		 * did this exact unref+NULL (see that function's comment on why
+		 * it also gives sem_disconnected) -- unref-ing again would
+		 * double-decrement a real connection's refcount, or (since
+		 * bt_conn_unref() asserts/derefs its argument) fault on a NULL
+		 * one outright. Every other path reaching this label still has
+		 * a live default_conn from bt_conn_disconnect() just above, so
+		 * this guard only skips the redundant work, never the needed one.
+		 */
+		if (default_conn) {
+			bt_conn_unref(default_conn);
+			default_conn = NULL;
+		}
+		connect_pending = false;
 	}
 
 	return 0;

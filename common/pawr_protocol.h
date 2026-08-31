@@ -280,4 +280,51 @@ struct sensor_payload {
 
 BUILD_ASSERT(sizeof(struct sensor_payload) == 8, "sensor_payload size mismatch");
 
+/* On-flash storage format (peripheral/src/main.c's storage_fcb_append()),
+ * distinct from sensor_payload above -- node_id is dropped here (redundant,
+ * every reading on a given board's own flash log is that board's own
+ * CONFIG_APP_NODE_ID; storage_dump_all() substitutes it back in at print
+ * time). RECORDS_PER_BLOCK records are batched into one struct
+ * stored_sensor_block and written as a single FCB entry, amortizing FCB's
+ * own per-entry length/CRC framing overhead (and its 4-byte flash
+ * write-block-size padding on nRF52840 -- confirmed 2026-08-31 that this
+ * padding, not just the raw length+CRC byte count, was why one-record-per-
+ * entry storage held meaningfully less than a naive overhead estimate
+ * predicted) across the whole block instead of paying it per reading. Same
+ * batching idea proven on the ble-gatt-store-forward branch (2026-08-22,
+ * ~3.3x capacity gain there), ported here without that branch's
+ * init_epoch/download-request machinery, which main's live PAwR reporting
+ * has no use for -- this node never needs an operator to "download" its
+ * log on demand, only to recover it if central missed some subevents.
+ */
+#define RECORDS_PER_BLOCK 16
+
+struct stored_sensor_record {
+	uint16_t seq;
+	uint8_t  flags;
+	int16_t  temp_cdeg;
+	uint16_t humidity_pct10;
+} __packed;
+
+BUILD_ASSERT(sizeof(struct stored_sensor_record) == 7, "stored_sensor_record size mismatch");
+
+/* reserved[3] pads count(1 byte) to a 4-byte boundary so the whole block's
+ * size is a multiple of 4 -- nRF52840's flash write-block-size (see
+ * write-block-size in its devicetree). flash_area_write() rejects a
+ * length that isn't a multiple of this with -EINVAL; confirmed on real
+ * hardware 2026-08-31 (node 3) that omitting this padding (1 + 16*7 = 113
+ * bytes, not 4-aligned) fails exactly this way on the first block flush.
+ * ble-gatt-store-forward's own stored_sensor_block hit and fixed the same
+ * issue 2026-08-21 -- ported here from there, not rediscovered blind.
+ */
+struct stored_sensor_block {
+	uint8_t count; /* how many of records[] are valid, 1..RECORDS_PER_BLOCK */
+	uint8_t reserved[3];
+	struct stored_sensor_record records[RECORDS_PER_BLOCK];
+} __packed;
+
+BUILD_ASSERT(sizeof(struct stored_sensor_block) == 116, "stored_sensor_block size mismatch");
+BUILD_ASSERT(sizeof(struct stored_sensor_block) % 4 == 0,
+	     "stored_sensor_block must be word-aligned for flash_area_write()");
+
 #endif /* PAWR_PROTOCOL_H_ */
