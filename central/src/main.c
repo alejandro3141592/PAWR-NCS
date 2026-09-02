@@ -14,11 +14,14 @@
  * every subevent poll is answered (or not) by synced peripherals with their
  * latest skin temperature + humidity reading, which is parsed and printed.
  *
- * Assignment is dynamic and hub-driven (not baked into peripheral firmware)
- * so that later work can add slot-shifting (reassigning a node's subevent
- * at runtime) and flexible node-count membership without redesigning the
- * onboarding channel -- the GATT write used here for initial assignment is
- * the same mechanism a future scheduler would reuse.
+ * Assignment is static/fixed (2026-08-07, see node_slot_table.h and this
+ * file's own "Fixed slot assignment" comment below): a compile-time
+ * node_id -> subevent lookup, not handed out dynamically at onboarding time
+ * as an earlier version of this file did -- that scheme was replaced to
+ * avoid the silent-collision risk of a formula over a sparse,
+ * non-contiguous set of real node IDs. The GATT write used here still
+ * carries the (now-fixed) assignment to the peripheral, the same mechanism
+ * a future dynamic scheduler would reuse if one is added back.
  */
 
 #include <zephyr/bluetooth/att.h>
