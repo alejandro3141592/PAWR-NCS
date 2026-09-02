@@ -1,0 +1,106 @@
+[
+  {
+    "node": 11,
+    "central": 1
+  },
+  {
+    "node": 12,
+    "central": 1
+  },
+  {
+    "node": 16,
+    "central": 2
+  },
+  {
+    "node": 18,
+    "central": 2
+  },
+  {
+    "node": 19,
+    "central": 2
+  },
+  {
+    "node": 21,
+    "central": 2
+  },
+  {
+    "node": 23,
+    "central": 2
+  },
+  {
+    "node": 26,
+    "central": 2
+  },
+  {
+    "node": 30,
+    "central": 3
+  },
+  {
+    "node": 31,
+    "central": 3
+  },
+  {
+    "node": 33,
+    "central": 3
+  },
+  {
+    "node": 34,
+    "central": 3
+  },
+  {
+    "node": 38,
+    "central": 3
+  },
+  {
+    "node": 40,
+    "central": 3
+  },
+  {
+    "node": 42,
+    "central": 3
+  },
+  {
+    "node": 43,
+    "central": 4
+  },
+  {
+    "node": 45,
+    "central": 4
+  },
+  {
+    "node": 47,
+    "central": 4
+  },
+  {
+    "node": 50,
+    "central": 4
+  },
+  {
+    "node": 51,
+    "central": 4
+  },
+  {
+    "node": 55,
+    "central": 4
+  },
+  {
+    "node": 56,
+    "central": 4
+  },
+  {
+    "node": 57,
+    "central": 4
+  },
+  {
+    "node": 58,
+    "central": 4
+  },
+  {
+    "node": 61,
+    "central": 4
+  },
+  {
+    "node": 63,
+    "central": 4
+  }
+]

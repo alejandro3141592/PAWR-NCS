@@ -1,0 +1,8112 @@
+{
+  "node_id": 55,
+  "central_id": 4,
+  "source_file": "logs/dumps/node55_dump_20260831.csv",
+  "row_count": 1157,
+  "seq_range": [
+    2773,
+    3929
+  ],
+  "contiguity_verified": true,
+  "readings": [
+    {
+      "seq": 2773,
+      "flags": 0,
+      "flash_row": 0,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 2774,
+      "flags": 0,
+      "flash_row": 1,
+      "temp_c": 36.59,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 2775,
+      "flags": 0,
+      "flash_row": 2,
+      "temp_c": 36.6,
+      "humidity_pct": 38.9
+    },
+    {
+      "seq": 2776,
+      "flags": 0,
+      "flash_row": 3,
+      "temp_c": 36.61,
+      "humidity_pct": 38.9
+    },
+    {
+      "seq": 2777,
+      "flags": 0,
+      "flash_row": 4,
+      "temp_c": 36.61,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 2778,
+      "flags": 0,
+      "flash_row": 5,
+      "temp_c": 36.6,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 2779,
+      "flags": 0,
+      "flash_row": 6,
+      "temp_c": 36.58,
+      "humidity_pct": 38.2
+    },
+    {
+      "seq": 2780,
+      "flags": 0,
+      "flash_row": 7,
+      "temp_c": 36.6,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 2781,
+      "flags": 0,
+      "flash_row": 8,
+      "temp_c": 36.6,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 2782,
+      "flags": 0,
+      "flash_row": 9,
+      "temp_c": 36.61,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 2783,
+      "flags": 0,
+      "flash_row": 10,
+      "temp_c": 36.61,
+      "humidity_pct": 38.3
+    },
+    {
+      "seq": 2784,
+      "flags": 0,
+      "flash_row": 11,
+      "temp_c": 36.62,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 2785,
+      "flags": 0,
+      "flash_row": 12,
+      "temp_c": 36.61,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 2786,
+      "flags": 0,
+      "flash_row": 13,
+      "temp_c": 36.62,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 2787,
+      "flags": 0,
+      "flash_row": 14,
+      "temp_c": 36.61,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 2788,
+      "flags": 0,
+      "flash_row": 15,
+      "temp_c": 36.61,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 2789,
+      "flags": 0,
+      "flash_row": 16,
+      "temp_c": 36.6,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 2790,
+      "flags": 0,
+      "flash_row": 17,
+      "temp_c": 36.59,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 2791,
+      "flags": 0,
+      "flash_row": 18,
+      "temp_c": 36.6,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 2792,
+      "flags": 0,
+      "flash_row": 19,
+      "temp_c": 36.59,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 2793,
+      "flags": 0,
+      "flash_row": 20,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 2794,
+      "flags": 0,
+      "flash_row": 21,
+      "temp_c": 36.58,
+      "humidity_pct": 36.1
+    },
+    {
+      "seq": 2795,
+      "flags": 0,
+      "flash_row": 22,
+      "temp_c": 36.58,
+      "humidity_pct": 35.9
+    },
+    {
+      "seq": 2796,
+      "flags": 0,
+      "flash_row": 23,
+      "temp_c": 36.58,
+      "humidity_pct": 35.7
+    },
+    {
+      "seq": 2797,
+      "flags": 0,
+      "flash_row": 24,
+      "temp_c": 36.57,
+      "humidity_pct": 35.7
+    },
+    {
+      "seq": 2798,
+      "flags": 0,
+      "flash_row": 25,
+      "temp_c": 36.57,
+      "humidity_pct": 35.6
+    },
+    {
+      "seq": 2799,
+      "flags": 0,
+      "flash_row": 26,
+      "temp_c": 36.57,
+      "humidity_pct": 35.5
+    },
+    {
+      "seq": 2800,
+      "flags": 0,
+      "flash_row": 27,
+      "temp_c": 36.57,
+      "humidity_pct": 35.5
+    },
+    {
+      "seq": 2801,
+      "flags": 0,
+      "flash_row": 28,
+      "temp_c": 36.56,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2802,
+      "flags": 0,
+      "flash_row": 29,
+      "temp_c": 36.55,
+      "humidity_pct": 35.5
+    },
+    {
+      "seq": 2803,
+      "flags": 0,
+      "flash_row": 30,
+      "temp_c": 36.56,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2804,
+      "flags": 0,
+      "flash_row": 31,
+      "temp_c": 36.53,
+      "humidity_pct": 35.5
+    },
+    {
+      "seq": 2805,
+      "flags": 0,
+      "flash_row": 32,
+      "temp_c": 36.55,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2806,
+      "flags": 0,
+      "flash_row": 33,
+      "temp_c": 36.55,
+      "humidity_pct": 35.3
+    },
+    {
+      "seq": 2807,
+      "flags": 0,
+      "flash_row": 34,
+      "temp_c": 36.54,
+      "humidity_pct": 35.3
+    },
+    {
+      "seq": 2808,
+      "flags": 0,
+      "flash_row": 35,
+      "temp_c": 36.52,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2809,
+      "flags": 0,
+      "flash_row": 36,
+      "temp_c": 36.54,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2810,
+      "flags": 0,
+      "flash_row": 37,
+      "temp_c": 36.52,
+      "humidity_pct": 35.3
+    },
+    {
+      "seq": 2811,
+      "flags": 0,
+      "flash_row": 38,
+      "temp_c": 36.53,
+      "humidity_pct": 35.3
+    },
+    {
+      "seq": 2812,
+      "flags": 0,
+      "flash_row": 39,
+      "temp_c": 36.52,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2813,
+      "flags": 0,
+      "flash_row": 40,
+      "temp_c": 36.53,
+      "humidity_pct": 35.0
+    },
+    {
+      "seq": 2814,
+      "flags": 0,
+      "flash_row": 41,
+      "temp_c": 36.5,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2815,
+      "flags": 0,
+      "flash_row": 42,
+      "temp_c": 36.49,
+      "humidity_pct": 35.2
+    },
+    {
+      "seq": 2816,
+      "flags": 0,
+      "flash_row": 43,
+      "temp_c": 36.45,
+      "humidity_pct": 35.0
+    },
+    {
+      "seq": 2817,
+      "flags": 0,
+      "flash_row": 44,
+      "temp_c": 36.44,
+      "humidity_pct": 34.9
+    },
+    {
+      "seq": 2818,
+      "flags": 0,
+      "flash_row": 45,
+      "temp_c": 36.45,
+      "humidity_pct": 34.9
+    },
+    {
+      "seq": 2819,
+      "flags": 0,
+      "flash_row": 46,
+      "temp_c": 36.44,
+      "humidity_pct": 35.0
+    },
+    {
+      "seq": 2820,
+      "flags": 0,
+      "flash_row": 47,
+      "temp_c": 36.4,
+      "humidity_pct": 35.1
+    },
+    {
+      "seq": 2821,
+      "flags": 0,
+      "flash_row": 48,
+      "temp_c": 36.41,
+      "humidity_pct": 35.2
+    },
+    {
+      "seq": 2822,
+      "flags": 0,
+      "flash_row": 49,
+      "temp_c": 36.38,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2823,
+      "flags": 0,
+      "flash_row": 50,
+      "temp_c": 36.38,
+      "humidity_pct": 35.4
+    },
+    {
+      "seq": 2824,
+      "flags": 0,
+      "flash_row": 51,
+      "temp_c": 36.37,
+      "humidity_pct": 35.3
+    },
+    {
+      "seq": 2825,
+      "flags": 0,
+      "flash_row": 52,
+      "temp_c": 36.36,
+      "humidity_pct": 35.1
+    },
+    {
+      "seq": 2826,
+      "flags": 0,
+      "flash_row": 53,
+      "temp_c": 36.34,
+      "humidity_pct": 35.0
+    },
+    {
+      "seq": 2827,
+      "flags": 0,
+      "flash_row": 54,
+      "temp_c": 36.33,
+      "humidity_pct": 34.9
+    },
+    {
+      "seq": 2828,
+      "flags": 0,
+      "flash_row": 55,
+      "temp_c": 36.33,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2829,
+      "flags": 0,
+      "flash_row": 56,
+      "temp_c": 36.31,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2830,
+      "flags": 0,
+      "flash_row": 57,
+      "temp_c": 36.3,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2831,
+      "flags": 0,
+      "flash_row": 58,
+      "temp_c": 36.28,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2832,
+      "flags": 0,
+      "flash_row": 59,
+      "temp_c": 36.28,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2833,
+      "flags": 0,
+      "flash_row": 60,
+      "temp_c": 36.26,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2834,
+      "flags": 0,
+      "flash_row": 61,
+      "temp_c": 36.26,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2835,
+      "flags": 0,
+      "flash_row": 62,
+      "temp_c": 36.25,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2836,
+      "flags": 0,
+      "flash_row": 63,
+      "temp_c": 36.24,
+      "humidity_pct": 34.6
+    },
+    {
+      "seq": 2837,
+      "flags": 0,
+      "flash_row": 64,
+      "temp_c": 36.24,
+      "humidity_pct": 34.4
+    },
+    {
+      "seq": 2838,
+      "flags": 0,
+      "flash_row": 65,
+      "temp_c": 36.23,
+      "humidity_pct": 34.5
+    },
+    {
+      "seq": 2839,
+      "flags": 0,
+      "flash_row": 66,
+      "temp_c": 36.22,
+      "humidity_pct": 34.6
+    },
+    {
+      "seq": 2840,
+      "flags": 0,
+      "flash_row": 67,
+      "temp_c": 36.22,
+      "humidity_pct": 34.6
+    },
+    {
+      "seq": 2841,
+      "flags": 0,
+      "flash_row": 68,
+      "temp_c": 36.21,
+      "humidity_pct": 34.6
+    },
+    {
+      "seq": 2842,
+      "flags": 0,
+      "flash_row": 69,
+      "temp_c": 36.2,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2843,
+      "flags": 0,
+      "flash_row": 70,
+      "temp_c": 36.2,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2844,
+      "flags": 0,
+      "flash_row": 71,
+      "temp_c": 36.17,
+      "humidity_pct": 34.7
+    },
+    {
+      "seq": 2845,
+      "flags": 0,
+      "flash_row": 72,
+      "temp_c": 36.17,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2846,
+      "flags": 0,
+      "flash_row": 73,
+      "temp_c": 36.19,
+      "humidity_pct": 34.8
+    },
+    {
+      "seq": 2847,
+      "flags": 0,
+      "flash_row": 74,
+      "temp_c": 36.16,
+      "humidity_pct": 34.9
+    },
+    {
+      "seq": 2848,
+      "flags": 0,
+      "flash_row": 75,
+      "temp_c": 36.16,
+      "humidity_pct": 35.1
+    },
+    {
+      "seq": 2849,
+      "flags": 0,
+      "flash_row": 76,
+      "temp_c": 36.16,
+      "humidity_pct": 35.7
+    },
+    {
+      "seq": 2850,
+      "flags": 0,
+      "flash_row": 77,
+      "temp_c": 36.19,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 2851,
+      "flags": 0,
+      "flash_row": 78,
+      "temp_c": 36.19,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 2852,
+      "flags": 0,
+      "flash_row": 79,
+      "temp_c": 36.17,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 2853,
+      "flags": 0,
+      "flash_row": 80,
+      "temp_c": 36.18,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 2854,
+      "flags": 0,
+      "flash_row": 81,
+      "temp_c": 36.17,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 2855,
+      "flags": 0,
+      "flash_row": 82,
+      "temp_c": 36.18,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 2856,
+      "flags": 0,
+      "flash_row": 83,
+      "temp_c": 36.17,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 2857,
+      "flags": 0,
+      "flash_row": 84,
+      "temp_c": 36.17,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 2858,
+      "flags": 0,
+      "flash_row": 85,
+      "temp_c": 36.19,
+      "humidity_pct": 38.1
+    },
+    {
+      "seq": 2859,
+      "flags": 0,
+      "flash_row": 86,
+      "temp_c": 36.21,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 2860,
+      "flags": 0,
+      "flash_row": 87,
+      "temp_c": 36.21,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 2861,
+      "flags": 0,
+      "flash_row": 88,
+      "temp_c": 36.22,
+      "humidity_pct": 38.9
+    },
+    {
+      "seq": 2862,
+      "flags": 0,
+      "flash_row": 89,
+      "temp_c": 36.25,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 2863,
+      "flags": 0,
+      "flash_row": 90,
+      "temp_c": 36.23,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 2864,
+      "flags": 0,
+      "flash_row": 91,
+      "temp_c": 36.24,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 2865,
+      "flags": 0,
+      "flash_row": 92,
+      "temp_c": 36.25,
+      "humidity_pct": 39.1
+    },
+    {
+      "seq": 2866,
+      "flags": 0,
+      "flash_row": 93,
+      "temp_c": 36.26,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 2867,
+      "flags": 0,
+      "flash_row": 94,
+      "temp_c": 36.28,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 2868,
+      "flags": 0,
+      "flash_row": 95,
+      "temp_c": 36.28,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 2869,
+      "flags": 0,
+      "flash_row": 96,
+      "temp_c": 36.29,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 2870,
+      "flags": 0,
+      "flash_row": 97,
+      "temp_c": 36.27,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 2871,
+      "flags": 0,
+      "flash_row": 98,
+      "temp_c": 36.29,
+      "humidity_pct": 43.5
+    },
+    {
+      "seq": 2872,
+      "flags": 0,
+      "flash_row": 99,
+      "temp_c": 36.32,
+      "humidity_pct": 52.4
+    },
+    {
+      "seq": 2873,
+      "flags": 0,
+      "flash_row": 100,
+      "temp_c": 36.32,
+      "humidity_pct": 53.3
+    },
+    {
+      "seq": 2874,
+      "flags": 0,
+      "flash_row": 101,
+      "temp_c": 36.33,
+      "humidity_pct": 52.6
+    },
+    {
+      "seq": 2875,
+      "flags": 0,
+      "flash_row": 102,
+      "temp_c": 36.34,
+      "humidity_pct": 50.2
+    },
+    {
+      "seq": 2876,
+      "flags": 0,
+      "flash_row": 103,
+      "temp_c": 36.33,
+      "humidity_pct": 49.7
+    },
+    {
+      "seq": 2877,
+      "flags": 0,
+      "flash_row": 104,
+      "temp_c": 36.33,
+      "humidity_pct": 48.9
+    },
+    {
+      "seq": 2878,
+      "flags": 0,
+      "flash_row": 105,
+      "temp_c": 36.36,
+      "humidity_pct": 51.3
+    },
+    {
+      "seq": 2879,
+      "flags": 0,
+      "flash_row": 106,
+      "temp_c": 36.35,
+      "humidity_pct": 51.1
+    },
+    {
+      "seq": 2880,
+      "flags": 0,
+      "flash_row": 107,
+      "temp_c": 36.35,
+      "humidity_pct": 50.8
+    },
+    {
+      "seq": 2881,
+      "flags": 0,
+      "flash_row": 108,
+      "temp_c": 36.36,
+      "humidity_pct": 49.1
+    },
+    {
+      "seq": 2882,
+      "flags": 0,
+      "flash_row": 109,
+      "temp_c": 36.37,
+      "humidity_pct": 47.8
+    },
+    {
+      "seq": 2883,
+      "flags": 0,
+      "flash_row": 110,
+      "temp_c": 36.37,
+      "humidity_pct": 47.0
+    },
+    {
+      "seq": 2884,
+      "flags": 0,
+      "flash_row": 111,
+      "temp_c": 36.39,
+      "humidity_pct": 46.2
+    },
+    {
+      "seq": 2885,
+      "flags": 0,
+      "flash_row": 112,
+      "temp_c": 36.39,
+      "humidity_pct": 45.7
+    },
+    {
+      "seq": 2886,
+      "flags": 0,
+      "flash_row": 113,
+      "temp_c": 36.4,
+      "humidity_pct": 45.2
+    },
+    {
+      "seq": 2887,
+      "flags": 0,
+      "flash_row": 114,
+      "temp_c": 36.41,
+      "humidity_pct": 44.8
+    },
+    {
+      "seq": 2888,
+      "flags": 0,
+      "flash_row": 115,
+      "temp_c": 36.43,
+      "humidity_pct": 50.6
+    },
+    {
+      "seq": 2889,
+      "flags": 0,
+      "flash_row": 116,
+      "temp_c": 36.41,
+      "humidity_pct": 50.7
+    },
+    {
+      "seq": 2890,
+      "flags": 0,
+      "flash_row": 117,
+      "temp_c": 36.43,
+      "humidity_pct": 48.7
+    },
+    {
+      "seq": 2891,
+      "flags": 0,
+      "flash_row": 118,
+      "temp_c": 36.42,
+      "humidity_pct": 47.3
+    },
+    {
+      "seq": 2892,
+      "flags": 0,
+      "flash_row": 119,
+      "temp_c": 36.43,
+      "humidity_pct": 45.8
+    },
+    {
+      "seq": 2893,
+      "flags": 0,
+      "flash_row": 120,
+      "temp_c": 36.41,
+      "humidity_pct": 44.7
+    },
+    {
+      "seq": 2894,
+      "flags": 0,
+      "flash_row": 121,
+      "temp_c": 36.42,
+      "humidity_pct": 44.0
+    },
+    {
+      "seq": 2895,
+      "flags": 0,
+      "flash_row": 122,
+      "temp_c": 36.41,
+      "humidity_pct": 43.4
+    },
+    {
+      "seq": 2896,
+      "flags": 0,
+      "flash_row": 123,
+      "temp_c": 36.42,
+      "humidity_pct": 43.1
+    },
+    {
+      "seq": 2897,
+      "flags": 0,
+      "flash_row": 124,
+      "temp_c": 36.41,
+      "humidity_pct": 42.9
+    },
+    {
+      "seq": 2898,
+      "flags": 0,
+      "flash_row": 125,
+      "temp_c": 36.38,
+      "humidity_pct": 42.7
+    },
+    {
+      "seq": 2899,
+      "flags": 0,
+      "flash_row": 126,
+      "temp_c": 36.39,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 2900,
+      "flags": 0,
+      "flash_row": 127,
+      "temp_c": 36.38,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2901,
+      "flags": 0,
+      "flash_row": 128,
+      "temp_c": 36.39,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2902,
+      "flags": 0,
+      "flash_row": 129,
+      "temp_c": 36.38,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2903,
+      "flags": 0,
+      "flash_row": 130,
+      "temp_c": 36.38,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2904,
+      "flags": 0,
+      "flash_row": 131,
+      "temp_c": 36.39,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2905,
+      "flags": 0,
+      "flash_row": 132,
+      "temp_c": 36.37,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 2906,
+      "flags": 0,
+      "flash_row": 133,
+      "temp_c": 36.38,
+      "humidity_pct": 41.3
+    },
+    {
+      "seq": 2907,
+      "flags": 0,
+      "flash_row": 134,
+      "temp_c": 36.38,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 2908,
+      "flags": 0,
+      "flash_row": 135,
+      "temp_c": 36.39,
+      "humidity_pct": 41.3
+    },
+    {
+      "seq": 2909,
+      "flags": 0,
+      "flash_row": 136,
+      "temp_c": 36.4,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 2910,
+      "flags": 0,
+      "flash_row": 137,
+      "temp_c": 36.39,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 2911,
+      "flags": 0,
+      "flash_row": 138,
+      "temp_c": 36.39,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 2912,
+      "flags": 0,
+      "flash_row": 139,
+      "temp_c": 36.39,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 2913,
+      "flags": 0,
+      "flash_row": 140,
+      "temp_c": 36.39,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2914,
+      "flags": 0,
+      "flash_row": 141,
+      "temp_c": 36.39,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2915,
+      "flags": 0,
+      "flash_row": 142,
+      "temp_c": 36.41,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2916,
+      "flags": 0,
+      "flash_row": 143,
+      "temp_c": 36.39,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2917,
+      "flags": 0,
+      "flash_row": 144,
+      "temp_c": 36.39,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 2918,
+      "flags": 0,
+      "flash_row": 145,
+      "temp_c": 36.41,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2919,
+      "flags": 0,
+      "flash_row": 146,
+      "temp_c": 36.4,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 2920,
+      "flags": 0,
+      "flash_row": 147,
+      "temp_c": 36.4,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2921,
+      "flags": 0,
+      "flash_row": 148,
+      "temp_c": 36.4,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2922,
+      "flags": 0,
+      "flash_row": 149,
+      "temp_c": 36.44,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2923,
+      "flags": 0,
+      "flash_row": 150,
+      "temp_c": 36.42,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2924,
+      "flags": 0,
+      "flash_row": 151,
+      "temp_c": 36.44,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2925,
+      "flags": 0,
+      "flash_row": 152,
+      "temp_c": 36.42,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2926,
+      "flags": 0,
+      "flash_row": 153,
+      "temp_c": 36.44,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2927,
+      "flags": 0,
+      "flash_row": 154,
+      "temp_c": 36.43,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 2928,
+      "flags": 0,
+      "flash_row": 155,
+      "temp_c": 36.44,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2929,
+      "flags": 0,
+      "flash_row": 156,
+      "temp_c": 36.45,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2930,
+      "flags": 0,
+      "flash_row": 157,
+      "temp_c": 36.45,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2931,
+      "flags": 0,
+      "flash_row": 158,
+      "temp_c": 36.45,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2932,
+      "flags": 0,
+      "flash_row": 159,
+      "temp_c": 36.47,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2933,
+      "flags": 0,
+      "flash_row": 160,
+      "temp_c": 36.45,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2934,
+      "flags": 0,
+      "flash_row": 161,
+      "temp_c": 36.47,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2935,
+      "flags": 0,
+      "flash_row": 162,
+      "temp_c": 36.47,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2936,
+      "flags": 0,
+      "flash_row": 163,
+      "temp_c": 36.48,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 2937,
+      "flags": 0,
+      "flash_row": 164,
+      "temp_c": 36.48,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2938,
+      "flags": 0,
+      "flash_row": 165,
+      "temp_c": 36.48,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2939,
+      "flags": 0,
+      "flash_row": 166,
+      "temp_c": 36.49,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 2940,
+      "flags": 0,
+      "flash_row": 167,
+      "temp_c": 36.5,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 2941,
+      "flags": 0,
+      "flash_row": 168,
+      "temp_c": 36.5,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 2942,
+      "flags": 0,
+      "flash_row": 169,
+      "temp_c": 36.5,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 2943,
+      "flags": 0,
+      "flash_row": 170,
+      "temp_c": 36.51,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2944,
+      "flags": 0,
+      "flash_row": 171,
+      "temp_c": 36.5,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2945,
+      "flags": 0,
+      "flash_row": 172,
+      "temp_c": 36.51,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2946,
+      "flags": 0,
+      "flash_row": 173,
+      "temp_c": 36.5,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2947,
+      "flags": 0,
+      "flash_row": 174,
+      "temp_c": 36.51,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2948,
+      "flags": 0,
+      "flash_row": 175,
+      "temp_c": 36.52,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2949,
+      "flags": 0,
+      "flash_row": 176,
+      "temp_c": 36.5,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2950,
+      "flags": 0,
+      "flash_row": 177,
+      "temp_c": 36.53,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2951,
+      "flags": 0,
+      "flash_row": 178,
+      "temp_c": 36.51,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2952,
+      "flags": 0,
+      "flash_row": 179,
+      "temp_c": 36.52,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2953,
+      "flags": 0,
+      "flash_row": 180,
+      "temp_c": 36.51,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2954,
+      "flags": 0,
+      "flash_row": 181,
+      "temp_c": 36.54,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2955,
+      "flags": 0,
+      "flash_row": 182,
+      "temp_c": 36.52,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2956,
+      "flags": 0,
+      "flash_row": 183,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2957,
+      "flags": 0,
+      "flash_row": 184,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2958,
+      "flags": 0,
+      "flash_row": 185,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2959,
+      "flags": 0,
+      "flash_row": 186,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2960,
+      "flags": 0,
+      "flash_row": 187,
+      "temp_c": 36.53,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 2961,
+      "flags": 0,
+      "flash_row": 188,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2962,
+      "flags": 0,
+      "flash_row": 189,
+      "temp_c": 36.53,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2963,
+      "flags": 0,
+      "flash_row": 190,
+      "temp_c": 36.54,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2964,
+      "flags": 0,
+      "flash_row": 191,
+      "temp_c": 36.54,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2965,
+      "flags": 0,
+      "flash_row": 192,
+      "temp_c": 36.53,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2966,
+      "flags": 0,
+      "flash_row": 193,
+      "temp_c": 36.53,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2967,
+      "flags": 0,
+      "flash_row": 194,
+      "temp_c": 36.53,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2968,
+      "flags": 0,
+      "flash_row": 195,
+      "temp_c": 36.54,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2969,
+      "flags": 0,
+      "flash_row": 196,
+      "temp_c": 36.55,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2970,
+      "flags": 0,
+      "flash_row": 197,
+      "temp_c": 36.54,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2971,
+      "flags": 0,
+      "flash_row": 198,
+      "temp_c": 36.54,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 2972,
+      "flags": 0,
+      "flash_row": 199,
+      "temp_c": 36.54,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 2973,
+      "flags": 0,
+      "flash_row": 200,
+      "temp_c": 36.55,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 2974,
+      "flags": 0,
+      "flash_row": 201,
+      "temp_c": 36.55,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 2975,
+      "flags": 0,
+      "flash_row": 202,
+      "temp_c": 36.55,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 2976,
+      "flags": 0,
+      "flash_row": 203,
+      "temp_c": 36.53,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2977,
+      "flags": 0,
+      "flash_row": 204,
+      "temp_c": 36.53,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2978,
+      "flags": 0,
+      "flash_row": 205,
+      "temp_c": 36.54,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2979,
+      "flags": 0,
+      "flash_row": 206,
+      "temp_c": 36.55,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2980,
+      "flags": 0,
+      "flash_row": 207,
+      "temp_c": 36.56,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2981,
+      "flags": 0,
+      "flash_row": 208,
+      "temp_c": 36.56,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2982,
+      "flags": 0,
+      "flash_row": 209,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2983,
+      "flags": 0,
+      "flash_row": 210,
+      "temp_c": 36.54,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2984,
+      "flags": 0,
+      "flash_row": 211,
+      "temp_c": 36.54,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2985,
+      "flags": 0,
+      "flash_row": 212,
+      "temp_c": 36.53,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2986,
+      "flags": 0,
+      "flash_row": 213,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2987,
+      "flags": 0,
+      "flash_row": 214,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2988,
+      "flags": 0,
+      "flash_row": 215,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2989,
+      "flags": 0,
+      "flash_row": 216,
+      "temp_c": 36.55,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2990,
+      "flags": 0,
+      "flash_row": 217,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 2991,
+      "flags": 0,
+      "flash_row": 218,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2992,
+      "flags": 0,
+      "flash_row": 219,
+      "temp_c": 36.55,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 2993,
+      "flags": 0,
+      "flash_row": 220,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2994,
+      "flags": 0,
+      "flash_row": 221,
+      "temp_c": 36.56,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 2995,
+      "flags": 0,
+      "flash_row": 222,
+      "temp_c": 36.55,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2996,
+      "flags": 0,
+      "flash_row": 223,
+      "temp_c": 36.57,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 2997,
+      "flags": 0,
+      "flash_row": 224,
+      "temp_c": 36.56,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 2998,
+      "flags": 0,
+      "flash_row": 225,
+      "temp_c": 36.55,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 2999,
+      "flags": 0,
+      "flash_row": 226,
+      "temp_c": 36.58,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3000,
+      "flags": 0,
+      "flash_row": 227,
+      "temp_c": 36.56,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3001,
+      "flags": 0,
+      "flash_row": 228,
+      "temp_c": 36.56,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3002,
+      "flags": 0,
+      "flash_row": 229,
+      "temp_c": 36.56,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3003,
+      "flags": 0,
+      "flash_row": 230,
+      "temp_c": 36.55,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3004,
+      "flags": 0,
+      "flash_row": 231,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3005,
+      "flags": 0,
+      "flash_row": 232,
+      "temp_c": 36.56,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3006,
+      "flags": 0,
+      "flash_row": 233,
+      "temp_c": 36.56,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3007,
+      "flags": 0,
+      "flash_row": 234,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3008,
+      "flags": 0,
+      "flash_row": 235,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3009,
+      "flags": 0,
+      "flash_row": 236,
+      "temp_c": 36.55,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3010,
+      "flags": 0,
+      "flash_row": 237,
+      "temp_c": 36.55,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3011,
+      "flags": 0,
+      "flash_row": 238,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3012,
+      "flags": 0,
+      "flash_row": 239,
+      "temp_c": 36.56,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3013,
+      "flags": 0,
+      "flash_row": 240,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3014,
+      "flags": 0,
+      "flash_row": 241,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3015,
+      "flags": 0,
+      "flash_row": 242,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3016,
+      "flags": 0,
+      "flash_row": 243,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3017,
+      "flags": 0,
+      "flash_row": 244,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3018,
+      "flags": 0,
+      "flash_row": 245,
+      "temp_c": 36.56,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3019,
+      "flags": 0,
+      "flash_row": 246,
+      "temp_c": 36.57,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3020,
+      "flags": 0,
+      "flash_row": 247,
+      "temp_c": 36.58,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3021,
+      "flags": 0,
+      "flash_row": 248,
+      "temp_c": 36.56,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3022,
+      "flags": 0,
+      "flash_row": 249,
+      "temp_c": 36.55,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3023,
+      "flags": 0,
+      "flash_row": 250,
+      "temp_c": 36.56,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3024,
+      "flags": 0,
+      "flash_row": 251,
+      "temp_c": 36.55,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3025,
+      "flags": 0,
+      "flash_row": 252,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3026,
+      "flags": 0,
+      "flash_row": 253,
+      "temp_c": 36.56,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3027,
+      "flags": 0,
+      "flash_row": 254,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3028,
+      "flags": 0,
+      "flash_row": 255,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3029,
+      "flags": 0,
+      "flash_row": 256,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3030,
+      "flags": 0,
+      "flash_row": 257,
+      "temp_c": 36.56,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3031,
+      "flags": 0,
+      "flash_row": 258,
+      "temp_c": 36.58,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3032,
+      "flags": 0,
+      "flash_row": 259,
+      "temp_c": 36.56,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3033,
+      "flags": 0,
+      "flash_row": 260,
+      "temp_c": 36.55,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3034,
+      "flags": 0,
+      "flash_row": 261,
+      "temp_c": 36.58,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3035,
+      "flags": 0,
+      "flash_row": 262,
+      "temp_c": 36.56,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3036,
+      "flags": 0,
+      "flash_row": 263,
+      "temp_c": 36.54,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3037,
+      "flags": 0,
+      "flash_row": 264,
+      "temp_c": 36.58,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3038,
+      "flags": 0,
+      "flash_row": 265,
+      "temp_c": 36.55,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3039,
+      "flags": 0,
+      "flash_row": 266,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3040,
+      "flags": 0,
+      "flash_row": 267,
+      "temp_c": 36.57,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3041,
+      "flags": 0,
+      "flash_row": 268,
+      "temp_c": 36.59,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3042,
+      "flags": 0,
+      "flash_row": 269,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3043,
+      "flags": 0,
+      "flash_row": 270,
+      "temp_c": 36.57,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3044,
+      "flags": 0,
+      "flash_row": 271,
+      "temp_c": 36.58,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3045,
+      "flags": 0,
+      "flash_row": 272,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3046,
+      "flags": 0,
+      "flash_row": 273,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3047,
+      "flags": 0,
+      "flash_row": 274,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3048,
+      "flags": 0,
+      "flash_row": 275,
+      "temp_c": 36.57,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3049,
+      "flags": 0,
+      "flash_row": 276,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3050,
+      "flags": 0,
+      "flash_row": 277,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3051,
+      "flags": 0,
+      "flash_row": 278,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3052,
+      "flags": 0,
+      "flash_row": 279,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3053,
+      "flags": 0,
+      "flash_row": 280,
+      "temp_c": 36.57,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3054,
+      "flags": 0,
+      "flash_row": 281,
+      "temp_c": 36.58,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3055,
+      "flags": 0,
+      "flash_row": 282,
+      "temp_c": 36.57,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3056,
+      "flags": 0,
+      "flash_row": 283,
+      "temp_c": 36.57,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3057,
+      "flags": 0,
+      "flash_row": 284,
+      "temp_c": 36.57,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3058,
+      "flags": 0,
+      "flash_row": 285,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3059,
+      "flags": 0,
+      "flash_row": 286,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3060,
+      "flags": 0,
+      "flash_row": 287,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3061,
+      "flags": 0,
+      "flash_row": 288,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3062,
+      "flags": 0,
+      "flash_row": 289,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3063,
+      "flags": 0,
+      "flash_row": 290,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3064,
+      "flags": 0,
+      "flash_row": 291,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3065,
+      "flags": 0,
+      "flash_row": 292,
+      "temp_c": 36.56,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3066,
+      "flags": 0,
+      "flash_row": 293,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3067,
+      "flags": 0,
+      "flash_row": 294,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3068,
+      "flags": 0,
+      "flash_row": 295,
+      "temp_c": 36.55,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3069,
+      "flags": 0,
+      "flash_row": 296,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3070,
+      "flags": 0,
+      "flash_row": 297,
+      "temp_c": 36.59,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3071,
+      "flags": 0,
+      "flash_row": 298,
+      "temp_c": 36.58,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3072,
+      "flags": 0,
+      "flash_row": 299,
+      "temp_c": 36.59,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3073,
+      "flags": 0,
+      "flash_row": 300,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3074,
+      "flags": 0,
+      "flash_row": 301,
+      "temp_c": 36.57,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3075,
+      "flags": 0,
+      "flash_row": 302,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3076,
+      "flags": 0,
+      "flash_row": 303,
+      "temp_c": 36.6,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3077,
+      "flags": 0,
+      "flash_row": 304,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3078,
+      "flags": 0,
+      "flash_row": 305,
+      "temp_c": 36.58,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3079,
+      "flags": 0,
+      "flash_row": 306,
+      "temp_c": 36.56,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3080,
+      "flags": 0,
+      "flash_row": 307,
+      "temp_c": 36.57,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3081,
+      "flags": 0,
+      "flash_row": 308,
+      "temp_c": 36.59,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3082,
+      "flags": 0,
+      "flash_row": 309,
+      "temp_c": 36.58,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3083,
+      "flags": 0,
+      "flash_row": 310,
+      "temp_c": 36.58,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3084,
+      "flags": 0,
+      "flash_row": 311,
+      "temp_c": 36.59,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3085,
+      "flags": 0,
+      "flash_row": 312,
+      "temp_c": 36.58,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3086,
+      "flags": 0,
+      "flash_row": 313,
+      "temp_c": 36.59,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3087,
+      "flags": 0,
+      "flash_row": 314,
+      "temp_c": 36.59,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3088,
+      "flags": 0,
+      "flash_row": 315,
+      "temp_c": 36.58,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3089,
+      "flags": 0,
+      "flash_row": 316,
+      "temp_c": 36.58,
+      "humidity_pct": 42.8
+    },
+    {
+      "seq": 3090,
+      "flags": 0,
+      "flash_row": 317,
+      "temp_c": 36.58,
+      "humidity_pct": 42.8
+    },
+    {
+      "seq": 3091,
+      "flags": 0,
+      "flash_row": 318,
+      "temp_c": 36.57,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3092,
+      "flags": 0,
+      "flash_row": 319,
+      "temp_c": 36.6,
+      "humidity_pct": 42.5
+    },
+    {
+      "seq": 3093,
+      "flags": 0,
+      "flash_row": 320,
+      "temp_c": 36.58,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3094,
+      "flags": 0,
+      "flash_row": 321,
+      "temp_c": 36.57,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3095,
+      "flags": 0,
+      "flash_row": 322,
+      "temp_c": 36.59,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3096,
+      "flags": 0,
+      "flash_row": 323,
+      "temp_c": 36.58,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3097,
+      "flags": 0,
+      "flash_row": 324,
+      "temp_c": 36.58,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3098,
+      "flags": 0,
+      "flash_row": 325,
+      "temp_c": 36.59,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3099,
+      "flags": 0,
+      "flash_row": 326,
+      "temp_c": 36.59,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3100,
+      "flags": 0,
+      "flash_row": 327,
+      "temp_c": 36.59,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3101,
+      "flags": 0,
+      "flash_row": 328,
+      "temp_c": 36.6,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3102,
+      "flags": 0,
+      "flash_row": 329,
+      "temp_c": 36.58,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3103,
+      "flags": 0,
+      "flash_row": 330,
+      "temp_c": 36.61,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3104,
+      "flags": 0,
+      "flash_row": 331,
+      "temp_c": 36.61,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3105,
+      "flags": 0,
+      "flash_row": 332,
+      "temp_c": 36.6,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3106,
+      "flags": 0,
+      "flash_row": 333,
+      "temp_c": 36.59,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3107,
+      "flags": 0,
+      "flash_row": 334,
+      "temp_c": 36.6,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3108,
+      "flags": 0,
+      "flash_row": 335,
+      "temp_c": 36.58,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3109,
+      "flags": 0,
+      "flash_row": 336,
+      "temp_c": 36.6,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3110,
+      "flags": 0,
+      "flash_row": 337,
+      "temp_c": 36.6,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3111,
+      "flags": 0,
+      "flash_row": 338,
+      "temp_c": 36.6,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3112,
+      "flags": 0,
+      "flash_row": 339,
+      "temp_c": 36.6,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3113,
+      "flags": 0,
+      "flash_row": 340,
+      "temp_c": 36.61,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3114,
+      "flags": 0,
+      "flash_row": 341,
+      "temp_c": 36.59,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3115,
+      "flags": 0,
+      "flash_row": 342,
+      "temp_c": 36.6,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3116,
+      "flags": 0,
+      "flash_row": 343,
+      "temp_c": 36.59,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3117,
+      "flags": 0,
+      "flash_row": 344,
+      "temp_c": 36.6,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3118,
+      "flags": 0,
+      "flash_row": 345,
+      "temp_c": 36.61,
+      "humidity_pct": 42.1
+    },
+    {
+      "seq": 3119,
+      "flags": 0,
+      "flash_row": 346,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3120,
+      "flags": 0,
+      "flash_row": 347,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3121,
+      "flags": 0,
+      "flash_row": 348,
+      "temp_c": 36.61,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3122,
+      "flags": 0,
+      "flash_row": 349,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3123,
+      "flags": 0,
+      "flash_row": 350,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3124,
+      "flags": 0,
+      "flash_row": 351,
+      "temp_c": 36.63,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3125,
+      "flags": 0,
+      "flash_row": 352,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3126,
+      "flags": 0,
+      "flash_row": 353,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3127,
+      "flags": 0,
+      "flash_row": 354,
+      "temp_c": 36.62,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3128,
+      "flags": 0,
+      "flash_row": 355,
+      "temp_c": 36.62,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3129,
+      "flags": 0,
+      "flash_row": 356,
+      "temp_c": 36.63,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3130,
+      "flags": 0,
+      "flash_row": 357,
+      "temp_c": 36.63,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3131,
+      "flags": 0,
+      "flash_row": 358,
+      "temp_c": 36.62,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3132,
+      "flags": 0,
+      "flash_row": 359,
+      "temp_c": 36.62,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3133,
+      "flags": 0,
+      "flash_row": 360,
+      "temp_c": 36.62,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3134,
+      "flags": 0,
+      "flash_row": 361,
+      "temp_c": 36.62,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3135,
+      "flags": 0,
+      "flash_row": 362,
+      "temp_c": 36.62,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3136,
+      "flags": 0,
+      "flash_row": 363,
+      "temp_c": 36.62,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3137,
+      "flags": 0,
+      "flash_row": 364,
+      "temp_c": 36.63,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3138,
+      "flags": 0,
+      "flash_row": 365,
+      "temp_c": 36.63,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3139,
+      "flags": 0,
+      "flash_row": 366,
+      "temp_c": 36.63,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3140,
+      "flags": 0,
+      "flash_row": 367,
+      "temp_c": 36.63,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3141,
+      "flags": 0,
+      "flash_row": 368,
+      "temp_c": 36.62,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3142,
+      "flags": 0,
+      "flash_row": 369,
+      "temp_c": 36.62,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3143,
+      "flags": 0,
+      "flash_row": 370,
+      "temp_c": 36.62,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3144,
+      "flags": 0,
+      "flash_row": 371,
+      "temp_c": 36.62,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3145,
+      "flags": 0,
+      "flash_row": 372,
+      "temp_c": 36.62,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3146,
+      "flags": 0,
+      "flash_row": 373,
+      "temp_c": 36.61,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3147,
+      "flags": 0,
+      "flash_row": 374,
+      "temp_c": 36.6,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3148,
+      "flags": 0,
+      "flash_row": 375,
+      "temp_c": 36.61,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3149,
+      "flags": 0,
+      "flash_row": 376,
+      "temp_c": 36.62,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3150,
+      "flags": 0,
+      "flash_row": 377,
+      "temp_c": 36.59,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3151,
+      "flags": 0,
+      "flash_row": 378,
+      "temp_c": 36.6,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3152,
+      "flags": 0,
+      "flash_row": 379,
+      "temp_c": 36.6,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3153,
+      "flags": 0,
+      "flash_row": 380,
+      "temp_c": 36.6,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3154,
+      "flags": 0,
+      "flash_row": 381,
+      "temp_c": 36.61,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3155,
+      "flags": 0,
+      "flash_row": 382,
+      "temp_c": 36.6,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3156,
+      "flags": 0,
+      "flash_row": 383,
+      "temp_c": 36.59,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3157,
+      "flags": 0,
+      "flash_row": 384,
+      "temp_c": 36.61,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3158,
+      "flags": 0,
+      "flash_row": 385,
+      "temp_c": 36.61,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3159,
+      "flags": 0,
+      "flash_row": 386,
+      "temp_c": 36.6,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3160,
+      "flags": 0,
+      "flash_row": 387,
+      "temp_c": 36.6,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3161,
+      "flags": 0,
+      "flash_row": 388,
+      "temp_c": 36.59,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3162,
+      "flags": 0,
+      "flash_row": 389,
+      "temp_c": 36.59,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3163,
+      "flags": 0,
+      "flash_row": 390,
+      "temp_c": 36.6,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3164,
+      "flags": 0,
+      "flash_row": 391,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3165,
+      "flags": 0,
+      "flash_row": 392,
+      "temp_c": 36.59,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3166,
+      "flags": 0,
+      "flash_row": 393,
+      "temp_c": 36.59,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3167,
+      "flags": 0,
+      "flash_row": 394,
+      "temp_c": 36.57,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3168,
+      "flags": 0,
+      "flash_row": 395,
+      "temp_c": 36.57,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3169,
+      "flags": 0,
+      "flash_row": 396,
+      "temp_c": 36.57,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3170,
+      "flags": 0,
+      "flash_row": 397,
+      "temp_c": 36.6,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3171,
+      "flags": 0,
+      "flash_row": 398,
+      "temp_c": 36.57,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3172,
+      "flags": 0,
+      "flash_row": 399,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3173,
+      "flags": 0,
+      "flash_row": 400,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3174,
+      "flags": 0,
+      "flash_row": 401,
+      "temp_c": 36.58,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3175,
+      "flags": 0,
+      "flash_row": 402,
+      "temp_c": 36.58,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3176,
+      "flags": 0,
+      "flash_row": 403,
+      "temp_c": 36.58,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3177,
+      "flags": 0,
+      "flash_row": 404,
+      "temp_c": 36.59,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3178,
+      "flags": 0,
+      "flash_row": 405,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3179,
+      "flags": 0,
+      "flash_row": 406,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3180,
+      "flags": 0,
+      "flash_row": 407,
+      "temp_c": 36.61,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3181,
+      "flags": 0,
+      "flash_row": 408,
+      "temp_c": 36.6,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3182,
+      "flags": 0,
+      "flash_row": 409,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3183,
+      "flags": 0,
+      "flash_row": 410,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3184,
+      "flags": 0,
+      "flash_row": 411,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3185,
+      "flags": 0,
+      "flash_row": 412,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3186,
+      "flags": 0,
+      "flash_row": 413,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3187,
+      "flags": 0,
+      "flash_row": 414,
+      "temp_c": 36.58,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3188,
+      "flags": 0,
+      "flash_row": 415,
+      "temp_c": 36.58,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3189,
+      "flags": 0,
+      "flash_row": 416,
+      "temp_c": 36.57,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3190,
+      "flags": 0,
+      "flash_row": 417,
+      "temp_c": 36.57,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3191,
+      "flags": 0,
+      "flash_row": 418,
+      "temp_c": 36.58,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3192,
+      "flags": 0,
+      "flash_row": 419,
+      "temp_c": 36.57,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3193,
+      "flags": 0,
+      "flash_row": 420,
+      "temp_c": 36.57,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3194,
+      "flags": 0,
+      "flash_row": 421,
+      "temp_c": 36.57,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3195,
+      "flags": 0,
+      "flash_row": 422,
+      "temp_c": 36.57,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3196,
+      "flags": 0,
+      "flash_row": 423,
+      "temp_c": 36.59,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3197,
+      "flags": 0,
+      "flash_row": 424,
+      "temp_c": 36.57,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3198,
+      "flags": 0,
+      "flash_row": 425,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3199,
+      "flags": 0,
+      "flash_row": 426,
+      "temp_c": 36.6,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3200,
+      "flags": 0,
+      "flash_row": 427,
+      "temp_c": 36.58,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3201,
+      "flags": 0,
+      "flash_row": 428,
+      "temp_c": 36.59,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3202,
+      "flags": 0,
+      "flash_row": 429,
+      "temp_c": 36.59,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3203,
+      "flags": 0,
+      "flash_row": 430,
+      "temp_c": 36.59,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3204,
+      "flags": 0,
+      "flash_row": 431,
+      "temp_c": 36.6,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3205,
+      "flags": 0,
+      "flash_row": 432,
+      "temp_c": 36.61,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3206,
+      "flags": 0,
+      "flash_row": 433,
+      "temp_c": 36.62,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3207,
+      "flags": 0,
+      "flash_row": 434,
+      "temp_c": 36.61,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3208,
+      "flags": 0,
+      "flash_row": 435,
+      "temp_c": 36.61,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3209,
+      "flags": 0,
+      "flash_row": 436,
+      "temp_c": 36.61,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3210,
+      "flags": 0,
+      "flash_row": 437,
+      "temp_c": 36.6,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3211,
+      "flags": 0,
+      "flash_row": 438,
+      "temp_c": 36.61,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3212,
+      "flags": 0,
+      "flash_row": 439,
+      "temp_c": 36.62,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3213,
+      "flags": 0,
+      "flash_row": 440,
+      "temp_c": 36.61,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3214,
+      "flags": 0,
+      "flash_row": 441,
+      "temp_c": 36.62,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3215,
+      "flags": 0,
+      "flash_row": 442,
+      "temp_c": 36.62,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3216,
+      "flags": 0,
+      "flash_row": 443,
+      "temp_c": 36.61,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3217,
+      "flags": 0,
+      "flash_row": 444,
+      "temp_c": 36.6,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3218,
+      "flags": 0,
+      "flash_row": 445,
+      "temp_c": 36.61,
+      "humidity_pct": 41.3
+    },
+    {
+      "seq": 3219,
+      "flags": 0,
+      "flash_row": 446,
+      "temp_c": 36.62,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3220,
+      "flags": 0,
+      "flash_row": 447,
+      "temp_c": 36.64,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3221,
+      "flags": 0,
+      "flash_row": 448,
+      "temp_c": 36.62,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3222,
+      "flags": 0,
+      "flash_row": 449,
+      "temp_c": 36.62,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3223,
+      "flags": 0,
+      "flash_row": 450,
+      "temp_c": 36.61,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3224,
+      "flags": 0,
+      "flash_row": 451,
+      "temp_c": 36.62,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3225,
+      "flags": 0,
+      "flash_row": 452,
+      "temp_c": 36.61,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3226,
+      "flags": 0,
+      "flash_row": 453,
+      "temp_c": 36.63,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3227,
+      "flags": 0,
+      "flash_row": 454,
+      "temp_c": 36.63,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3228,
+      "flags": 0,
+      "flash_row": 455,
+      "temp_c": 36.62,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3229,
+      "flags": 0,
+      "flash_row": 456,
+      "temp_c": 36.62,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3230,
+      "flags": 0,
+      "flash_row": 457,
+      "temp_c": 36.6,
+      "humidity_pct": 41.7
+    },
+    {
+      "seq": 3231,
+      "flags": 0,
+      "flash_row": 458,
+      "temp_c": 36.63,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3232,
+      "flags": 0,
+      "flash_row": 459,
+      "temp_c": 36.62,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3233,
+      "flags": 0,
+      "flash_row": 460,
+      "temp_c": 36.62,
+      "humidity_pct": 41.3
+    },
+    {
+      "seq": 3234,
+      "flags": 0,
+      "flash_row": 461,
+      "temp_c": 36.62,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3235,
+      "flags": 0,
+      "flash_row": 462,
+      "temp_c": 36.63,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3236,
+      "flags": 0,
+      "flash_row": 463,
+      "temp_c": 36.64,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3237,
+      "flags": 0,
+      "flash_row": 464,
+      "temp_c": 36.62,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3238,
+      "flags": 0,
+      "flash_row": 465,
+      "temp_c": 36.64,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3239,
+      "flags": 0,
+      "flash_row": 466,
+      "temp_c": 36.64,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3240,
+      "flags": 0,
+      "flash_row": 467,
+      "temp_c": 36.63,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3241,
+      "flags": 0,
+      "flash_row": 468,
+      "temp_c": 36.65,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3242,
+      "flags": 0,
+      "flash_row": 469,
+      "temp_c": 36.65,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3243,
+      "flags": 0,
+      "flash_row": 470,
+      "temp_c": 36.63,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3244,
+      "flags": 0,
+      "flash_row": 471,
+      "temp_c": 36.65,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3245,
+      "flags": 0,
+      "flash_row": 472,
+      "temp_c": 36.64,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3246,
+      "flags": 0,
+      "flash_row": 473,
+      "temp_c": 36.64,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3247,
+      "flags": 0,
+      "flash_row": 474,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3248,
+      "flags": 0,
+      "flash_row": 475,
+      "temp_c": 36.64,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3249,
+      "flags": 0,
+      "flash_row": 476,
+      "temp_c": 36.62,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3250,
+      "flags": 0,
+      "flash_row": 477,
+      "temp_c": 36.66,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3251,
+      "flags": 0,
+      "flash_row": 478,
+      "temp_c": 36.64,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3252,
+      "flags": 0,
+      "flash_row": 479,
+      "temp_c": 36.63,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3253,
+      "flags": 0,
+      "flash_row": 480,
+      "temp_c": 36.62,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3254,
+      "flags": 0,
+      "flash_row": 481,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3255,
+      "flags": 0,
+      "flash_row": 482,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3256,
+      "flags": 0,
+      "flash_row": 483,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3257,
+      "flags": 0,
+      "flash_row": 484,
+      "temp_c": 36.65,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3258,
+      "flags": 0,
+      "flash_row": 485,
+      "temp_c": 36.64,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3259,
+      "flags": 0,
+      "flash_row": 486,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3260,
+      "flags": 0,
+      "flash_row": 487,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3261,
+      "flags": 0,
+      "flash_row": 488,
+      "temp_c": 36.64,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3262,
+      "flags": 0,
+      "flash_row": 489,
+      "temp_c": 36.64,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3263,
+      "flags": 0,
+      "flash_row": 490,
+      "temp_c": 36.63,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3264,
+      "flags": 0,
+      "flash_row": 491,
+      "temp_c": 36.63,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3265,
+      "flags": 0,
+      "flash_row": 492,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3266,
+      "flags": 0,
+      "flash_row": 493,
+      "temp_c": 36.64,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3267,
+      "flags": 0,
+      "flash_row": 494,
+      "temp_c": 36.65,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3268,
+      "flags": 0,
+      "flash_row": 495,
+      "temp_c": 36.65,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3269,
+      "flags": 0,
+      "flash_row": 496,
+      "temp_c": 36.65,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3270,
+      "flags": 0,
+      "flash_row": 497,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3271,
+      "flags": 0,
+      "flash_row": 498,
+      "temp_c": 36.66,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3272,
+      "flags": 0,
+      "flash_row": 499,
+      "temp_c": 36.66,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3273,
+      "flags": 0,
+      "flash_row": 500,
+      "temp_c": 36.66,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3274,
+      "flags": 0,
+      "flash_row": 501,
+      "temp_c": 36.65,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3275,
+      "flags": 0,
+      "flash_row": 502,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3276,
+      "flags": 0,
+      "flash_row": 503,
+      "temp_c": 36.66,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3277,
+      "flags": 0,
+      "flash_row": 504,
+      "temp_c": 36.66,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3278,
+      "flags": 0,
+      "flash_row": 505,
+      "temp_c": 36.66,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3279,
+      "flags": 0,
+      "flash_row": 506,
+      "temp_c": 36.67,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3280,
+      "flags": 0,
+      "flash_row": 507,
+      "temp_c": 36.66,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3281,
+      "flags": 0,
+      "flash_row": 508,
+      "temp_c": 36.64,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3282,
+      "flags": 0,
+      "flash_row": 509,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3283,
+      "flags": 0,
+      "flash_row": 510,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3284,
+      "flags": 0,
+      "flash_row": 511,
+      "temp_c": 36.65,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3285,
+      "flags": 0,
+      "flash_row": 512,
+      "temp_c": 36.66,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3286,
+      "flags": 0,
+      "flash_row": 513,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3287,
+      "flags": 0,
+      "flash_row": 514,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3288,
+      "flags": 0,
+      "flash_row": 515,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3289,
+      "flags": 0,
+      "flash_row": 516,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3290,
+      "flags": 0,
+      "flash_row": 517,
+      "temp_c": 36.65,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3291,
+      "flags": 0,
+      "flash_row": 518,
+      "temp_c": 36.66,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3292,
+      "flags": 0,
+      "flash_row": 519,
+      "temp_c": 36.66,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3293,
+      "flags": 0,
+      "flash_row": 520,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3294,
+      "flags": 0,
+      "flash_row": 521,
+      "temp_c": 36.66,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3295,
+      "flags": 0,
+      "flash_row": 522,
+      "temp_c": 36.65,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3296,
+      "flags": 0,
+      "flash_row": 523,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3297,
+      "flags": 0,
+      "flash_row": 524,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3298,
+      "flags": 0,
+      "flash_row": 525,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3299,
+      "flags": 0,
+      "flash_row": 526,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3300,
+      "flags": 0,
+      "flash_row": 527,
+      "temp_c": 36.69,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3301,
+      "flags": 0,
+      "flash_row": 528,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3302,
+      "flags": 0,
+      "flash_row": 529,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3303,
+      "flags": 0,
+      "flash_row": 530,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3304,
+      "flags": 0,
+      "flash_row": 531,
+      "temp_c": 36.68,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3305,
+      "flags": 0,
+      "flash_row": 532,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3306,
+      "flags": 0,
+      "flash_row": 533,
+      "temp_c": 36.68,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3307,
+      "flags": 0,
+      "flash_row": 534,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3308,
+      "flags": 0,
+      "flash_row": 535,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3309,
+      "flags": 0,
+      "flash_row": 536,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3310,
+      "flags": 0,
+      "flash_row": 537,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3311,
+      "flags": 0,
+      "flash_row": 538,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3312,
+      "flags": 0,
+      "flash_row": 539,
+      "temp_c": 36.69,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3313,
+      "flags": 0,
+      "flash_row": 540,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3314,
+      "flags": 0,
+      "flash_row": 541,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3315,
+      "flags": 0,
+      "flash_row": 542,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3316,
+      "flags": 0,
+      "flash_row": 543,
+      "temp_c": 36.66,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3317,
+      "flags": 0,
+      "flash_row": 544,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3318,
+      "flags": 0,
+      "flash_row": 545,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3319,
+      "flags": 0,
+      "flash_row": 546,
+      "temp_c": 36.66,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3320,
+      "flags": 0,
+      "flash_row": 547,
+      "temp_c": 36.67,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3321,
+      "flags": 0,
+      "flash_row": 548,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3322,
+      "flags": 0,
+      "flash_row": 549,
+      "temp_c": 36.7,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3323,
+      "flags": 0,
+      "flash_row": 550,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3324,
+      "flags": 0,
+      "flash_row": 551,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3325,
+      "flags": 0,
+      "flash_row": 552,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3326,
+      "flags": 0,
+      "flash_row": 553,
+      "temp_c": 36.69,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3327,
+      "flags": 0,
+      "flash_row": 554,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3328,
+      "flags": 0,
+      "flash_row": 555,
+      "temp_c": 36.68,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3329,
+      "flags": 0,
+      "flash_row": 556,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3330,
+      "flags": 0,
+      "flash_row": 557,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3331,
+      "flags": 0,
+      "flash_row": 558,
+      "temp_c": 36.68,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3332,
+      "flags": 0,
+      "flash_row": 559,
+      "temp_c": 36.67,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3333,
+      "flags": 0,
+      "flash_row": 560,
+      "temp_c": 36.69,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3334,
+      "flags": 0,
+      "flash_row": 561,
+      "temp_c": 36.69,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3335,
+      "flags": 0,
+      "flash_row": 562,
+      "temp_c": 36.68,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3336,
+      "flags": 0,
+      "flash_row": 563,
+      "temp_c": 36.67,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3337,
+      "flags": 0,
+      "flash_row": 564,
+      "temp_c": 36.68,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3338,
+      "flags": 0,
+      "flash_row": 565,
+      "temp_c": 36.69,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3339,
+      "flags": 0,
+      "flash_row": 566,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3340,
+      "flags": 0,
+      "flash_row": 567,
+      "temp_c": 36.69,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3341,
+      "flags": 0,
+      "flash_row": 568,
+      "temp_c": 36.67,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3342,
+      "flags": 0,
+      "flash_row": 569,
+      "temp_c": 36.68,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3343,
+      "flags": 0,
+      "flash_row": 570,
+      "temp_c": 36.67,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3344,
+      "flags": 0,
+      "flash_row": 571,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3345,
+      "flags": 0,
+      "flash_row": 572,
+      "temp_c": 36.68,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3346,
+      "flags": 0,
+      "flash_row": 573,
+      "temp_c": 36.68,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3347,
+      "flags": 0,
+      "flash_row": 574,
+      "temp_c": 36.69,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3348,
+      "flags": 0,
+      "flash_row": 575,
+      "temp_c": 36.69,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3349,
+      "flags": 0,
+      "flash_row": 576,
+      "temp_c": 36.68,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3350,
+      "flags": 0,
+      "flash_row": 577,
+      "temp_c": 36.68,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3351,
+      "flags": 0,
+      "flash_row": 578,
+      "temp_c": 36.67,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3352,
+      "flags": 0,
+      "flash_row": 579,
+      "temp_c": 36.67,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3353,
+      "flags": 0,
+      "flash_row": 580,
+      "temp_c": 36.69,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3354,
+      "flags": 0,
+      "flash_row": 581,
+      "temp_c": 36.67,
+      "humidity_pct": 41.2
+    },
+    {
+      "seq": 3355,
+      "flags": 0,
+      "flash_row": 582,
+      "temp_c": 36.67,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3356,
+      "flags": 0,
+      "flash_row": 583,
+      "temp_c": 36.69,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3357,
+      "flags": 0,
+      "flash_row": 584,
+      "temp_c": 36.67,
+      "humidity_pct": 41.0
+    },
+    {
+      "seq": 3358,
+      "flags": 0,
+      "flash_row": 585,
+      "temp_c": 36.69,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3359,
+      "flags": 0,
+      "flash_row": 586,
+      "temp_c": 36.69,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3360,
+      "flags": 0,
+      "flash_row": 587,
+      "temp_c": 36.66,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3361,
+      "flags": 0,
+      "flash_row": 588,
+      "temp_c": 36.68,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3362,
+      "flags": 0,
+      "flash_row": 589,
+      "temp_c": 36.69,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3363,
+      "flags": 0,
+      "flash_row": 590,
+      "temp_c": 36.67,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3364,
+      "flags": 0,
+      "flash_row": 591,
+      "temp_c": 36.67,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3365,
+      "flags": 0,
+      "flash_row": 592,
+      "temp_c": 36.67,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3366,
+      "flags": 0,
+      "flash_row": 593,
+      "temp_c": 36.69,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3367,
+      "flags": 0,
+      "flash_row": 594,
+      "temp_c": 36.68,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3368,
+      "flags": 0,
+      "flash_row": 595,
+      "temp_c": 36.66,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3369,
+      "flags": 0,
+      "flash_row": 596,
+      "temp_c": 36.66,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3370,
+      "flags": 0,
+      "flash_row": 597,
+      "temp_c": 36.67,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3371,
+      "flags": 0,
+      "flash_row": 598,
+      "temp_c": 36.66,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3372,
+      "flags": 0,
+      "flash_row": 599,
+      "temp_c": 36.66,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3373,
+      "flags": 0,
+      "flash_row": 600,
+      "temp_c": 36.66,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3374,
+      "flags": 0,
+      "flash_row": 601,
+      "temp_c": 36.65,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3375,
+      "flags": 0,
+      "flash_row": 602,
+      "temp_c": 36.66,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3376,
+      "flags": 0,
+      "flash_row": 603,
+      "temp_c": 36.65,
+      "humidity_pct": 39.7
+    },
+    {
+      "seq": 3377,
+      "flags": 0,
+      "flash_row": 604,
+      "temp_c": 36.64,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3378,
+      "flags": 0,
+      "flash_row": 605,
+      "temp_c": 36.65,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3379,
+      "flags": 0,
+      "flash_row": 606,
+      "temp_c": 36.66,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3380,
+      "flags": 0,
+      "flash_row": 607,
+      "temp_c": 36.64,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3381,
+      "flags": 0,
+      "flash_row": 608,
+      "temp_c": 36.65,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3382,
+      "flags": 0,
+      "flash_row": 609,
+      "temp_c": 36.64,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3383,
+      "flags": 0,
+      "flash_row": 610,
+      "temp_c": 36.63,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3384,
+      "flags": 0,
+      "flash_row": 611,
+      "temp_c": 36.63,
+      "humidity_pct": 43.7
+    },
+    {
+      "seq": 3385,
+      "flags": 0,
+      "flash_row": 612,
+      "temp_c": 36.64,
+      "humidity_pct": 43.8
+    },
+    {
+      "seq": 3386,
+      "flags": 0,
+      "flash_row": 613,
+      "temp_c": 36.64,
+      "humidity_pct": 42.9
+    },
+    {
+      "seq": 3387,
+      "flags": 0,
+      "flash_row": 614,
+      "temp_c": 36.63,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3388,
+      "flags": 0,
+      "flash_row": 615,
+      "temp_c": 36.63,
+      "humidity_pct": 42.0
+    },
+    {
+      "seq": 3389,
+      "flags": 0,
+      "flash_row": 616,
+      "temp_c": 36.62,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3390,
+      "flags": 0,
+      "flash_row": 617,
+      "temp_c": 36.63,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3391,
+      "flags": 0,
+      "flash_row": 618,
+      "temp_c": 36.64,
+      "humidity_pct": 41.8
+    },
+    {
+      "seq": 3392,
+      "flags": 0,
+      "flash_row": 619,
+      "temp_c": 36.64,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3393,
+      "flags": 0,
+      "flash_row": 620,
+      "temp_c": 36.63,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3394,
+      "flags": 0,
+      "flash_row": 621,
+      "temp_c": 36.63,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3395,
+      "flags": 0,
+      "flash_row": 622,
+      "temp_c": 36.65,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3396,
+      "flags": 0,
+      "flash_row": 623,
+      "temp_c": 36.64,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3397,
+      "flags": 0,
+      "flash_row": 624,
+      "temp_c": 36.64,
+      "humidity_pct": 42.6
+    },
+    {
+      "seq": 3398,
+      "flags": 0,
+      "flash_row": 625,
+      "temp_c": 36.63,
+      "humidity_pct": 42.3
+    },
+    {
+      "seq": 3399,
+      "flags": 0,
+      "flash_row": 626,
+      "temp_c": 36.64,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3400,
+      "flags": 0,
+      "flash_row": 627,
+      "temp_c": 36.65,
+      "humidity_pct": 47.0
+    },
+    {
+      "seq": 3401,
+      "flags": 0,
+      "flash_row": 628,
+      "temp_c": 36.64,
+      "humidity_pct": 47.6
+    },
+    {
+      "seq": 3402,
+      "flags": 0,
+      "flash_row": 629,
+      "temp_c": 36.63,
+      "humidity_pct": 47.3
+    },
+    {
+      "seq": 3403,
+      "flags": 0,
+      "flash_row": 630,
+      "temp_c": 36.64,
+      "humidity_pct": 47.4
+    },
+    {
+      "seq": 3404,
+      "flags": 0,
+      "flash_row": 631,
+      "temp_c": 36.63,
+      "humidity_pct": 47.1
+    },
+    {
+      "seq": 3405,
+      "flags": 0,
+      "flash_row": 632,
+      "temp_c": 36.64,
+      "humidity_pct": 46.2
+    },
+    {
+      "seq": 3406,
+      "flags": 0,
+      "flash_row": 633,
+      "temp_c": 36.64,
+      "humidity_pct": 46.0
+    },
+    {
+      "seq": 3407,
+      "flags": 0,
+      "flash_row": 634,
+      "temp_c": 36.64,
+      "humidity_pct": 45.6
+    },
+    {
+      "seq": 3408,
+      "flags": 0,
+      "flash_row": 635,
+      "temp_c": 36.63,
+      "humidity_pct": 45.6
+    },
+    {
+      "seq": 3409,
+      "flags": 0,
+      "flash_row": 636,
+      "temp_c": 36.62,
+      "humidity_pct": 45.6
+    },
+    {
+      "seq": 3410,
+      "flags": 0,
+      "flash_row": 637,
+      "temp_c": 36.64,
+      "humidity_pct": 44.9
+    },
+    {
+      "seq": 3411,
+      "flags": 0,
+      "flash_row": 638,
+      "temp_c": 36.64,
+      "humidity_pct": 44.1
+    },
+    {
+      "seq": 3412,
+      "flags": 0,
+      "flash_row": 639,
+      "temp_c": 36.62,
+      "humidity_pct": 43.7
+    },
+    {
+      "seq": 3413,
+      "flags": 0,
+      "flash_row": 640,
+      "temp_c": 36.63,
+      "humidity_pct": 43.2
+    },
+    {
+      "seq": 3414,
+      "flags": 0,
+      "flash_row": 641,
+      "temp_c": 36.64,
+      "humidity_pct": 43.0
+    },
+    {
+      "seq": 3415,
+      "flags": 0,
+      "flash_row": 642,
+      "temp_c": 36.61,
+      "humidity_pct": 42.8
+    },
+    {
+      "seq": 3416,
+      "flags": 0,
+      "flash_row": 643,
+      "temp_c": 36.61,
+      "humidity_pct": 42.7
+    },
+    {
+      "seq": 3417,
+      "flags": 0,
+      "flash_row": 644,
+      "temp_c": 36.63,
+      "humidity_pct": 42.4
+    },
+    {
+      "seq": 3418,
+      "flags": 0,
+      "flash_row": 645,
+      "temp_c": 36.62,
+      "humidity_pct": 42.7
+    },
+    {
+      "seq": 3419,
+      "flags": 0,
+      "flash_row": 646,
+      "temp_c": 36.62,
+      "humidity_pct": 42.2
+    },
+    {
+      "seq": 3420,
+      "flags": 0,
+      "flash_row": 647,
+      "temp_c": 36.61,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3421,
+      "flags": 0,
+      "flash_row": 648,
+      "temp_c": 36.61,
+      "humidity_pct": 41.5
+    },
+    {
+      "seq": 3422,
+      "flags": 0,
+      "flash_row": 649,
+      "temp_c": 36.62,
+      "humidity_pct": 41.6
+    },
+    {
+      "seq": 3423,
+      "flags": 0,
+      "flash_row": 650,
+      "temp_c": 36.63,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3424,
+      "flags": 0,
+      "flash_row": 651,
+      "temp_c": 36.61,
+      "humidity_pct": 41.4
+    },
+    {
+      "seq": 3425,
+      "flags": 0,
+      "flash_row": 652,
+      "temp_c": 36.6,
+      "humidity_pct": 41.3
+    },
+    {
+      "seq": 3426,
+      "flags": 0,
+      "flash_row": 653,
+      "temp_c": 36.6,
+      "humidity_pct": 41.1
+    },
+    {
+      "seq": 3427,
+      "flags": 0,
+      "flash_row": 654,
+      "temp_c": 36.6,
+      "humidity_pct": 40.9
+    },
+    {
+      "seq": 3428,
+      "flags": 0,
+      "flash_row": 655,
+      "temp_c": 36.58,
+      "humidity_pct": 40.8
+    },
+    {
+      "seq": 3429,
+      "flags": 0,
+      "flash_row": 656,
+      "temp_c": 36.6,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3430,
+      "flags": 0,
+      "flash_row": 657,
+      "temp_c": 36.6,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3431,
+      "flags": 0,
+      "flash_row": 658,
+      "temp_c": 36.6,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3432,
+      "flags": 0,
+      "flash_row": 659,
+      "temp_c": 36.6,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3433,
+      "flags": 0,
+      "flash_row": 660,
+      "temp_c": 36.6,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3434,
+      "flags": 0,
+      "flash_row": 661,
+      "temp_c": 36.59,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3435,
+      "flags": 0,
+      "flash_row": 662,
+      "temp_c": 36.61,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3436,
+      "flags": 0,
+      "flash_row": 663,
+      "temp_c": 36.59,
+      "humidity_pct": 39.5
+    },
+    {
+      "seq": 3437,
+      "flags": 0,
+      "flash_row": 664,
+      "temp_c": 36.6,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3438,
+      "flags": 0,
+      "flash_row": 665,
+      "temp_c": 36.59,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3439,
+      "flags": 0,
+      "flash_row": 666,
+      "temp_c": 36.58,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3440,
+      "flags": 0,
+      "flash_row": 667,
+      "temp_c": 36.57,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 3441,
+      "flags": 0,
+      "flash_row": 668,
+      "temp_c": 36.58,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3442,
+      "flags": 0,
+      "flash_row": 669,
+      "temp_c": 36.57,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3443,
+      "flags": 0,
+      "flash_row": 670,
+      "temp_c": 36.57,
+      "humidity_pct": 39.1
+    },
+    {
+      "seq": 3444,
+      "flags": 0,
+      "flash_row": 671,
+      "temp_c": 36.56,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3445,
+      "flags": 0,
+      "flash_row": 672,
+      "temp_c": 36.56,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3446,
+      "flags": 0,
+      "flash_row": 673,
+      "temp_c": 36.57,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 3447,
+      "flags": 0,
+      "flash_row": 674,
+      "temp_c": 36.54,
+      "humidity_pct": 38.9
+    },
+    {
+      "seq": 3448,
+      "flags": 0,
+      "flash_row": 675,
+      "temp_c": 36.56,
+      "humidity_pct": 38.9
+    },
+    {
+      "seq": 3449,
+      "flags": 0,
+      "flash_row": 676,
+      "temp_c": 36.57,
+      "humidity_pct": 39.1
+    },
+    {
+      "seq": 3450,
+      "flags": 0,
+      "flash_row": 677,
+      "temp_c": 36.56,
+      "humidity_pct": 39.1
+    },
+    {
+      "seq": 3451,
+      "flags": 0,
+      "flash_row": 678,
+      "temp_c": 36.56,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3452,
+      "flags": 0,
+      "flash_row": 679,
+      "temp_c": 36.57,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3453,
+      "flags": 0,
+      "flash_row": 680,
+      "temp_c": 36.56,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 3454,
+      "flags": 0,
+      "flash_row": 681,
+      "temp_c": 36.56,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 3455,
+      "flags": 0,
+      "flash_row": 682,
+      "temp_c": 36.57,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 3456,
+      "flags": 0,
+      "flash_row": 683,
+      "temp_c": 36.57,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3457,
+      "flags": 0,
+      "flash_row": 684,
+      "temp_c": 36.57,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3458,
+      "flags": 0,
+      "flash_row": 685,
+      "temp_c": 36.56,
+      "humidity_pct": 39.5
+    },
+    {
+      "seq": 3459,
+      "flags": 0,
+      "flash_row": 686,
+      "temp_c": 36.58,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3460,
+      "flags": 0,
+      "flash_row": 687,
+      "temp_c": 36.57,
+      "humidity_pct": 39.8
+    },
+    {
+      "seq": 3461,
+      "flags": 0,
+      "flash_row": 688,
+      "temp_c": 36.58,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3462,
+      "flags": 0,
+      "flash_row": 689,
+      "temp_c": 36.56,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3463,
+      "flags": 0,
+      "flash_row": 690,
+      "temp_c": 36.56,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3464,
+      "flags": 0,
+      "flash_row": 691,
+      "temp_c": 36.6,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3465,
+      "flags": 0,
+      "flash_row": 692,
+      "temp_c": 36.59,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3466,
+      "flags": 0,
+      "flash_row": 693,
+      "temp_c": 36.57,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3467,
+      "flags": 0,
+      "flash_row": 694,
+      "temp_c": 36.58,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3468,
+      "flags": 0,
+      "flash_row": 695,
+      "temp_c": 36.6,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3469,
+      "flags": 0,
+      "flash_row": 696,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3470,
+      "flags": 0,
+      "flash_row": 697,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3471,
+      "flags": 0,
+      "flash_row": 698,
+      "temp_c": 36.58,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3472,
+      "flags": 0,
+      "flash_row": 699,
+      "temp_c": 36.59,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3473,
+      "flags": 0,
+      "flash_row": 700,
+      "temp_c": 36.59,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3474,
+      "flags": 0,
+      "flash_row": 701,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3475,
+      "flags": 0,
+      "flash_row": 702,
+      "temp_c": 36.59,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3476,
+      "flags": 0,
+      "flash_row": 703,
+      "temp_c": 36.6,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3477,
+      "flags": 0,
+      "flash_row": 704,
+      "temp_c": 36.59,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3478,
+      "flags": 0,
+      "flash_row": 705,
+      "temp_c": 36.6,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3479,
+      "flags": 0,
+      "flash_row": 706,
+      "temp_c": 36.6,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3480,
+      "flags": 0,
+      "flash_row": 707,
+      "temp_c": 36.59,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3481,
+      "flags": 0,
+      "flash_row": 708,
+      "temp_c": 36.59,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3482,
+      "flags": 0,
+      "flash_row": 709,
+      "temp_c": 36.6,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3483,
+      "flags": 0,
+      "flash_row": 710,
+      "temp_c": 36.58,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3484,
+      "flags": 0,
+      "flash_row": 711,
+      "temp_c": 36.58,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3485,
+      "flags": 0,
+      "flash_row": 712,
+      "temp_c": 36.59,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3486,
+      "flags": 0,
+      "flash_row": 713,
+      "temp_c": 36.6,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3487,
+      "flags": 0,
+      "flash_row": 714,
+      "temp_c": 36.6,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3488,
+      "flags": 0,
+      "flash_row": 715,
+      "temp_c": 36.6,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3489,
+      "flags": 0,
+      "flash_row": 716,
+      "temp_c": 36.59,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3490,
+      "flags": 0,
+      "flash_row": 717,
+      "temp_c": 36.58,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3491,
+      "flags": 0,
+      "flash_row": 718,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3492,
+      "flags": 0,
+      "flash_row": 719,
+      "temp_c": 36.58,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3493,
+      "flags": 0,
+      "flash_row": 720,
+      "temp_c": 36.59,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3494,
+      "flags": 0,
+      "flash_row": 721,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3495,
+      "flags": 0,
+      "flash_row": 722,
+      "temp_c": 36.58,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3496,
+      "flags": 0,
+      "flash_row": 723,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3497,
+      "flags": 0,
+      "flash_row": 724,
+      "temp_c": 36.56,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3498,
+      "flags": 0,
+      "flash_row": 725,
+      "temp_c": 36.56,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3499,
+      "flags": 0,
+      "flash_row": 726,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3500,
+      "flags": 0,
+      "flash_row": 727,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3501,
+      "flags": 0,
+      "flash_row": 728,
+      "temp_c": 36.57,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3502,
+      "flags": 0,
+      "flash_row": 729,
+      "temp_c": 36.57,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3503,
+      "flags": 0,
+      "flash_row": 730,
+      "temp_c": 36.56,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3504,
+      "flags": 0,
+      "flash_row": 731,
+      "temp_c": 36.57,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3505,
+      "flags": 0,
+      "flash_row": 732,
+      "temp_c": 36.56,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3506,
+      "flags": 0,
+      "flash_row": 733,
+      "temp_c": 36.56,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3507,
+      "flags": 0,
+      "flash_row": 734,
+      "temp_c": 36.55,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3508,
+      "flags": 0,
+      "flash_row": 735,
+      "temp_c": 36.57,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3509,
+      "flags": 0,
+      "flash_row": 736,
+      "temp_c": 36.55,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3510,
+      "flags": 0,
+      "flash_row": 737,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3511,
+      "flags": 0,
+      "flash_row": 738,
+      "temp_c": 36.56,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3512,
+      "flags": 0,
+      "flash_row": 739,
+      "temp_c": 36.56,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3513,
+      "flags": 0,
+      "flash_row": 740,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3514,
+      "flags": 0,
+      "flash_row": 741,
+      "temp_c": 36.56,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3515,
+      "flags": 0,
+      "flash_row": 742,
+      "temp_c": 36.55,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3516,
+      "flags": 0,
+      "flash_row": 743,
+      "temp_c": 36.57,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3517,
+      "flags": 0,
+      "flash_row": 744,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3518,
+      "flags": 0,
+      "flash_row": 745,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3519,
+      "flags": 0,
+      "flash_row": 746,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3520,
+      "flags": 0,
+      "flash_row": 747,
+      "temp_c": 36.57,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3521,
+      "flags": 0,
+      "flash_row": 748,
+      "temp_c": 36.55,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3522,
+      "flags": 0,
+      "flash_row": 749,
+      "temp_c": 36.55,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3523,
+      "flags": 0,
+      "flash_row": 750,
+      "temp_c": 36.55,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3524,
+      "flags": 0,
+      "flash_row": 751,
+      "temp_c": 36.54,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3525,
+      "flags": 0,
+      "flash_row": 752,
+      "temp_c": 36.56,
+      "humidity_pct": 40.6
+    },
+    {
+      "seq": 3526,
+      "flags": 0,
+      "flash_row": 753,
+      "temp_c": 36.55,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3527,
+      "flags": 0,
+      "flash_row": 754,
+      "temp_c": 36.56,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3528,
+      "flags": 0,
+      "flash_row": 755,
+      "temp_c": 36.55,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3529,
+      "flags": 0,
+      "flash_row": 756,
+      "temp_c": 36.55,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3530,
+      "flags": 0,
+      "flash_row": 757,
+      "temp_c": 36.56,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3531,
+      "flags": 0,
+      "flash_row": 758,
+      "temp_c": 36.54,
+      "humidity_pct": 40.5
+    },
+    {
+      "seq": 3532,
+      "flags": 0,
+      "flash_row": 759,
+      "temp_c": 36.55,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3533,
+      "flags": 0,
+      "flash_row": 760,
+      "temp_c": 36.55,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3534,
+      "flags": 0,
+      "flash_row": 761,
+      "temp_c": 36.55,
+      "humidity_pct": 40.4
+    },
+    {
+      "seq": 3535,
+      "flags": 0,
+      "flash_row": 762,
+      "temp_c": 36.53,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3536,
+      "flags": 0,
+      "flash_row": 763,
+      "temp_c": 36.55,
+      "humidity_pct": 40.3
+    },
+    {
+      "seq": 3537,
+      "flags": 0,
+      "flash_row": 764,
+      "temp_c": 36.54,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3538,
+      "flags": 0,
+      "flash_row": 765,
+      "temp_c": 36.54,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3539,
+      "flags": 0,
+      "flash_row": 766,
+      "temp_c": 36.54,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3540,
+      "flags": 0,
+      "flash_row": 767,
+      "temp_c": 36.55,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3541,
+      "flags": 0,
+      "flash_row": 768,
+      "temp_c": 36.53,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3542,
+      "flags": 0,
+      "flash_row": 769,
+      "temp_c": 36.54,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3543,
+      "flags": 0,
+      "flash_row": 770,
+      "temp_c": 36.54,
+      "humidity_pct": 40.2
+    },
+    {
+      "seq": 3544,
+      "flags": 0,
+      "flash_row": 771,
+      "temp_c": 36.55,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3545,
+      "flags": 0,
+      "flash_row": 772,
+      "temp_c": 36.53,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3546,
+      "flags": 0,
+      "flash_row": 773,
+      "temp_c": 36.55,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3547,
+      "flags": 0,
+      "flash_row": 774,
+      "temp_c": 36.53,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3548,
+      "flags": 0,
+      "flash_row": 775,
+      "temp_c": 36.54,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3549,
+      "flags": 0,
+      "flash_row": 776,
+      "temp_c": 36.53,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3550,
+      "flags": 0,
+      "flash_row": 777,
+      "temp_c": 36.55,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3551,
+      "flags": 0,
+      "flash_row": 778,
+      "temp_c": 36.55,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3552,
+      "flags": 0,
+      "flash_row": 779,
+      "temp_c": 36.54,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3553,
+      "flags": 0,
+      "flash_row": 780,
+      "temp_c": 36.52,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3554,
+      "flags": 0,
+      "flash_row": 781,
+      "temp_c": 36.52,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3555,
+      "flags": 0,
+      "flash_row": 782,
+      "temp_c": 36.51,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3556,
+      "flags": 0,
+      "flash_row": 783,
+      "temp_c": 36.53,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3557,
+      "flags": 0,
+      "flash_row": 784,
+      "temp_c": 36.5,
+      "humidity_pct": 39.9
+    },
+    {
+      "seq": 3558,
+      "flags": 0,
+      "flash_row": 785,
+      "temp_c": 36.51,
+      "humidity_pct": 39.7
+    },
+    {
+      "seq": 3559,
+      "flags": 0,
+      "flash_row": 786,
+      "temp_c": 36.53,
+      "humidity_pct": 39.7
+    },
+    {
+      "seq": 3560,
+      "flags": 0,
+      "flash_row": 787,
+      "temp_c": 36.51,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3561,
+      "flags": 0,
+      "flash_row": 788,
+      "temp_c": 36.52,
+      "humidity_pct": 39.5
+    },
+    {
+      "seq": 3562,
+      "flags": 0,
+      "flash_row": 789,
+      "temp_c": 36.52,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3563,
+      "flags": 0,
+      "flash_row": 790,
+      "temp_c": 36.51,
+      "humidity_pct": 39.4
+    },
+    {
+      "seq": 3564,
+      "flags": 0,
+      "flash_row": 791,
+      "temp_c": 36.51,
+      "humidity_pct": 39.3
+    },
+    {
+      "seq": 3565,
+      "flags": 0,
+      "flash_row": 792,
+      "temp_c": 36.51,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3566,
+      "flags": 0,
+      "flash_row": 793,
+      "temp_c": 36.5,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 3567,
+      "flags": 0,
+      "flash_row": 794,
+      "temp_c": 36.48,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 3568,
+      "flags": 0,
+      "flash_row": 795,
+      "temp_c": 36.5,
+      "humidity_pct": 39.0
+    },
+    {
+      "seq": 3569,
+      "flags": 0,
+      "flash_row": 796,
+      "temp_c": 36.5,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3570,
+      "flags": 0,
+      "flash_row": 797,
+      "temp_c": 36.5,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3571,
+      "flags": 0,
+      "flash_row": 798,
+      "temp_c": 36.5,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3572,
+      "flags": 0,
+      "flash_row": 799,
+      "temp_c": 36.51,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3573,
+      "flags": 0,
+      "flash_row": 800,
+      "temp_c": 36.5,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3574,
+      "flags": 0,
+      "flash_row": 801,
+      "temp_c": 36.51,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3575,
+      "flags": 0,
+      "flash_row": 802,
+      "temp_c": 36.51,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3576,
+      "flags": 0,
+      "flash_row": 803,
+      "temp_c": 36.5,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3577,
+      "flags": 0,
+      "flash_row": 804,
+      "temp_c": 36.51,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3578,
+      "flags": 0,
+      "flash_row": 805,
+      "temp_c": 36.51,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3579,
+      "flags": 0,
+      "flash_row": 806,
+      "temp_c": 36.51,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3580,
+      "flags": 0,
+      "flash_row": 807,
+      "temp_c": 36.52,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3581,
+      "flags": 0,
+      "flash_row": 808,
+      "temp_c": 36.53,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3582,
+      "flags": 0,
+      "flash_row": 809,
+      "temp_c": 36.52,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3583,
+      "flags": 0,
+      "flash_row": 810,
+      "temp_c": 36.51,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3584,
+      "flags": 0,
+      "flash_row": 811,
+      "temp_c": 36.51,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3585,
+      "flags": 0,
+      "flash_row": 812,
+      "temp_c": 36.54,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3586,
+      "flags": 0,
+      "flash_row": 813,
+      "temp_c": 36.53,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3587,
+      "flags": 0,
+      "flash_row": 814,
+      "temp_c": 36.52,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3588,
+      "flags": 0,
+      "flash_row": 815,
+      "temp_c": 36.53,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3589,
+      "flags": 0,
+      "flash_row": 816,
+      "temp_c": 36.53,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3590,
+      "flags": 0,
+      "flash_row": 817,
+      "temp_c": 36.55,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3591,
+      "flags": 0,
+      "flash_row": 818,
+      "temp_c": 36.54,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3592,
+      "flags": 0,
+      "flash_row": 819,
+      "temp_c": 36.54,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3593,
+      "flags": 0,
+      "flash_row": 820,
+      "temp_c": 36.55,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3594,
+      "flags": 0,
+      "flash_row": 821,
+      "temp_c": 36.54,
+      "humidity_pct": 38.7
+    },
+    {
+      "seq": 3595,
+      "flags": 0,
+      "flash_row": 822,
+      "temp_c": 36.53,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3596,
+      "flags": 0,
+      "flash_row": 823,
+      "temp_c": 36.55,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3597,
+      "flags": 0,
+      "flash_row": 824,
+      "temp_c": 36.54,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3598,
+      "flags": 0,
+      "flash_row": 825,
+      "temp_c": 36.54,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3599,
+      "flags": 0,
+      "flash_row": 826,
+      "temp_c": 36.54,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3600,
+      "flags": 0,
+      "flash_row": 827,
+      "temp_c": 36.53,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3601,
+      "flags": 0,
+      "flash_row": 828,
+      "temp_c": 36.54,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3602,
+      "flags": 0,
+      "flash_row": 829,
+      "temp_c": 36.54,
+      "humidity_pct": 38.3
+    },
+    {
+      "seq": 3603,
+      "flags": 0,
+      "flash_row": 830,
+      "temp_c": 36.57,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3604,
+      "flags": 0,
+      "flash_row": 831,
+      "temp_c": 36.53,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3605,
+      "flags": 0,
+      "flash_row": 832,
+      "temp_c": 36.54,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3606,
+      "flags": 0,
+      "flash_row": 833,
+      "temp_c": 36.53,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3607,
+      "flags": 0,
+      "flash_row": 834,
+      "temp_c": 36.55,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3608,
+      "flags": 0,
+      "flash_row": 835,
+      "temp_c": 36.57,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3609,
+      "flags": 0,
+      "flash_row": 836,
+      "temp_c": 36.55,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3610,
+      "flags": 0,
+      "flash_row": 837,
+      "temp_c": 36.55,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3611,
+      "flags": 0,
+      "flash_row": 838,
+      "temp_c": 36.55,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3612,
+      "flags": 0,
+      "flash_row": 839,
+      "temp_c": 36.56,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3613,
+      "flags": 0,
+      "flash_row": 840,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3614,
+      "flags": 0,
+      "flash_row": 841,
+      "temp_c": 36.55,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3615,
+      "flags": 0,
+      "flash_row": 842,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3616,
+      "flags": 0,
+      "flash_row": 843,
+      "temp_c": 36.55,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3617,
+      "flags": 0,
+      "flash_row": 844,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3618,
+      "flags": 0,
+      "flash_row": 845,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3619,
+      "flags": 0,
+      "flash_row": 846,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3620,
+      "flags": 0,
+      "flash_row": 847,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3621,
+      "flags": 0,
+      "flash_row": 848,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3622,
+      "flags": 0,
+      "flash_row": 849,
+      "temp_c": 36.56,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3623,
+      "flags": 0,
+      "flash_row": 850,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3624,
+      "flags": 0,
+      "flash_row": 851,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3625,
+      "flags": 0,
+      "flash_row": 852,
+      "temp_c": 36.57,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3626,
+      "flags": 0,
+      "flash_row": 853,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3627,
+      "flags": 0,
+      "flash_row": 854,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3628,
+      "flags": 0,
+      "flash_row": 855,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3629,
+      "flags": 0,
+      "flash_row": 856,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3630,
+      "flags": 0,
+      "flash_row": 857,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3631,
+      "flags": 0,
+      "flash_row": 858,
+      "temp_c": 36.57,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3632,
+      "flags": 0,
+      "flash_row": 859,
+      "temp_c": 36.58,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3633,
+      "flags": 0,
+      "flash_row": 860,
+      "temp_c": 36.58,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3634,
+      "flags": 0,
+      "flash_row": 861,
+      "temp_c": 36.61,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3635,
+      "flags": 0,
+      "flash_row": 862,
+      "temp_c": 36.6,
+      "humidity_pct": 38.5
+    },
+    {
+      "seq": 3636,
+      "flags": 0,
+      "flash_row": 863,
+      "temp_c": 36.6,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3637,
+      "flags": 0,
+      "flash_row": 864,
+      "temp_c": 36.58,
+      "humidity_pct": 38.4
+    },
+    {
+      "seq": 3638,
+      "flags": 0,
+      "flash_row": 865,
+      "temp_c": 36.59,
+      "humidity_pct": 38.3
+    },
+    {
+      "seq": 3639,
+      "flags": 0,
+      "flash_row": 866,
+      "temp_c": 36.59,
+      "humidity_pct": 38.2
+    },
+    {
+      "seq": 3640,
+      "flags": 0,
+      "flash_row": 867,
+      "temp_c": 36.57,
+      "humidity_pct": 38.2
+    },
+    {
+      "seq": 3641,
+      "flags": 0,
+      "flash_row": 868,
+      "temp_c": 36.58,
+      "humidity_pct": 38.1
+    },
+    {
+      "seq": 3642,
+      "flags": 0,
+      "flash_row": 869,
+      "temp_c": 36.57,
+      "humidity_pct": 38.2
+    },
+    {
+      "seq": 3643,
+      "flags": 0,
+      "flash_row": 870,
+      "temp_c": 36.57,
+      "humidity_pct": 38.1
+    },
+    {
+      "seq": 3644,
+      "flags": 0,
+      "flash_row": 871,
+      "temp_c": 36.58,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3645,
+      "flags": 0,
+      "flash_row": 872,
+      "temp_c": 36.57,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3646,
+      "flags": 0,
+      "flash_row": 873,
+      "temp_c": 36.57,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3647,
+      "flags": 0,
+      "flash_row": 874,
+      "temp_c": 36.58,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 3648,
+      "flags": 0,
+      "flash_row": 875,
+      "temp_c": 36.57,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 3649,
+      "flags": 0,
+      "flash_row": 876,
+      "temp_c": 36.56,
+      "humidity_pct": 37.7
+    },
+    {
+      "seq": 3650,
+      "flags": 0,
+      "flash_row": 877,
+      "temp_c": 36.55,
+      "humidity_pct": 37.7
+    },
+    {
+      "seq": 3651,
+      "flags": 0,
+      "flash_row": 878,
+      "temp_c": 36.58,
+      "humidity_pct": 37.6
+    },
+    {
+      "seq": 3652,
+      "flags": 0,
+      "flash_row": 879,
+      "temp_c": 36.57,
+      "humidity_pct": 37.6
+    },
+    {
+      "seq": 3653,
+      "flags": 0,
+      "flash_row": 880,
+      "temp_c": 36.58,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3654,
+      "flags": 0,
+      "flash_row": 881,
+      "temp_c": 36.58,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3655,
+      "flags": 0,
+      "flash_row": 882,
+      "temp_c": 36.56,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3656,
+      "flags": 0,
+      "flash_row": 883,
+      "temp_c": 36.57,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3657,
+      "flags": 0,
+      "flash_row": 884,
+      "temp_c": 36.55,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3658,
+      "flags": 0,
+      "flash_row": 885,
+      "temp_c": 36.58,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3659,
+      "flags": 0,
+      "flash_row": 886,
+      "temp_c": 36.55,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3660,
+      "flags": 0,
+      "flash_row": 887,
+      "temp_c": 36.57,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3661,
+      "flags": 0,
+      "flash_row": 888,
+      "temp_c": 36.55,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3662,
+      "flags": 0,
+      "flash_row": 889,
+      "temp_c": 36.57,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3663,
+      "flags": 0,
+      "flash_row": 890,
+      "temp_c": 36.57,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3664,
+      "flags": 0,
+      "flash_row": 891,
+      "temp_c": 36.57,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3665,
+      "flags": 0,
+      "flash_row": 892,
+      "temp_c": 36.57,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3666,
+      "flags": 0,
+      "flash_row": 893,
+      "temp_c": 36.55,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3667,
+      "flags": 0,
+      "flash_row": 894,
+      "temp_c": 36.56,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3668,
+      "flags": 0,
+      "flash_row": 895,
+      "temp_c": 36.57,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3669,
+      "flags": 0,
+      "flash_row": 896,
+      "temp_c": 36.55,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3670,
+      "flags": 0,
+      "flash_row": 897,
+      "temp_c": 36.55,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3671,
+      "flags": 0,
+      "flash_row": 898,
+      "temp_c": 36.57,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3672,
+      "flags": 0,
+      "flash_row": 899,
+      "temp_c": 36.58,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3673,
+      "flags": 0,
+      "flash_row": 900,
+      "temp_c": 36.57,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3674,
+      "flags": 0,
+      "flash_row": 901,
+      "temp_c": 36.56,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3675,
+      "flags": 0,
+      "flash_row": 902,
+      "temp_c": 36.55,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3676,
+      "flags": 0,
+      "flash_row": 903,
+      "temp_c": 36.58,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3677,
+      "flags": 0,
+      "flash_row": 904,
+      "temp_c": 36.57,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3678,
+      "flags": 0,
+      "flash_row": 905,
+      "temp_c": 36.57,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3679,
+      "flags": 0,
+      "flash_row": 906,
+      "temp_c": 36.58,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3680,
+      "flags": 0,
+      "flash_row": 907,
+      "temp_c": 36.58,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3681,
+      "flags": 0,
+      "flash_row": 908,
+      "temp_c": 36.56,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3682,
+      "flags": 0,
+      "flash_row": 909,
+      "temp_c": 36.59,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3683,
+      "flags": 0,
+      "flash_row": 910,
+      "temp_c": 36.59,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3684,
+      "flags": 0,
+      "flash_row": 911,
+      "temp_c": 36.58,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3685,
+      "flags": 0,
+      "flash_row": 912,
+      "temp_c": 36.57,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3686,
+      "flags": 0,
+      "flash_row": 913,
+      "temp_c": 36.57,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3687,
+      "flags": 0,
+      "flash_row": 914,
+      "temp_c": 36.58,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3688,
+      "flags": 0,
+      "flash_row": 915,
+      "temp_c": 36.57,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3689,
+      "flags": 0,
+      "flash_row": 916,
+      "temp_c": 36.58,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3690,
+      "flags": 0,
+      "flash_row": 917,
+      "temp_c": 36.59,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3691,
+      "flags": 0,
+      "flash_row": 918,
+      "temp_c": 36.6,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3692,
+      "flags": 0,
+      "flash_row": 919,
+      "temp_c": 36.6,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3693,
+      "flags": 0,
+      "flash_row": 920,
+      "temp_c": 36.6,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3694,
+      "flags": 0,
+      "flash_row": 921,
+      "temp_c": 36.59,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3695,
+      "flags": 0,
+      "flash_row": 922,
+      "temp_c": 36.57,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3696,
+      "flags": 0,
+      "flash_row": 923,
+      "temp_c": 36.6,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3697,
+      "flags": 0,
+      "flash_row": 924,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3698,
+      "flags": 0,
+      "flash_row": 925,
+      "temp_c": 36.59,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3699,
+      "flags": 0,
+      "flash_row": 926,
+      "temp_c": 36.59,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3700,
+      "flags": 0,
+      "flash_row": 927,
+      "temp_c": 36.58,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3701,
+      "flags": 0,
+      "flash_row": 928,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3702,
+      "flags": 0,
+      "flash_row": 929,
+      "temp_c": 36.59,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3703,
+      "flags": 0,
+      "flash_row": 930,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3704,
+      "flags": 0,
+      "flash_row": 931,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3705,
+      "flags": 0,
+      "flash_row": 932,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3706,
+      "flags": 0,
+      "flash_row": 933,
+      "temp_c": 36.62,
+      "humidity_pct": 36.2
+    },
+    {
+      "seq": 3707,
+      "flags": 0,
+      "flash_row": 934,
+      "temp_c": 36.6,
+      "humidity_pct": 36.2
+    },
+    {
+      "seq": 3708,
+      "flags": 0,
+      "flash_row": 935,
+      "temp_c": 36.62,
+      "humidity_pct": 36.1
+    },
+    {
+      "seq": 3709,
+      "flags": 0,
+      "flash_row": 936,
+      "temp_c": 36.61,
+      "humidity_pct": 36.1
+    },
+    {
+      "seq": 3710,
+      "flags": 0,
+      "flash_row": 937,
+      "temp_c": 36.6,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3711,
+      "flags": 0,
+      "flash_row": 938,
+      "temp_c": 36.63,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3712,
+      "flags": 0,
+      "flash_row": 939,
+      "temp_c": 36.62,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3713,
+      "flags": 0,
+      "flash_row": 940,
+      "temp_c": 36.6,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3714,
+      "flags": 0,
+      "flash_row": 941,
+      "temp_c": 36.6,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3715,
+      "flags": 0,
+      "flash_row": 942,
+      "temp_c": 36.61,
+      "humidity_pct": 36.2
+    },
+    {
+      "seq": 3716,
+      "flags": 0,
+      "flash_row": 943,
+      "temp_c": 36.62,
+      "humidity_pct": 36.2
+    },
+    {
+      "seq": 3717,
+      "flags": 0,
+      "flash_row": 944,
+      "temp_c": 36.62,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3718,
+      "flags": 0,
+      "flash_row": 945,
+      "temp_c": 36.6,
+      "humidity_pct": 36.3
+    },
+    {
+      "seq": 3719,
+      "flags": 0,
+      "flash_row": 946,
+      "temp_c": 36.61,
+      "humidity_pct": 36.4
+    },
+    {
+      "seq": 3720,
+      "flags": 0,
+      "flash_row": 947,
+      "temp_c": 36.62,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3721,
+      "flags": 0,
+      "flash_row": 948,
+      "temp_c": 36.62,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3722,
+      "flags": 0,
+      "flash_row": 949,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3723,
+      "flags": 0,
+      "flash_row": 950,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3724,
+      "flags": 0,
+      "flash_row": 951,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3725,
+      "flags": 0,
+      "flash_row": 952,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3726,
+      "flags": 0,
+      "flash_row": 953,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3727,
+      "flags": 0,
+      "flash_row": 954,
+      "temp_c": 36.61,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3728,
+      "flags": 0,
+      "flash_row": 955,
+      "temp_c": 36.64,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3729,
+      "flags": 0,
+      "flash_row": 956,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3730,
+      "flags": 0,
+      "flash_row": 957,
+      "temp_c": 36.63,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3731,
+      "flags": 0,
+      "flash_row": 958,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3732,
+      "flags": 0,
+      "flash_row": 959,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3733,
+      "flags": 0,
+      "flash_row": 960,
+      "temp_c": 36.62,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3734,
+      "flags": 0,
+      "flash_row": 961,
+      "temp_c": 36.64,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3735,
+      "flags": 0,
+      "flash_row": 962,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3736,
+      "flags": 0,
+      "flash_row": 963,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3737,
+      "flags": 0,
+      "flash_row": 964,
+      "temp_c": 36.65,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3738,
+      "flags": 0,
+      "flash_row": 965,
+      "temp_c": 36.64,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3739,
+      "flags": 0,
+      "flash_row": 966,
+      "temp_c": 36.64,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3740,
+      "flags": 0,
+      "flash_row": 967,
+      "temp_c": 36.64,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3741,
+      "flags": 0,
+      "flash_row": 968,
+      "temp_c": 36.64,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3742,
+      "flags": 0,
+      "flash_row": 969,
+      "temp_c": 36.65,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3743,
+      "flags": 0,
+      "flash_row": 970,
+      "temp_c": 36.66,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3744,
+      "flags": 0,
+      "flash_row": 971,
+      "temp_c": 36.64,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3745,
+      "flags": 0,
+      "flash_row": 972,
+      "temp_c": 36.64,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3746,
+      "flags": 0,
+      "flash_row": 973,
+      "temp_c": 36.64,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3747,
+      "flags": 0,
+      "flash_row": 974,
+      "temp_c": 36.64,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3748,
+      "flags": 0,
+      "flash_row": 975,
+      "temp_c": 36.65,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3749,
+      "flags": 0,
+      "flash_row": 976,
+      "temp_c": 36.64,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3750,
+      "flags": 0,
+      "flash_row": 977,
+      "temp_c": 36.66,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3751,
+      "flags": 0,
+      "flash_row": 978,
+      "temp_c": 36.65,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3752,
+      "flags": 0,
+      "flash_row": 979,
+      "temp_c": 36.64,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3753,
+      "flags": 0,
+      "flash_row": 980,
+      "temp_c": 36.66,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3754,
+      "flags": 0,
+      "flash_row": 981,
+      "temp_c": 36.65,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3755,
+      "flags": 0,
+      "flash_row": 982,
+      "temp_c": 36.65,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3756,
+      "flags": 0,
+      "flash_row": 983,
+      "temp_c": 36.66,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3757,
+      "flags": 0,
+      "flash_row": 984,
+      "temp_c": 36.66,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3758,
+      "flags": 0,
+      "flash_row": 985,
+      "temp_c": 36.65,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3759,
+      "flags": 0,
+      "flash_row": 986,
+      "temp_c": 36.64,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3760,
+      "flags": 0,
+      "flash_row": 987,
+      "temp_c": 36.67,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3761,
+      "flags": 0,
+      "flash_row": 988,
+      "temp_c": 36.64,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3762,
+      "flags": 0,
+      "flash_row": 989,
+      "temp_c": 36.66,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3763,
+      "flags": 0,
+      "flash_row": 990,
+      "temp_c": 36.66,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3764,
+      "flags": 0,
+      "flash_row": 991,
+      "temp_c": 36.67,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3765,
+      "flags": 0,
+      "flash_row": 992,
+      "temp_c": 36.67,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3766,
+      "flags": 0,
+      "flash_row": 993,
+      "temp_c": 36.65,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3767,
+      "flags": 0,
+      "flash_row": 994,
+      "temp_c": 36.66,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3768,
+      "flags": 0,
+      "flash_row": 995,
+      "temp_c": 36.67,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3769,
+      "flags": 0,
+      "flash_row": 996,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3770,
+      "flags": 0,
+      "flash_row": 997,
+      "temp_c": 36.64,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3771,
+      "flags": 0,
+      "flash_row": 998,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3772,
+      "flags": 0,
+      "flash_row": 999,
+      "temp_c": 36.67,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3773,
+      "flags": 0,
+      "flash_row": 1000,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3774,
+      "flags": 0,
+      "flash_row": 1001,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3775,
+      "flags": 0,
+      "flash_row": 1002,
+      "temp_c": 36.67,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3776,
+      "flags": 0,
+      "flash_row": 1003,
+      "temp_c": 36.66,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3777,
+      "flags": 0,
+      "flash_row": 1004,
+      "temp_c": 36.64,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3778,
+      "flags": 0,
+      "flash_row": 1005,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3779,
+      "flags": 0,
+      "flash_row": 1006,
+      "temp_c": 36.67,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3780,
+      "flags": 0,
+      "flash_row": 1007,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3781,
+      "flags": 0,
+      "flash_row": 1008,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3782,
+      "flags": 0,
+      "flash_row": 1009,
+      "temp_c": 36.65,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3783,
+      "flags": 0,
+      "flash_row": 1010,
+      "temp_c": 36.67,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3784,
+      "flags": 0,
+      "flash_row": 1011,
+      "temp_c": 36.65,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3785,
+      "flags": 0,
+      "flash_row": 1012,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3786,
+      "flags": 0,
+      "flash_row": 1013,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3787,
+      "flags": 0,
+      "flash_row": 1014,
+      "temp_c": 36.65,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3788,
+      "flags": 0,
+      "flash_row": 1015,
+      "temp_c": 36.66,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3789,
+      "flags": 0,
+      "flash_row": 1016,
+      "temp_c": 36.65,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3790,
+      "flags": 0,
+      "flash_row": 1017,
+      "temp_c": 36.66,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3791,
+      "flags": 0,
+      "flash_row": 1018,
+      "temp_c": 36.67,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3792,
+      "flags": 0,
+      "flash_row": 1019,
+      "temp_c": 36.65,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3793,
+      "flags": 0,
+      "flash_row": 1020,
+      "temp_c": 36.65,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3794,
+      "flags": 0,
+      "flash_row": 1021,
+      "temp_c": 36.64,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3795,
+      "flags": 0,
+      "flash_row": 1022,
+      "temp_c": 36.67,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3796,
+      "flags": 0,
+      "flash_row": 1023,
+      "temp_c": 36.69,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3797,
+      "flags": 0,
+      "flash_row": 1024,
+      "temp_c": 36.66,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3798,
+      "flags": 0,
+      "flash_row": 1025,
+      "temp_c": 36.65,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3799,
+      "flags": 0,
+      "flash_row": 1026,
+      "temp_c": 36.67,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3800,
+      "flags": 0,
+      "flash_row": 1027,
+      "temp_c": 36.67,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3801,
+      "flags": 0,
+      "flash_row": 1028,
+      "temp_c": 36.66,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3802,
+      "flags": 0,
+      "flash_row": 1029,
+      "temp_c": 36.66,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3803,
+      "flags": 0,
+      "flash_row": 1030,
+      "temp_c": 36.64,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3804,
+      "flags": 0,
+      "flash_row": 1031,
+      "temp_c": 36.63,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3805,
+      "flags": 0,
+      "flash_row": 1032,
+      "temp_c": 36.64,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3806,
+      "flags": 0,
+      "flash_row": 1033,
+      "temp_c": 36.65,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3807,
+      "flags": 0,
+      "flash_row": 1034,
+      "temp_c": 36.66,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3808,
+      "flags": 0,
+      "flash_row": 1035,
+      "temp_c": 36.66,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3809,
+      "flags": 0,
+      "flash_row": 1036,
+      "temp_c": 36.65,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3810,
+      "flags": 0,
+      "flash_row": 1037,
+      "temp_c": 36.64,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3811,
+      "flags": 0,
+      "flash_row": 1038,
+      "temp_c": 36.64,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3812,
+      "flags": 0,
+      "flash_row": 1039,
+      "temp_c": 36.64,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3813,
+      "flags": 0,
+      "flash_row": 1040,
+      "temp_c": 36.65,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3814,
+      "flags": 0,
+      "flash_row": 1041,
+      "temp_c": 36.65,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3815,
+      "flags": 0,
+      "flash_row": 1042,
+      "temp_c": 36.64,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3816,
+      "flags": 0,
+      "flash_row": 1043,
+      "temp_c": 36.64,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3817,
+      "flags": 0,
+      "flash_row": 1044,
+      "temp_c": 36.63,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3818,
+      "flags": 0,
+      "flash_row": 1045,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3819,
+      "flags": 0,
+      "flash_row": 1046,
+      "temp_c": 36.65,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3820,
+      "flags": 0,
+      "flash_row": 1047,
+      "temp_c": 36.64,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3821,
+      "flags": 0,
+      "flash_row": 1048,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3822,
+      "flags": 0,
+      "flash_row": 1049,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3823,
+      "flags": 0,
+      "flash_row": 1050,
+      "temp_c": 36.66,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3824,
+      "flags": 0,
+      "flash_row": 1051,
+      "temp_c": 36.66,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3825,
+      "flags": 0,
+      "flash_row": 1052,
+      "temp_c": 36.64,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3826,
+      "flags": 0,
+      "flash_row": 1053,
+      "temp_c": 36.64,
+      "humidity_pct": 37.2
+    },
+    {
+      "seq": 3827,
+      "flags": 0,
+      "flash_row": 1054,
+      "temp_c": 36.64,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3828,
+      "flags": 0,
+      "flash_row": 1055,
+      "temp_c": 36.67,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3829,
+      "flags": 0,
+      "flash_row": 1056,
+      "temp_c": 36.65,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3830,
+      "flags": 0,
+      "flash_row": 1057,
+      "temp_c": 36.64,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3831,
+      "flags": 0,
+      "flash_row": 1058,
+      "temp_c": 36.64,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3832,
+      "flags": 0,
+      "flash_row": 1059,
+      "temp_c": 36.64,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3833,
+      "flags": 0,
+      "flash_row": 1060,
+      "temp_c": 36.63,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3834,
+      "flags": 0,
+      "flash_row": 1061,
+      "temp_c": 36.65,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3835,
+      "flags": 0,
+      "flash_row": 1062,
+      "temp_c": 36.64,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3836,
+      "flags": 0,
+      "flash_row": 1063,
+      "temp_c": 36.64,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3837,
+      "flags": 0,
+      "flash_row": 1064,
+      "temp_c": 36.65,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3838,
+      "flags": 0,
+      "flash_row": 1065,
+      "temp_c": 36.63,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3839,
+      "flags": 0,
+      "flash_row": 1066,
+      "temp_c": 36.62,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3840,
+      "flags": 0,
+      "flash_row": 1067,
+      "temp_c": 36.64,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3841,
+      "flags": 0,
+      "flash_row": 1068,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3842,
+      "flags": 0,
+      "flash_row": 1069,
+      "temp_c": 36.63,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3843,
+      "flags": 0,
+      "flash_row": 1070,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3844,
+      "flags": 0,
+      "flash_row": 1071,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3845,
+      "flags": 0,
+      "flash_row": 1072,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3846,
+      "flags": 0,
+      "flash_row": 1073,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3847,
+      "flags": 0,
+      "flash_row": 1074,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3848,
+      "flags": 0,
+      "flash_row": 1075,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3849,
+      "flags": 0,
+      "flash_row": 1076,
+      "temp_c": 36.64,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3850,
+      "flags": 0,
+      "flash_row": 1077,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3851,
+      "flags": 0,
+      "flash_row": 1078,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3852,
+      "flags": 0,
+      "flash_row": 1079,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3853,
+      "flags": 0,
+      "flash_row": 1080,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3854,
+      "flags": 0,
+      "flash_row": 1081,
+      "temp_c": 36.63,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3855,
+      "flags": 0,
+      "flash_row": 1082,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3856,
+      "flags": 0,
+      "flash_row": 1083,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3857,
+      "flags": 0,
+      "flash_row": 1084,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3858,
+      "flags": 0,
+      "flash_row": 1085,
+      "temp_c": 36.61,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3859,
+      "flags": 0,
+      "flash_row": 1086,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3860,
+      "flags": 0,
+      "flash_row": 1087,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3861,
+      "flags": 0,
+      "flash_row": 1088,
+      "temp_c": 36.63,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3862,
+      "flags": 0,
+      "flash_row": 1089,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3863,
+      "flags": 0,
+      "flash_row": 1090,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3864,
+      "flags": 0,
+      "flash_row": 1091,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3865,
+      "flags": 0,
+      "flash_row": 1092,
+      "temp_c": 36.62,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3866,
+      "flags": 0,
+      "flash_row": 1093,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3867,
+      "flags": 0,
+      "flash_row": 1094,
+      "temp_c": 36.63,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3868,
+      "flags": 0,
+      "flash_row": 1095,
+      "temp_c": 36.64,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3869,
+      "flags": 0,
+      "flash_row": 1096,
+      "temp_c": 36.61,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3870,
+      "flags": 0,
+      "flash_row": 1097,
+      "temp_c": 36.61,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3871,
+      "flags": 0,
+      "flash_row": 1098,
+      "temp_c": 36.61,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3872,
+      "flags": 0,
+      "flash_row": 1099,
+      "temp_c": 36.61,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3873,
+      "flags": 0,
+      "flash_row": 1100,
+      "temp_c": 36.61,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3874,
+      "flags": 0,
+      "flash_row": 1101,
+      "temp_c": 36.61,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3875,
+      "flags": 0,
+      "flash_row": 1102,
+      "temp_c": 36.62,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3876,
+      "flags": 0,
+      "flash_row": 1103,
+      "temp_c": 36.61,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3877,
+      "flags": 0,
+      "flash_row": 1104,
+      "temp_c": 36.63,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3878,
+      "flags": 0,
+      "flash_row": 1105,
+      "temp_c": 36.62,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3879,
+      "flags": 0,
+      "flash_row": 1106,
+      "temp_c": 36.62,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3880,
+      "flags": 0,
+      "flash_row": 1107,
+      "temp_c": 36.62,
+      "humidity_pct": 36.9
+    },
+    {
+      "seq": 3881,
+      "flags": 0,
+      "flash_row": 1108,
+      "temp_c": 36.61,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3882,
+      "flags": 0,
+      "flash_row": 1109,
+      "temp_c": 36.63,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3883,
+      "flags": 0,
+      "flash_row": 1110,
+      "temp_c": 36.63,
+      "humidity_pct": 37.0
+    },
+    {
+      "seq": 3884,
+      "flags": 0,
+      "flash_row": 1111,
+      "temp_c": 36.62,
+      "humidity_pct": 37.1
+    },
+    {
+      "seq": 3885,
+      "flags": 0,
+      "flash_row": 1112,
+      "temp_c": 36.6,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3886,
+      "flags": 0,
+      "flash_row": 1113,
+      "temp_c": 36.58,
+      "humidity_pct": 37.6
+    },
+    {
+      "seq": 3887,
+      "flags": 0,
+      "flash_row": 1114,
+      "temp_c": 36.59,
+      "humidity_pct": 37.7
+    },
+    {
+      "seq": 3888,
+      "flags": 0,
+      "flash_row": 1115,
+      "temp_c": 36.59,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 3889,
+      "flags": 0,
+      "flash_row": 1116,
+      "temp_c": 36.57,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 3890,
+      "flags": 0,
+      "flash_row": 1117,
+      "temp_c": 36.58,
+      "humidity_pct": 37.6
+    },
+    {
+      "seq": 3891,
+      "flags": 0,
+      "flash_row": 1118,
+      "temp_c": 36.6,
+      "humidity_pct": 37.5
+    },
+    {
+      "seq": 3892,
+      "flags": 0,
+      "flash_row": 1119,
+      "temp_c": 36.59,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3893,
+      "flags": 0,
+      "flash_row": 1120,
+      "temp_c": 36.6,
+      "humidity_pct": 37.4
+    },
+    {
+      "seq": 3894,
+      "flags": 0,
+      "flash_row": 1121,
+      "temp_c": 36.59,
+      "humidity_pct": 37.6
+    },
+    {
+      "seq": 3895,
+      "flags": 0,
+      "flash_row": 1122,
+      "temp_c": 36.6,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3896,
+      "flags": 0,
+      "flash_row": 1123,
+      "temp_c": 36.6,
+      "humidity_pct": 41.9
+    },
+    {
+      "seq": 3897,
+      "flags": 0,
+      "flash_row": 1124,
+      "temp_c": 36.6,
+      "humidity_pct": 40.7
+    },
+    {
+      "seq": 3898,
+      "flags": 0,
+      "flash_row": 1125,
+      "temp_c": 36.62,
+      "humidity_pct": 40.0
+    },
+    {
+      "seq": 3899,
+      "flags": 0,
+      "flash_row": 1126,
+      "temp_c": 36.62,
+      "humidity_pct": 39.6
+    },
+    {
+      "seq": 3900,
+      "flags": 0,
+      "flash_row": 1127,
+      "temp_c": 36.6,
+      "humidity_pct": 39.2
+    },
+    {
+      "seq": 3901,
+      "flags": 0,
+      "flash_row": 1128,
+      "temp_c": 36.62,
+      "humidity_pct": 38.6
+    },
+    {
+      "seq": 3902,
+      "flags": 0,
+      "flash_row": 1129,
+      "temp_c": 36.63,
+      "humidity_pct": 38.3
+    },
+    {
+      "seq": 3903,
+      "flags": 0,
+      "flash_row": 1130,
+      "temp_c": 36.62,
+      "humidity_pct": 38.2
+    },
+    {
+      "seq": 3904,
+      "flags": 0,
+      "flash_row": 1131,
+      "temp_c": 36.64,
+      "humidity_pct": 38.1
+    },
+    {
+      "seq": 3905,
+      "flags": 0,
+      "flash_row": 1132,
+      "temp_c": 36.61,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3906,
+      "flags": 0,
+      "flash_row": 1133,
+      "temp_c": 36.62,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3907,
+      "flags": 0,
+      "flash_row": 1134,
+      "temp_c": 36.61,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3908,
+      "flags": 0,
+      "flash_row": 1135,
+      "temp_c": 36.6,
+      "humidity_pct": 43.3
+    },
+    {
+      "seq": 3909,
+      "flags": 0,
+      "flash_row": 1136,
+      "temp_c": 36.59,
+      "humidity_pct": 40.1
+    },
+    {
+      "seq": 3910,
+      "flags": 0,
+      "flash_row": 1137,
+      "temp_c": 36.58,
+      "humidity_pct": 38.8
+    },
+    {
+      "seq": 3911,
+      "flags": 0,
+      "flash_row": 1138,
+      "temp_c": 36.57,
+      "humidity_pct": 38.3
+    },
+    {
+      "seq": 3912,
+      "flags": 0,
+      "flash_row": 1139,
+      "temp_c": 36.58,
+      "humidity_pct": 38.0
+    },
+    {
+      "seq": 3913,
+      "flags": 0,
+      "flash_row": 1140,
+      "temp_c": 36.58,
+      "humidity_pct": 37.3
+    },
+    {
+      "seq": 3914,
+      "flags": 0,
+      "flash_row": 1141,
+      "temp_c": 36.56,
+      "humidity_pct": 36.8
+    },
+    {
+      "seq": 3915,
+      "flags": 0,
+      "flash_row": 1142,
+      "temp_c": 36.57,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3916,
+      "flags": 0,
+      "flash_row": 1143,
+      "temp_c": 36.56,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3917,
+      "flags": 0,
+      "flash_row": 1144,
+      "temp_c": 36.56,
+      "humidity_pct": 36.6
+    },
+    {
+      "seq": 3918,
+      "flags": 0,
+      "flash_row": 1145,
+      "temp_c": 36.56,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3919,
+      "flags": 0,
+      "flash_row": 1146,
+      "temp_c": 36.55,
+      "humidity_pct": 36.7
+    },
+    {
+      "seq": 3920,
+      "flags": 0,
+      "flash_row": 1147,
+      "temp_c": 36.54,
+      "humidity_pct": 36.5
+    },
+    {
+      "seq": 3921,
+      "flags": 0,
+      "flash_row": 1148,
+      "temp_c": 36.55,
+      "humidity_pct": 37.8
+    },
+    {
+      "seq": 3922,
+      "flags": 0,
+      "flash_row": 1149,
+      "temp_c": 35.33,
+      "humidity_pct": 38.1
+    },
+    {
+      "seq": 3923,
+      "flags": 0,
+      "flash_row": 1150,
+      "temp_c": 34.17,
+      "humidity_pct": 34.9
+    },
+    {
+      "seq": 3924,
+      "flags": 0,
+      "flash_row": 1151,
+      "temp_c": 34.11,
+      "humidity_pct": 35.0
+    },
+    {
+      "seq": 3925,
+      "flags": 0,
+      "flash_row": 1152,
+      "temp_c": 33.82,
+      "humidity_pct": 36.0
+    },
+    {
+      "seq": 3926,
+      "flags": 0,
+      "flash_row": 1153,
+      "temp_c": 33.51,
+      "humidity_pct": 32.7
+    },
+    {
+      "seq": 3927,
+      "flags": 0,
+      "flash_row": 1154,
+      "temp_c": 33.24,
+      "humidity_pct": 33.3
+    },
+    {
+      "seq": 3928,
+      "flags": 0,
+      "flash_row": 1155,
+      "temp_c": 33.16,
+      "humidity_pct": 32.8
+    },
+    {
+      "seq": 3929,
+      "flags": 0,
+      "flash_row": 1156,
+      "temp_c": 32.78,
+      "humidity_pct": 32.6
+    }
+  ]
+}
