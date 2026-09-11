@@ -46,6 +46,8 @@ gui/config.json
 # content.
 gui/sensor_data.db
 gui/sensor_data.db-*
+gui/node_manager.db
+gui/node_manager.db-*
 gui/*.csv
 gui/exports/
 *.png
